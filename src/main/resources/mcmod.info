@@ -1,0 +1,16 @@
+[
+{
+  "modid": "stargarden",
+  "name": "Star Garden",
+  "description": "Modpack tweak for the Star Garden server",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "https://github.com/ferreusveritas/StarGarden",
+  "authorList": [ "FerreusVeritas" ],
+  "credits": "",
+  "logoFile": "assets/stargarden/textures/items/logo.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]
