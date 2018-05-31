@@ -75,6 +75,7 @@ public class StarGarden {
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		
+		Thermal.preInit();
 		ProjectRed.preInit();
 		
 		//ModConfigs.preInit(event);//Naturally this comes first so we can react to settings
@@ -128,6 +129,7 @@ public class StarGarden {
 		
 		@SubscribeEvent
 		public static void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+			Thermal.registerRecipes(event.getRegistry());
 			ProjectRed.registerRecipes(event.getRegistry());
 			//ModRecipes.registerRecipes(event.getRegistry());
 		}
