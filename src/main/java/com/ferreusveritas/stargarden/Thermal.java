@@ -2,10 +2,15 @@ package com.ferreusveritas.stargarden;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import cofh.core.item.ItemMulti;
+import cofh.thermalexpansion.util.managers.machine.CentrifugeManager;
 import cofh.thermalexpansion.util.managers.machine.CompactorManager;
+import cofh.thermalexpansion.util.managers.machine.FurnaceManager;
 import cofh.thermalexpansion.util.managers.machine.PulverizerManager;
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
@@ -13,13 +18,15 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
 
-public class Thermal {
+public class Thermal implements IFeature {
 
-	private static final String INPUT = "input";
+	//private static final String INPUT = "input";
 	//private static final String OUTPUT = "output";
 	private static final String ENERGY = "energy";
 	private static final String PRIMARY_INPUT = "primaryInput";
@@ -27,7 +34,6 @@ public class Thermal {
 	private static final String PRIMARY_OUTPUT = "primaryOutput";
 	private static final String SECONDARY_OUTPUT = "secondaryOutput";
 	private static final String SECONDARY_CHANCE = "secondaryChance";
-	private static final String REMOVE_FURNACE_RECIPE = "removefurnacerecipe";
 	private static final String ADD_SMELTER_RECIPE = "addsmelterrecipe";
 	
 	private static final String BIOMESOPLENTY = "biomesoplenty";
@@ -40,11 +46,8 @@ public class Thermal {
 		if (input.isEmpty()) {
 			return;
 		}
-		NBTTagCompound toSend = new NBTTagCompound();
-		toSend.setTag(INPUT, new NBTTagCompound());
 		
-		input.writeToNBT(toSend.getCompoundTag(INPUT));
-		FMLInterModComms.sendMessage(THERMALEXPANSION, REMOVE_FURNACE_RECIPE, toSend);
+		FurnaceManager.removeRecipe(input);
 	}
 	
 	private static void removeCompactorMintRecipe(ItemStack input) {
@@ -78,24 +81,6 @@ public class Thermal {
 			toSend.setInteger(SECONDARY_CHANCE, secondaryChance);
 		}
 		FMLInterModComms.sendMessage(THERMALEXPANSION, ADD_SMELTER_RECIPE, toSend);
-	}
-	
-	public static void addPulverizerRecipe(int energy, ItemStack input, ItemStack primaryOutput, ItemStack secondaryOutput, int secondaryChance) {
-		
-		if (input.isEmpty() || primaryOutput.isEmpty()) {
-			return;
-		}
-		
-		PulverizerManager.addRecipe(energy, input, primaryOutput, secondaryOutput, secondaryChance);
-	}
-	
-	private static void removePulverizerRecipe(ItemStack input) {
-		
-		if (input.isEmpty()) {
-			return;
-		}
-		
-		PulverizerManager.removeRecipe(input);
 	}
 	
 	public static ArrayList<ItemStack> getMintRemoveList() {
@@ -155,6 +140,7 @@ public class Thermal {
 		for(EnumDyeColor color : EnumDyeColor.values()) {
 			pulverizerRemoveList.add(new ItemStack(Blocks.WOOL, 1, color.getMetadata()));
 			pulverizerRemoveList.add(new ItemStack(quiltedWool, 1, color.getMetadata()));
+			pulverizerRemoveList.add(new ItemStack(Block.REGISTRY.getObject(new ResourceLocation(QUARK, "colored_flowerpot_" + color.getDyeColorName()))));
 		}
 		
 		return pulverizerRemoveList;
@@ -169,10 +155,10 @@ public class Thermal {
 		jeiRemoveList.add(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALEXPANSION, "augment")), 1, 720));
 		
 		//Remove thermal foundation pigment
-		Item dye = Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "dye"));
+		Item pigment = Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "dye"));
 		
 		for(EnumDyeColor color : EnumDyeColor.values()) {
-			jeiRemoveList.add(new ItemStack(dye, 1, color.getMetadata()));
+			jeiRemoveList.add(new ItemStack(pigment, 1, color.getMetadata()));
 		}
 		
 		return jeiRemoveList;
@@ -187,42 +173,72 @@ public class Thermal {
 		return recipesRemoveList;
 	}
 	
-	public static void preInit() {
+	@Override
+	public void preInit() {
 	}
 	
-	public static void init() {		
+	@Override
+	public void init() {		
+	}
+	
+	@Override
+	public void postInit() {
+		
 		//int coinMetas[] = { 0, 1, 64, 65, 66, 67, 68, 69, 70, 71, 72, 96, 97, 98, 99, 100, 101, 102, 103 };
 		Item coin = Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "coin"));
 		coin.setCreativeTab(null);//Remove the coin from the creative tabs
 		
-		Item dye = Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "dye"));
-		dye.setCreativeTab(null);
-	}
-	
-	public static void postInit() {
+		Item pigment = Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "dye"));
+		pigment.setCreativeTab(null);
+		
 		getRecipeRemoveList().forEach(i -> ModMolester.removeRecipe(i));
-		getPulverizerRemoveList().forEach(i -> removePulverizerRecipe(i));
+		getPulverizerRemoveList().forEach(i -> PulverizerManager.removeRecipe(i));
 		getMintRemoveList().forEach(i -> removeCompactorMintRecipe(i));
-		//TODO: Remove concrete powder recipes from Centrifugal Separator and replace with BoP colors
-		//TODO: Remove pulverizer recipe for quark flower pots
+		
+		for(EnumDyeColor c: EnumDyeColor.values()) {
+			//Remove concrete powder recipes from Centrifugal Separator
+			CentrifugeManager.removeRecipe(new ItemStack(Blocks.CONCRETE_POWDER, 2, c.getMetadata()));
+		}
 		
 		Item quiltedWool = Item.REGISTRY.getObject(new ResourceLocation(QUARK, "quilted_wool"));
-		int woolMeta = 15;
+		ItemStack sand = new ItemStack(Blocks.SAND);
+		ItemStack gravel = new ItemStack(Blocks.GRAVEL);
+
+		int meta = 15;
 		
 		for(ItemStack dye: getSafeDyesList()) {
 			System.out.println("Safe Dye: " + dye);
-			addPulverizerRecipe(3000, new ItemStack(Blocks.WOOL, 1, woolMeta), new ItemStack(Items.STRING, 4), dye, 15);
-			addPulverizerRecipe(3000, new ItemStack(quiltedWool, 1, woolMeta), new ItemStack(Items.STRING, 4), dye, 15);
-			woolMeta--;
+			PulverizerManager.addRecipe(3000, new ItemStack(Blocks.WOOL, 1, meta), new ItemStack(Items.STRING, 4), dye, 15);
+			PulverizerManager.addRecipe(3000, new ItemStack(quiltedWool, 1, meta), new ItemStack(Items.STRING, 4), dye, 15);
+			CentrifugeManager.addRecipe(2000, new ItemStack(Blocks.CONCRETE_POWDER, 2, meta), Arrays.asList(sand, gravel, dye), Arrays.asList(100, 100, 10), null);
+			meta--;
 		}
 		
 		cofh.thermalexpansion.block.dynamo.BlockDynamo.enable[5] = false;
 	}
 	
-	public static void registerRecipes(IForgeRegistry<IRecipe> registry) {
+	@Override
+	public void oreRegister(String oreName, ItemStack ore) {
+		
+		//Remove Thermal Expansion Pigments
+		if(ore.getItem().getRegistryName().toString().equals(THERMALFOUNDATION + ":dye")) {
+			try {
+				Field OREDICTIONARY_IDTOSTACK = OreDictionary.class.getDeclaredField("idToStack");
+				OREDICTIONARY_IDTOSTACK.setAccessible(true);
+				List<NonNullList<ItemStack>> ores = (List<NonNullList<ItemStack>>) OREDICTIONARY_IDTOSTACK.get(null);
+				ores.get(OreDictionary.getOreID(oreName)).remove(ore);
+			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+				System.err.println(e.getMessage());
+			}
+		}
+		
 	}
 	
-	public static void onLoadComplete() {		
+	@Override
+	public void registerRecipes(IForgeRegistry<IRecipe> registry) { }
+	
+	@Override
+	public void onLoadComplete() {		
 		getJeiRemoveList().forEach(i -> ModMolester.removeItemStackFromJEI(i));
 		
 		//Dirty hack to remove Numismatic Press and Lapidary Calibration from the creative tabs
