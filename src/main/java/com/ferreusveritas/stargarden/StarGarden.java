@@ -57,7 +57,8 @@ public class StarGarden {
 			"required-after:projectred-transmission;" +
 			"required-after:thermalfoundation;" +
 			"required-after:thermalexpansion;" +
-			"required-after:jei";
+			"required-after:jei;" +
+			"required-after:biomesoplenty";
 	
 	@SidedProxy(clientSide = "com.ferreusveritas.stargarden.proxy.ClientProxy", serverSide = "com.ferreusveritas.stargarden.proxy.CommonProxy")
 	public static CommonProxy proxy;
