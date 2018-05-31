@@ -47,7 +47,7 @@ public class Thermal {
 		FMLInterModComms.sendMessage(THERMALEXPANSION, REMOVE_FURNACE_RECIPE, toSend);
 	}
 	
-	public static void removeCompactorMintRecipe(ItemStack input) {
+	private static void removeCompactorMintRecipe(ItemStack input) {
 		
 		if (input.isEmpty()) {
 			return;
@@ -89,7 +89,7 @@ public class Thermal {
 		PulverizerManager.addRecipe(energy, input, primaryOutput, secondaryOutput, secondaryChance);
 	}
 	
-	public static void removePulverizerRecipe(ItemStack input) {
+	private static void removePulverizerRecipe(ItemStack input) {
 		
 		if (input.isEmpty()) {
 			return;
