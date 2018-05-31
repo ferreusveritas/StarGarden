@@ -203,12 +203,17 @@ public class Thermal {
 		getRecipeRemoveList().forEach(i -> ModMolester.removeRecipe(i));
 		getPulverizerRemoveList().forEach(i -> removePulverizerRecipe(i));
 		getMintRemoveList().forEach(i -> removeCompactorMintRecipe(i));
-
+		//TODO: Remove concrete powder recipes from Centrifugal Separator and replace with BoP colors
+		//TODO: Remove pulverizer recipe for quark flower pots
+		
 		Item quiltedWool = Item.REGISTRY.getObject(new ResourceLocation(QUARK, "quilted_wool"));
+		int woolMeta = 15;
 		
 		for(ItemStack dye: getSafeDyesList()) {
-			addPulverizerRecipe(3000, new ItemStack(Blocks.WOOL, 1, 15 - dye.getMetadata()), new ItemStack(Items.STRING, 4), dye, 15);
-			addPulverizerRecipe(3000, new ItemStack(quiltedWool, 1, 15 - dye.getMetadata()), new ItemStack(Items.STRING, 4), dye, 15);
+			System.out.println("Safe Dye: " + dye);
+			addPulverizerRecipe(3000, new ItemStack(Blocks.WOOL, 1, woolMeta), new ItemStack(Items.STRING, 4), dye, 15);
+			addPulverizerRecipe(3000, new ItemStack(quiltedWool, 1, woolMeta), new ItemStack(Items.STRING, 4), dye, 15);
+			woolMeta--;
 		}
 		
 		cofh.thermalexpansion.block.dynamo.BlockDynamo.enable[5] = false;
