@@ -22,7 +22,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.OreDictionary;
 import scala.actors.threadpool.Arrays;
 
 /**
@@ -61,6 +60,7 @@ public class StarGarden {
 			"required-after:thermalfoundation;" +
 			"required-after:thermalexpansion;" +
 			"required-after:jei;" +
+			"required-after:" + ComputerCraft.COMPUTERCRAFT + ";" +
 			"required-after:biomesoplenty";
 	
 	@SidedProxy(clientSide = "com.ferreusveritas.stargarden.proxy.ClientProxy", serverSide = "com.ferreusveritas.stargarden.proxy.CommonProxy")
@@ -79,7 +79,7 @@ public class StarGarden {
 	};
 	
 	public StarGarden() {
-		features.addAll(Arrays.asList(new IFeature[] { new Vanilla(), new Thermal(), new ProjectRed(), new Banners() }));
+		features.addAll(Arrays.asList(new IFeature[] { new Vanilla(), new Thermal(), new ProjectRed(), new ComputerCraft(), new Banners() }));
 	}
 	
 	@Mod.EventHandler
@@ -108,11 +108,6 @@ public class StarGarden {
 	
 	@Mod.EventBusSubscriber
 	public static class RegistrationHandler {
-		
-		@SubscribeEvent
-		public static void oreRegister(OreDictionary.OreRegisterEvent event) {
-			features.forEach(i -> i.oreRegister(event.getName(), event.getOre()));
-		}
 		
 		@SubscribeEvent
 		public static void registerBlocks(RegistryEvent.Register<Block> event) {

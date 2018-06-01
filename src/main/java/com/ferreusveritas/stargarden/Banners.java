@@ -39,9 +39,6 @@ public class Banners implements IFeature {
 	public void onLoadComplete() { }
 
 	@Override
-	public void oreRegister(String oreName, ItemStack ore) { }
-
-	@Override
 	public void registerRecipes(IForgeRegistry<IRecipe> registry) { }
 	
 }

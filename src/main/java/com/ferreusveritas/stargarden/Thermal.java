@@ -3,7 +3,6 @@ package com.ferreusveritas.stargarden;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import cofh.core.item.ItemMulti;
 import cofh.thermalexpansion.util.managers.machine.CentrifugeManager;
@@ -17,11 +16,12 @@ import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
-import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.OreIngredient;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class Thermal implements IFeature {
@@ -148,19 +148,10 @@ public class Thermal implements IFeature {
 
 	public static ArrayList<ItemStack> getJeiRemoveList() {
 		ArrayList<ItemStack> jeiRemoveList = new ArrayList<ItemStack>();
-		
 		jeiRemoveList.add(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "coin")), 1, 0));
 		jeiRemoveList.add(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALEXPANSION, "dynamo")), 1, 5));
 		jeiRemoveList.add(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALEXPANSION, "augment")), 1, 336));
 		jeiRemoveList.add(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALEXPANSION, "augment")), 1, 720));
-		
-		//Remove thermal foundation pigment
-		Item pigment = Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "dye"));
-		
-		for(EnumDyeColor color : EnumDyeColor.values()) {
-			jeiRemoveList.add(new ItemStack(pigment, 1, color.getMetadata()));
-		}
-		
 		return jeiRemoveList;
 	}
 	
@@ -169,6 +160,22 @@ public class Thermal implements IFeature {
 		recipesRemoveList.add(THERMALFOUNDATION + ":dynamo_5");//Remove the recipe for the stupid Numismatic Dynamo
 		recipesRemoveList.add(THERMALFOUNDATION + ":augment_13");//Numismatic Press
 		recipesRemoveList.add(THERMALFOUNDATION + ":augment_38");//Lapidary Calibration
+
+		for(int i = 5; i <= 9; i++) {
+			recipesRemoveList.add(THERMALEXPANSION + ":capacitor_" + i);//Capacitor Coloring
+		}
+		
+		for(int i = 5; i <= 9; i++) {
+			recipesRemoveList.add(THERMALEXPANSION + ":reservoir_" + i);//Reservoir Coloring
+		}
+		
+		for(int i = 13; i <= 22; i++) {
+			recipesRemoveList.add(THERMALEXPANSION + ":satchel_" + i);//Satchel Coloring
+		}
+
+		for(int i = 0; i <= 15; i++) {
+			recipesRemoveList.add(THERMALFOUNDATION + ":rockwool" +  (i != 0 ? ("_" + i) : ""));//Rockwool Coloring
+		}
 		
 		return recipesRemoveList;
 	}
@@ -191,11 +198,13 @@ public class Thermal implements IFeature {
 		Item pigment = Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "dye"));
 		pigment.setCreativeTab(null);
 		
-		getRecipeRemoveList().forEach(i -> ModMolester.removeRecipe(i));
+		getRecipeRemoveList().forEach(i -> Vanilla.removeRecipe(i));
 		getPulverizerRemoveList().forEach(i -> PulverizerManager.removeRecipe(i));
 		getMintRemoveList().forEach(i -> removeCompactorMintRecipe(i));
 		
 		for(EnumDyeColor c: EnumDyeColor.values()) {
+			//Remove Thermal Expansion Pigments
+			Vanilla.removeOre(new ItemStack(pigment, 1, c.getMetadata()), null);
 			//Remove concrete powder recipes from Centrifugal Separator
 			CentrifugeManager.removeRecipe(new ItemStack(Blocks.CONCRETE_POWDER, 2, c.getMetadata()));
 		}
@@ -206,40 +215,48 @@ public class Thermal implements IFeature {
 
 		int meta = 15;
 		
-		for(ItemStack dye: getSafeDyesList()) {
-			System.out.println("Safe Dye: " + dye);
+		ArrayList<ItemStack> safeDyesList = getSafeDyesList();
+		
+		//Recreate pulverizer recipes to produce safe dyes
+		for(ItemStack dye: safeDyesList) {
 			PulverizerManager.addRecipe(3000, new ItemStack(Blocks.WOOL, 1, meta), new ItemStack(Items.STRING, 4), dye, 15);
 			PulverizerManager.addRecipe(3000, new ItemStack(quiltedWool, 1, meta), new ItemStack(Items.STRING, 4), dye, 15);
 			CentrifugeManager.addRecipe(2000, new ItemStack(Blocks.CONCRETE_POWDER, 2, meta), Arrays.asList(sand, gravel, dye), Arrays.asList(100, 100, 10), null);
 			meta--;
 		}
 		
+		//Create pulverizer recipes for vanilla to safe dyes
+		for(EnumDyeColor color : new EnumDyeColor[] { EnumDyeColor.BLACK, EnumDyeColor.GREEN, EnumDyeColor.BROWN, EnumDyeColor.BLUE }) {
+			ItemStack safeDye = safeDyesList.get(color.getDyeDamage()).copy();
+			safeDye.setCount(4);
+			PulverizerManager.addRecipe(2000, new ItemStack(Items.DYE, 1, color.getDyeDamage()), safeDye);
+		}
+		
+		//Force options to disable Numismatic Dynamo
 		cofh.thermalexpansion.block.dynamo.BlockDynamo.enable[5] = false;
 	}
 	
 	@Override
-	public void oreRegister(String oreName, ItemStack ore) {
+	public void registerRecipes(IForgeRegistry<IRecipe> registry) {
 		
-		//Remove Thermal Expansion Pigments
-		if(ore.getItem().getRegistryName().toString().equals(THERMALFOUNDATION + ":dye")) {
-			try {
-				Field OREDICTIONARY_IDTOSTACK = OreDictionary.class.getDeclaredField("idToStack");
-				OREDICTIONARY_IDTOSTACK.setAccessible(true);
-				List<NonNullList<ItemStack>> ores = (List<NonNullList<ItemStack>>) OREDICTIONARY_IDTOSTACK.get(null);
-				ores.get(OreDictionary.getOreID(oreName)).remove(ore);
-			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-				System.err.println(e.getMessage());
-			}
+		//Recreate rockwool recipes to respect Ore Dictionary Dyes
+		for(EnumDyeColor color : EnumDyeColor.values()) {
+			GameRegistry.addShapelessRecipe(
+					new ResourceLocation(ModConstants.MODID, "coloredRockwool_" + color.getDyeColorName()),//Name
+					null,//Group
+					new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "rockwool")), 1, color.getDyeDamage()),//Output
+					new Ingredient[] {
+							new OreIngredient("blockRockwool"),
+							new OreIngredient("dye" + Vanilla.dyeValues[color.getDyeDamage()])
+					}
+				);
 		}
-		
+
 	}
 	
 	@Override
-	public void registerRecipes(IForgeRegistry<IRecipe> registry) { }
-	
-	@Override
 	public void onLoadComplete() {		
-		getJeiRemoveList().forEach(i -> ModMolester.removeItemStackFromJEI(i));
+		getJeiRemoveList().forEach(i -> Vanilla.removeItemStackFromJEI(i));
 		
 		//Dirty hack to remove Numismatic Press and Lapidary Calibration from the creative tabs
 		try {
