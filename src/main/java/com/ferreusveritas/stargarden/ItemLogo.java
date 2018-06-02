@@ -44,7 +44,7 @@ public class ItemLogo extends Item {
 		}
 		*/
 		
-		if(tab.equals(StarGarden.starGardenTab)) {
+		if(tab.equals(CreativeTabs.MISC)) {
 			items.add(new ItemStack(this, 1, 0));
 		}
 	}

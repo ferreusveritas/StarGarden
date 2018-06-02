@@ -3,12 +3,14 @@ package com.ferreusveritas.stargarden;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 import cofh.core.item.ItemMulti;
 import cofh.thermalexpansion.util.managers.machine.CentrifugeManager;
 import cofh.thermalexpansion.util.managers.machine.CompactorManager;
 import cofh.thermalexpansion.util.managers.machine.FurnaceManager;
 import cofh.thermalexpansion.util.managers.machine.PulverizerManager;
+import cofh.thermalexpansion.util.managers.machine.SmelterManager;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -17,25 +19,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreIngredient;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class Thermal implements IFeature {
 
-	//private static final String INPUT = "input";
-	//private static final String OUTPUT = "output";
-	private static final String ENERGY = "energy";
-	private static final String PRIMARY_INPUT = "primaryInput";
-	private static final String SECONDARY_INPUT = "secondaryInput";
-	private static final String PRIMARY_OUTPUT = "primaryOutput";
-	private static final String SECONDARY_OUTPUT = "secondaryOutput";
-	private static final String SECONDARY_CHANCE = "secondaryChance";
-	private static final String ADD_SMELTER_RECIPE = "addsmelterrecipe";
-	
 	private static final String BIOMESOPLENTY = "biomesoplenty";
 	private static final String QUARK = "quark";
 	private static final String THERMALEXPANSION = "thermalexpansion";
@@ -64,7 +54,10 @@ public class Thermal implements IFeature {
 		if (primaryInput.isEmpty() || secondaryInput.isEmpty() || primaryOutput.isEmpty()) {
 			return;
 		}
-		NBTTagCompound toSend = new NBTTagCompound();
+		
+		SmelterManager.addRecipe(energy, primaryInput, secondaryInput, primaryOutput, secondaryOutput, secondaryChance);
+		
+		/*NBTTagCompound toSend = new NBTTagCompound();
 		
 		toSend.setInteger(ENERGY, energy);
 		toSend.setTag(PRIMARY_INPUT, new NBTTagCompound());
@@ -80,7 +73,7 @@ public class Thermal implements IFeature {
 			secondaryOutput.writeToNBT(toSend.getCompoundTag(SECONDARY_OUTPUT));
 			toSend.setInteger(SECONDARY_CHANCE, secondaryChance);
 		}
-		FMLInterModComms.sendMessage(THERMALEXPANSION, ADD_SMELTER_RECIPE, toSend);
+		FMLInterModComms.sendMessage(THERMALEXPANSION, ADD_SMELTER_RECIPE, toSend);*/
 	}
 	
 	public static ArrayList<ItemStack> getMintRemoveList() {
@@ -143,6 +136,8 @@ public class Thermal implements IFeature {
 			pulverizerRemoveList.add(new ItemStack(Block.REGISTRY.getObject(new ResourceLocation(QUARK, "colored_flowerpot_" + color.getDyeColorName()))));
 		}
 		
+		pulverizerRemoveList.add(new ItemStack(Blocks.RED_FLOWER, 1, 6));
+		
 		return pulverizerRemoveList;
 	}
 
@@ -160,22 +155,11 @@ public class Thermal implements IFeature {
 		recipesRemoveList.add(THERMALFOUNDATION + ":dynamo_5");//Remove the recipe for the stupid Numismatic Dynamo
 		recipesRemoveList.add(THERMALFOUNDATION + ":augment_13");//Numismatic Press
 		recipesRemoveList.add(THERMALFOUNDATION + ":augment_38");//Lapidary Calibration
-
-		for(int i = 5; i <= 9; i++) {
-			recipesRemoveList.add(THERMALEXPANSION + ":capacitor_" + i);//Capacitor Coloring
-		}
 		
-		for(int i = 5; i <= 9; i++) {
-			recipesRemoveList.add(THERMALEXPANSION + ":reservoir_" + i);//Reservoir Coloring
-		}
-		
-		for(int i = 13; i <= 22; i++) {
-			recipesRemoveList.add(THERMALEXPANSION + ":satchel_" + i);//Satchel Coloring
-		}
-
-		for(int i = 0; i <= 15; i++) {
-			recipesRemoveList.add(THERMALFOUNDATION + ":rockwool" +  (i != 0 ? ("_" + i) : ""));//Rockwool Coloring
-		}
+		IntStream.rangeClosed(5, 9).forEach(i -> recipesRemoveList.add(THERMALEXPANSION + ":capacitor_" + i));//Capacitor Coloring
+		IntStream.rangeClosed(5, 9).forEach(i -> recipesRemoveList.add(THERMALEXPANSION + ":reservoir_" + i));//Reservoir Coloring
+		IntStream.rangeClosed(13, 22).forEach(i -> recipesRemoveList.add(THERMALEXPANSION + ":satchel_" + i));//Satchel Coloring
+		IntStream.rangeClosed(0, 15).forEach(i -> recipesRemoveList.add(THERMALFOUNDATION + ":rockwool" +  (i != 0 ? ("_" + i) : "")));//Rockwool Coloring
 		
 		return recipesRemoveList;
 	}
@@ -231,6 +215,11 @@ public class Thermal implements IFeature {
 			safeDye.setCount(4);
 			PulverizerManager.addRecipe(2000, new ItemStack(Items.DYE, 1, color.getDyeDamage()), safeDye);
 		}
+
+		//Make white tulip produce white dye
+		ItemStack whiteDye = safeDyesList.get(EnumDyeColor.WHITE.getDyeDamage()).copy();
+		whiteDye.setCount(4);
+		PulverizerManager.addRecipe(2000, new ItemStack(Blocks.RED_FLOWER, 1, 6), whiteDye);
 		
 		//Force options to disable Numismatic Dynamo
 		cofh.thermalexpansion.block.dynamo.BlockDynamo.enable[5] = false;

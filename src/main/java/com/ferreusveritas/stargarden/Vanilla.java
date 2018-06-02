@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
@@ -34,6 +35,8 @@ public class Vanilla implements IFeature {
 		removeOre(new ItemStack(Items.DYE, 1, 3), "dyeBrown");//Cocoa Beans
 		removeOre(new ItemStack(Items.DYE, 1, 4), "dyeBlue");//Lapis Lazuli
 		removeOre(new ItemStack(Items.DYE, 1, 15), "dyeWhite");//Bonemeal
+		
+		removeRecipe("minecraft:light_gray_dye_from_white_tulip");
 	}
 	
 	public static void removeRecipe(String resource) {
@@ -143,6 +146,10 @@ public class Vanilla implements IFeature {
 		addSafeColorRecipe(EnumDyeColor.BROWN, 2);//Cocoa Beans to 2 Brown Dye
 		addSafeColorRecipe(EnumDyeColor.BLUE, 2);//Lapis Lazuli to 2 Blue Dye
 		addSafeColorRecipe(EnumDyeColor.WHITE, 1);//Bone Meal to 1 White Dye
+
+		//Make white tulip produce white dye
+		ItemStack whiteDye = Thermal.getSafeDyesList().get(EnumDyeColor.WHITE.getDyeDamage()).copy();
+		GameRegistry.addShapedRecipe(new ResourceLocation(ModConstants.MODID, "white_gray_dye_from_white_tulip"), null, whiteDye, "x", 'x', new ItemStack(Blocks.RED_FLOWER, 1, 6));
 	}
 
 }

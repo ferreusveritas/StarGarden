@@ -6,9 +6,7 @@ import com.ferreusveritas.stargarden.proxy.CommonProxy;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -70,13 +68,13 @@ public class StarGarden {
 	
 	public static ArrayList<IFeature> features = new ArrayList<>();
 	
-	public static final CreativeTabs starGardenTab = new CreativeTabs(ModConstants.MODID) {
+	/*public static final CreativeTabs starGardenTab = new CreativeTabs(ModConstants.MODID) {
 		@SideOnly(Side.CLIENT)
 		@Override
 		public ItemStack getTabIconItem() {
 			return new ItemStack(logo);
 		}
-	};
+	};*/
 	
 	public StarGarden() {
 		features.addAll(Arrays.asList(new IFeature[] { new Vanilla(), new Thermal(), new ProjectRed(), new ComputerCraft(), new Banners() }));
