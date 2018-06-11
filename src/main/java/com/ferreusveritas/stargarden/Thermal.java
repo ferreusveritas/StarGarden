@@ -31,6 +31,18 @@ public class Thermal implements IFeature {
 	private static final String THERMALEXPANSION = "thermalexpansion";
 	private static final String THERMALFOUNDATION = "thermalfoundation";
 	
+	public static Item getThermalExpansionItem(String name) {
+		return Item.REGISTRY.getObject(new ResourceLocation(THERMALEXPANSION, name));
+	}
+	
+	public static Item getThermalFoundationItem(String name) {
+		return Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, name));
+	}
+	
+	public static Item getThermalFoundationMaterial() {
+		return getThermalFoundationItem("material");
+	}
+	
 	public static void removeFurnaceRecipe(ItemStack input) {
 		
 		if (input.isEmpty()) {
@@ -88,15 +100,15 @@ public class Thermal implements IFeature {
 		mintRemoveList.add(new ItemStack(Items.GOLD_NUGGET));
 		
 		for(int i = 0; i <= 9; i++) { //Copper, Tin, Silver, Lead, Aluminum, Nickle, Platinum, Iridium, Mana Infused
-			mintRemoveList.add(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "storage")), 1, i));//Blocks
-			mintRemoveList.add(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "material")), 1, i + 128));//Ingots
-			mintRemoveList.add(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "material")), 1, i + 192));//Nuggets
+			mintRemoveList.add(new ItemStack(getThermalFoundationItem("storage"), 1, i));//Blocks
+			mintRemoveList.add(new ItemStack(getThermalFoundationMaterial(), 1, i + 128));//Ingots
+			mintRemoveList.add(new ItemStack(getThermalFoundationMaterial(), 1, i + 192));//Nuggets
 		}
 		
 		for(int i = 0; i <= 8; i++) { //Steel, Electrum, Invar, Bronze, Constantan, Signalum, Lumium, Enderium
-			mintRemoveList.add(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "storage_alloy")), 1, i));//Blocks
-			mintRemoveList.add(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "material")), 1, i + 160));//Ingots
-			mintRemoveList.add(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "material")), 1, i + 224));//Nuggets
+			mintRemoveList.add(new ItemStack(getThermalFoundationItem("storage_alloy"), 1, i));//Blocks
+			mintRemoveList.add(new ItemStack(getThermalFoundationMaterial(), 1, i + 160));//Ingots
+			mintRemoveList.add(new ItemStack(getThermalFoundationMaterial(), 1, i + 224));//Nuggets
 		}
 		
 		return mintRemoveList;
@@ -143,18 +155,18 @@ public class Thermal implements IFeature {
 
 	public static ArrayList<ItemStack> getJeiRemoveList() {
 		ArrayList<ItemStack> jeiRemoveList = new ArrayList<ItemStack>();
-		jeiRemoveList.add(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "coin")), 1, 0));
-		jeiRemoveList.add(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALEXPANSION, "dynamo")), 1, 5));
-		jeiRemoveList.add(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALEXPANSION, "augment")), 1, 336));
-		jeiRemoveList.add(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALEXPANSION, "augment")), 1, 720));
+		jeiRemoveList.add(new ItemStack(getThermalFoundationItem("coin"), 1, 0));
+		jeiRemoveList.add(new ItemStack(getThermalExpansionItem("dynamo"), 1, 5));
+		jeiRemoveList.add(new ItemStack(getThermalExpansionItem("augment"), 1, 336));
+		jeiRemoveList.add(new ItemStack(getThermalExpansionItem("augment"), 1, 720));
 		return jeiRemoveList;
 	}
 	
 	public static ArrayList<String> getRecipeRemoveList() {
 		ArrayList<String> recipesRemoveList = new ArrayList<String>();
 		recipesRemoveList.add(THERMALFOUNDATION + ":dynamo_5");//Remove the recipe for the stupid Numismatic Dynamo
-		recipesRemoveList.add(THERMALFOUNDATION + ":augment_13");//Numismatic Press
-		recipesRemoveList.add(THERMALFOUNDATION + ":augment_38");//Lapidary Calibration
+		recipesRemoveList.add(THERMALEXPANSION + ":augment_13");//Numismatic Press
+		recipesRemoveList.add(THERMALEXPANSION + ":augment_38");//Lapidary Calibration
 		
 		IntStream.rangeClosed(5, 9).forEach(i -> recipesRemoveList.add(THERMALEXPANSION + ":capacitor_" + i));//Capacitor Coloring
 		IntStream.rangeClosed(5, 9).forEach(i -> recipesRemoveList.add(THERMALEXPANSION + ":reservoir_" + i));//Reservoir Coloring
@@ -176,10 +188,10 @@ public class Thermal implements IFeature {
 	public void postInit() {
 		
 		//int coinMetas[] = { 0, 1, 64, 65, 66, 67, 68, 69, 70, 71, 72, 96, 97, 98, 99, 100, 101, 102, 103 };
-		Item coin = Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "coin"));
+		Item coin = getThermalFoundationItem("coin");
 		coin.setCreativeTab(null);//Remove the coin from the creative tabs
 		
-		Item pigment = Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "dye"));
+		Item pigment = getThermalFoundationItem("dye");
 		pigment.setCreativeTab(null);
 		
 		getRecipeRemoveList().forEach(i -> Vanilla.removeRecipe(i));
@@ -233,7 +245,7 @@ public class Thermal implements IFeature {
 			GameRegistry.addShapelessRecipe(
 					new ResourceLocation(ModConstants.MODID, "coloredRockwool_" + color.getDyeColorName()),//Name
 					null,//Group
-					new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "rockwool")), 1, color.getDyeDamage()),//Output
+					new ItemStack(getThermalFoundationItem("rockwool"), 1, color.getDyeDamage()),//Output
 					new Ingredient[] {
 							new OreIngredient("blockRockwool"),
 							new OreIngredient("dye" + Vanilla.dyeValues[color.getDyeDamage()])
@@ -249,7 +261,7 @@ public class Thermal implements IFeature {
 		
 		//Dirty hack to remove Numismatic Press and Lapidary Calibration from the creative tabs
 		try {
-			ItemMulti augment = (ItemMulti) Item.REGISTRY.getObject(new ResourceLocation(THERMALEXPANSION, "augment"));
+			ItemMulti augment = (ItemMulti) getThermalExpansionItem("augment");
 			Field declaredField = ItemMulti.class.getDeclaredField("itemList");
 			declaredField.setAccessible(true);
 			ArrayList<Integer> list = (ArrayList<Integer>) declaredField.get(augment);

@@ -15,6 +15,36 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 public class ProjectRed implements IFeature {
 	
+	private static final String PROJECTREDCORE = "projectred-core";
+	private static final String PROJECTREDTRANS = "projectred-transmission";
+	private static final String PROJECTREDFAB = "projectred-fabrication";
+	private static final String PROJECTREDINT = "projectred-integration";
+	private static final String PROJECTREDLUM = "projectred-illumination";
+	
+	public static Item getProjectRedItem(String name) {
+		return Item.REGISTRY.getObject(new ResourceLocation(PROJECTREDCORE, name));
+	}
+
+	public static Item getProjectRedTransItem(String name) {
+		return Item.REGISTRY.getObject(new ResourceLocation(PROJECTREDTRANS, name));
+	}
+	
+	public static Item getProjectRedFabItem(String name) {
+		return Item.REGISTRY.getObject(new ResourceLocation(PROJECTREDFAB, name));
+	}
+	
+	public static Item getProjectRedIntItem(String name) {
+		return Item.REGISTRY.getObject(new ResourceLocation(PROJECTREDINT, name));
+	}
+	
+	public static Item getProjectRedLumItem(String name) {
+		return Item.REGISTRY.getObject(new ResourceLocation(PROJECTREDLUM, name));
+	}
+	
+	public static Item getProjectRedResItem() {
+		return Item.REGISTRY.getObject(new ResourceLocation(PROJECTREDCORE, "resource_item"));
+	}
+	
 	public ArrayList<String> getRemoveOreList() {
 		ArrayList<String> list = new ArrayList<String>();
 		for(String oreName : new String[]{ "gemRuby", "gemSapphire", "gemPeridot", "ingotCopper", "ingotTin", "ingotSilver" }) {
@@ -27,8 +57,8 @@ public class ProjectRed implements IFeature {
 		
 		ArrayList<ItemStack> list = new ArrayList<>();
 		
-		Item resItem = Item.REGISTRY.getObject(new ResourceLocation("projectred-core:resource_item"));
-		Item resPlate = Item.REGISTRY.getObject(new ResourceLocation("projectred-core:drawplate"));
+		Item resItem = getProjectRedItem("resource_item");
+		Item resPlate = getProjectRedItem("drawplate");
 		
 		int resMetas[] = {
 				100, //Copper Ingot
@@ -71,8 +101,8 @@ public class ProjectRed implements IFeature {
 	}
 	
 	public void postInit() {
-		Item resItem = Item.REGISTRY.getObject(new ResourceLocation("projectred-core:resource_item"));
-		Item resPlate = Item.REGISTRY.getObject(new ResourceLocation("projectred-core:drawplate"));
+		Item resItem = getProjectRedItem("resource_item");
+		Item resPlate = getProjectRedItem("drawplate");
 		
 		resItem.setCreativeTab(null);
 		resPlate.setCreativeTab(null);
@@ -92,23 +122,23 @@ public class ProjectRed implements IFeature {
 		Vanilla.removeSmelterRecipe(new ItemStack(resItem, 1, 103));//Red Alloy Ingot
 		
 		//These materials no longer have any use
-		Vanilla.removeRecipe("projectred-core:resource/electrotine_silicon_compound");
-		Vanilla.removeRecipe("projectred-core:resource/electrotine_iron_compound");
-		Vanilla.removeRecipe("projectred-core:misc/iron_coil");
-		Vanilla.removeRecipe("projectred-core:misc/gold_coil");
-		Vanilla.removeRecipe("projectred-core:misc/copper_coil");
-		Vanilla.removeRecipe("projectred-core:misc/motor");
-		Vanilla.removeRecipe("projectred-core:tools/draw_plate");
-		Vanilla.removeRecipe("projectred-transmission:power_low_load");
-		Vanilla.removeRecipe("projectred-transmission:framed/34_framed");
-		Vanilla.removeRecipe("projectred-core:misc/sail");
-		Vanilla.removeRecipe("projectred-core:misc/woven_cloth");
+		Vanilla.removeRecipe(PROJECTREDCORE + ":resource/electrotine_silicon_compound");
+		Vanilla.removeRecipe(PROJECTREDCORE + ":resource/electrotine_iron_compound");
+		Vanilla.removeRecipe(PROJECTREDCORE + ":misc/iron_coil");
+		Vanilla.removeRecipe(PROJECTREDCORE + ":misc/gold_coil");
+		Vanilla.removeRecipe(PROJECTREDCORE + ":misc/copper_coil");
+		Vanilla.removeRecipe(PROJECTREDCORE + ":misc/motor");
+		Vanilla.removeRecipe(PROJECTREDCORE + ":tools/draw_plate");
+		Vanilla.removeRecipe(PROJECTREDTRANS + ":power_low_load");
+		Vanilla.removeRecipe(PROJECTREDTRANS + ":framed/34_framed");
+		Vanilla.removeRecipe(PROJECTREDCORE + ":misc/sail");
+		Vanilla.removeRecipe(PROJECTREDCORE + ":misc/woven_cloth");
 	
 		//These will be replaced with Induction Smelter Recipes
-		Vanilla.removeRecipe("projectred-core:resource/red_iron_compound");
-		Vanilla.removeRecipe("projectred-core:resource/sandy_coal_compound");
-		Vanilla.removeRecipe("projectred-core:resource/red_silicon_compound");
-		Vanilla.removeRecipe("projectred-core:resource/glowing_silicon_compound");
+		Vanilla.removeRecipe(PROJECTREDCORE + ":resource/red_iron_compound");
+		Vanilla.removeRecipe(PROJECTREDCORE + ":resource/sandy_coal_compound");
+		Vanilla.removeRecipe(PROJECTREDCORE + ":resource/red_silicon_compound");
+		Vanilla.removeRecipe(PROJECTREDCORE + ":resource/glowing_silicon_compound");
 		
 		//Remove subItems from Project Red
 		CreativeTabs projectRedCoreTab = Vanilla.findCreativeTab("projectred.core");
@@ -133,9 +163,9 @@ public class ProjectRed implements IFeature {
 	@Override
 	public void registerRecipes(IForgeRegistry<IRecipe> registry) {
 
-		Item resItem = Item.REGISTRY.getObject(new ResourceLocation("projectred-core:resource_item"));
+		Item resItem = getProjectRedResItem();
 		
-		ItemStack silverIngot = new ItemStack(Item.REGISTRY.getObject(new ResourceLocation("thermalfoundation", "material")), 1, 130);
+		ItemStack silverIngot = new ItemStack(Thermal.getThermalFoundationItem("material"), 1, 130);
 		ItemStack siliconWafer = new ItemStack(resItem, 1, 301);
 		
 		Thermal.addSmelterRecipe(8000, new ItemStack(Blocks.COAL_BLOCK), new ItemStack(Blocks.SAND, 8), new ItemStack(resItem, 1, 300), ItemStack.EMPTY, 0);//Silicon Boule
@@ -146,7 +176,7 @@ public class ProjectRed implements IFeature {
 	
 	@Override
 	public void onLoadComplete() {
-		Item resPlate = Item.REGISTRY.getObject(new ResourceLocation("projectred-core:drawplate"));
+		Item resPlate = Item.REGISTRY.getObject(new ResourceLocation(PROJECTREDCORE, "drawplate"));
 		Vanilla.removeItemStackFromJEI(new ItemStack(resPlate, 1, 0));
 	}
 	
