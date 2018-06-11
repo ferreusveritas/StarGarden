@@ -1,6 +1,8 @@
 package com.ferreusveritas.stargarden;
 
 import dan200.computercraft.shared.media.items.ItemDiskExpanded;
+import dan200.computercraft.shared.media.items.ItemDiskLegacy;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
@@ -39,7 +41,7 @@ public class ComputerCraft implements IFeature {
 			Vanilla.removeRecipe(COMPUTERCRAFT + ":disk_imposter_convert_" + i);
 		}
 		
-		String removals[] = { "disk_impostor", "normal_computer", "advanced_computer", "normal_monitor", 
+		String removals[] = { "disk_impostor", "normal_computer", "advanced_computer", "normal_monitor", "advanced_monitor",
 			"normal_turtle",  "advanced_turtle", "cable", "wired_modem", "wireless_modem", "ender_modem", 
 			"normal_pocket_computer",  "advanced_pocket_computer", "disk_drive", "printer"};
 		
@@ -47,10 +49,20 @@ public class ComputerCraft implements IFeature {
 			Vanilla.removeRecipe(COMPUTERCRAFT + ":" + recipe);
 		}
 		
+		//Remove subItems from Project Red
+		CreativeTabs computerCraftTab = Vanilla.findCreativeTab("ComputerCraft");
+
+		//Add colored disks to creative tabs
+		for( EnumDyeColor color : EnumDyeColor.values()) {
+    		((ItemLogo) StarGarden.logo).addItem(ItemDiskLegacy.createFromIDAndColour( -1, null, color.getColorValue()), computerCraftTab);
+        }
+
 	}
 	
 	@Override
-	public void onLoadComplete() { }
+	public void onLoadComplete() { 
+		Vanilla.removeItemStackFromJEI(new ItemStack(getComputerCraftItem("disk")));
+	}
 	
 	public void addColoredFloppyRecipe(EnumDyeColor color) {
 		

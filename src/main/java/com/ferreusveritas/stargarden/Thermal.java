@@ -166,7 +166,7 @@ public class Thermal implements IFeature {
 		ArrayList<String> recipesRemoveList = new ArrayList<String>();
 		recipesRemoveList.add(THERMALFOUNDATION + ":dynamo_5");//Remove the recipe for the stupid Numismatic Dynamo
 		recipesRemoveList.add(THERMALEXPANSION + ":augment_13");//Numismatic Press
-		recipesRemoveList.add(THERMALEXPANSION + ":augment_38");//Lapidary Calibration
+		recipesRemoveList.add(THERMALEXPANSION + ":augment_39");//Lapidary Calibration
 		
 		IntStream.rangeClosed(5, 9).forEach(i -> recipesRemoveList.add(THERMALEXPANSION + ":capacitor_" + i));//Capacitor Coloring
 		IntStream.rangeClosed(5, 9).forEach(i -> recipesRemoveList.add(THERMALEXPANSION + ":reservoir_" + i));//Reservoir Coloring
