@@ -6,8 +6,13 @@ import com.ferreusveritas.stargarden.proxy.CommonProxy;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemMonsterPlacer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
@@ -75,6 +80,16 @@ public class StarGarden {
 			return new ItemStack(logo);
 		}
 	};*/
+	
+	public static final CreativeTabs spawnEggs = new CreativeTabs("spawneggs") {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public ItemStack getTabIconItem() {
+			ItemStack egg = new ItemStack(Items.SPAWN_EGG);
+			ItemMonsterPlacer.applyEntityIdToItemStack(egg, new ResourceLocation("minecraft", "zombie"));
+			return egg;
+		}
+	};
 	
 	public StarGarden() {
 		features.addAll(Arrays.asList(new IFeature[] { new Vanilla(), new Thermal(), new ProjectRed(), new ComputerCraft(), new Banners() }));

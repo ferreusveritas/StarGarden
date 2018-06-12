@@ -30,6 +30,8 @@ public class Vanilla implements IFeature {
 
 	@Override
 	public void postInit() {
+		Items.SPAWN_EGG.setCreativeTab(StarGarden.spawnEggs);
+		
 		removeOre(new ItemStack(Items.DYE, 1, 0), "dyeBlack");//Ink Sac
 		removeOre(new ItemStack(Items.DYE, 1, 2), "dyeGreen");//Cactus
 		removeOre(new ItemStack(Items.DYE, 1, 3), "dyeBrown");//Cocoa Beans

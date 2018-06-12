@@ -6,12 +6,17 @@ import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import cofh.core.item.ItemMulti;
+import cofh.thermalexpansion.ThermalExpansion;
+import cofh.thermalexpansion.item.ItemMorb;
 import cofh.thermalexpansion.util.managers.machine.CentrifugeManager;
 import cofh.thermalexpansion.util.managers.machine.CompactorManager;
 import cofh.thermalexpansion.util.managers.machine.FurnaceManager;
 import cofh.thermalexpansion.util.managers.machine.PulverizerManager;
 import cofh.thermalexpansion.util.managers.machine.SmelterManager;
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
@@ -30,13 +35,18 @@ public class Thermal implements IFeature {
 	private static final String QUARK = "quark";
 	private static final String THERMALEXPANSION = "thermalexpansion";
 	private static final String THERMALFOUNDATION = "thermalfoundation";
-	
+	private static final String THERMALDYNAMICS = "thermaldynamics";
+
 	public static Item getThermalExpansionItem(String name) {
 		return Item.REGISTRY.getObject(new ResourceLocation(THERMALEXPANSION, name));
 	}
 	
 	public static Item getThermalFoundationItem(String name) {
 		return Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, name));
+	}
+	
+	public static Item getThermalDynamicsItem(String name) {
+		return Item.REGISTRY.getObject(new ResourceLocation(THERMALDYNAMICS, name));
 	}
 	
 	public static Item getThermalFoundationMaterial() {
@@ -159,6 +169,7 @@ public class Thermal implements IFeature {
 		jeiRemoveList.add(new ItemStack(getThermalExpansionItem("dynamo"), 1, 5));
 		jeiRemoveList.add(new ItemStack(getThermalExpansionItem("augment"), 1, 336));
 		jeiRemoveList.add(new ItemStack(getThermalExpansionItem("augment"), 1, 720));
+		jeiRemoveList.add(new ItemStack(getThermalExpansionItem("morb")));
 		return jeiRemoveList;
 	}
 	
@@ -178,10 +189,39 @@ public class Thermal implements IFeature {
 	
 	@Override
 	public void preInit() {
+		ItemMorb.enable = false;
 	}
 	
 	@Override
-	public void init() {		
+	public void init() {
+		ThermalExpansion.CONFIG.set("Device.Tapper", "Enable", false);
+		ThermalExpansion.CONFIG.set("Device.MobCatcher", "Enable", false);
+		ThermalExpansion.CONFIG.set("Dynamo.Numismatic", "Enable", false);
+		ThermalExpansion.CONFIG.save();
+
+		//getThermalDynamicsItem("cover").setCreativeTab(null);
+		
+		disableMorbs();
+	}
+	
+	private void disableMorbs() {
+		ArrayList<String> list = new ArrayList<>();
+
+		for (ResourceLocation name : EntityList.getEntityNameList()) {
+			Class<? extends Entity> clazz = EntityList.getClass(name);
+			if (clazz == null || !EntityLiving.class.isAssignableFrom(clazz)) {
+				continue;
+			}
+			if (EntityList.ENTITY_EGGS.containsKey(name)) {
+				list.add(name.toString());
+				continue;
+			}
+		}
+
+		getThermalExpansionItem("morb").setCreativeTab(null);
+		
+		ItemMorb.blacklist = list.toArray(new String[0]);
+		ItemMorb.enable = false;
 	}
 	
 	@Override
