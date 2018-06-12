@@ -1,4 +1,4 @@
-package com.ferreusveritas.stargarden;
+package com.ferreusveritas.stargarden.items;
 
 import java.util.Collection;
 import java.util.HashMap;

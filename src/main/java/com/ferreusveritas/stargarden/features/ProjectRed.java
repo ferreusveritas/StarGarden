@@ -1,6 +1,8 @@
-package com.ferreusveritas.stargarden;
+package com.ferreusveritas.stargarden.features;
 
 import java.util.ArrayList;
+
+import com.ferreusveritas.mcf.features.IFeature;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
@@ -10,16 +12,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class ProjectRed implements IFeature {
 	
-	private static final String PROJECTREDCORE = "projectred-core";
-	private static final String PROJECTREDTRANS = "projectred-transmission";
-	private static final String PROJECTREDFAB = "projectred-fabrication";
-	private static final String PROJECTREDINT = "projectred-integration";
-	private static final String PROJECTREDLUM = "projectred-illumination";
+	public static final String PROJECTREDCORE = "projectred-core";
+	public static final String PROJECTREDTRANS = "projectred-transmission";
+	public static final String PROJECTREDFAB = "projectred-fabrication";
+	public static final String PROJECTREDINT = "projectred-integration";
+	public static final String PROJECTREDLUM = "projectred-illumination";
 	
 	public static Item getProjectRedItem(String name) {
 		return Item.REGISTRY.getObject(new ResourceLocation(PROJECTREDCORE, name));
@@ -144,7 +148,7 @@ public class ProjectRed implements IFeature {
 		CreativeTabs projectRedCoreTab = Vanilla.findCreativeTab("projectred.core");
 		
 		for(ItemStack stack : getRemoveList()) {
-			((ItemLogo) StarGarden.logo).addContraband(stack, projectRedCoreTab);
+			Vanilla.addContraband(stack, projectRedCoreTab);
 		}
 		
 		//Remove ore dictionary references
@@ -161,8 +165,11 @@ public class ProjectRed implements IFeature {
 	}
 	
 	@Override
+	public void registerItems(IForgeRegistry<Item> registry) { }
+	
+	@Override
 	public void registerRecipes(IForgeRegistry<IRecipe> registry) {
-
+		
 		Item resItem = getProjectRedResItem();
 		
 		ItemStack silverIngot = new ItemStack(Thermal.getThermalFoundationItem("material"), 1, 130);
@@ -179,5 +186,9 @@ public class ProjectRed implements IFeature {
 		Item resPlate = Item.REGISTRY.getObject(new ResourceLocation(PROJECTREDCORE, "drawplate"));
 		Vanilla.removeItemStackFromJEI(new ItemStack(resPlate, 1, 0));
 	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerModels() { }
 	
 }

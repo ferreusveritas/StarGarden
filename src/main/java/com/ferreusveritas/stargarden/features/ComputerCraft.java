@@ -1,4 +1,7 @@
-package com.ferreusveritas.stargarden;
+package com.ferreusveritas.stargarden.features;
+
+import com.ferreusveritas.mcf.features.IFeature;
+import com.ferreusveritas.stargarden.ModConstants;
 
 import dan200.computercraft.shared.media.items.ItemDiskExpanded;
 import dan200.computercraft.shared.media.items.ItemDiskLegacy;
@@ -12,6 +15,8 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreIngredient;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -54,8 +59,8 @@ public class ComputerCraft implements IFeature {
 
 		//Add colored disks to creative tabs
 		for( EnumDyeColor color : EnumDyeColor.values()) {
-    		((ItemLogo) StarGarden.logo).addItem(ItemDiskLegacy.createFromIDAndColour( -1, null, color.getColorValue()), computerCraftTab);
-        }
+			Vanilla.addItem(ItemDiskLegacy.createFromIDAndColour( -1, null, color.getColorValue()), computerCraftTab);
+		}
 
 	}
 	
@@ -79,6 +84,9 @@ public class ComputerCraft implements IFeature {
 			}
 		);
 	}
+	
+	@Override
+	public void registerItems(IForgeRegistry<Item> registry) { }
 	
 	@Override
 	public void registerRecipes(IForgeRegistry<IRecipe> registry) {
@@ -306,5 +314,9 @@ public class ComputerCraft implements IFeature {
 		);
 		
 	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerModels() { }
 	
 }

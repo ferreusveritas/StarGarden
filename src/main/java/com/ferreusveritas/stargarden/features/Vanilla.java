@@ -1,14 +1,20 @@
-package com.ferreusveritas.stargarden;
+package com.ferreusveritas.stargarden.features;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.ferreusveritas.mcf.features.IFeature;
+import com.ferreusveritas.stargarden.ModConstants;
+import com.ferreusveritas.stargarden.items.ItemLogo;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
@@ -16,12 +22,24 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryModifiable;
 
 public class Vanilla implements IFeature {
 
+	public static final CreativeTabs spawnEggs = new CreativeTabs("spawneggs") {
+		@SideOnly(Side.CLIENT)
+		@Override
+		public ItemStack getTabIconItem() {
+			ItemStack egg = new ItemStack(Items.SPAWN_EGG);
+			ItemMonsterPlacer.applyEntityIdToItemStack(egg, new ResourceLocation("minecraft", "zombie"));
+			return egg;
+		}
+	};
+	
 	@Override
 	public void preInit() { }
 
@@ -30,7 +48,7 @@ public class Vanilla implements IFeature {
 
 	@Override
 	public void postInit() {
-		Items.SPAWN_EGG.setCreativeTab(StarGarden.spawnEggs);
+		Items.SPAWN_EGG.setCreativeTab(spawnEggs);
 		
 		removeOre(new ItemStack(Items.DYE, 1, 0), "dyeBlack");//Ink Sac
 		removeOre(new ItemStack(Items.DYE, 1, 2), "dyeGreen");//Cactus
@@ -39,6 +57,14 @@ public class Vanilla implements IFeature {
 		removeOre(new ItemStack(Items.DYE, 1, 15), "dyeWhite");//Bonemeal
 		
 		removeRecipe("minecraft:light_gray_dye_from_white_tulip");
+	}
+	
+	public static void addContraband(ItemStack stack, CreativeTabs tab) {
+		((ItemLogo) Logo.logo).addContraband(stack, tab);
+	}
+	
+	public static void addItem(ItemStack stack, CreativeTabs tab) {
+		((ItemLogo) Logo.logo).addItem(stack, tab);
 	}
 	
 	public static void removeRecipe(String resource) {
@@ -142,16 +168,23 @@ public class Vanilla implements IFeature {
 	}
 	
 	@Override
+	public void registerItems(IForgeRegistry<Item> event) { }
+	
+	@Override
 	public void registerRecipes(IForgeRegistry<IRecipe> registry) {
 		addSafeColorRecipe(EnumDyeColor.BLACK, 2);//Ink Sac to 2 Black Dye
 		addSafeColorRecipe(EnumDyeColor.GREEN, 2);//Cactus Green to 2 Green Dye
 		addSafeColorRecipe(EnumDyeColor.BROWN, 2);//Cocoa Beans to 2 Brown Dye
 		addSafeColorRecipe(EnumDyeColor.BLUE, 2);//Lapis Lazuli to 2 Blue Dye
 		addSafeColorRecipe(EnumDyeColor.WHITE, 1);//Bone Meal to 1 White Dye
-
+		
 		//Make white tulip produce white dye
 		ItemStack whiteDye = Thermal.getSafeDyesList().get(EnumDyeColor.WHITE.getDyeDamage()).copy();
 		GameRegistry.addShapedRecipe(new ResourceLocation(ModConstants.MODID, "white_gray_dye_from_white_tulip"), null, whiteDye, "x", 'x', new ItemStack(Blocks.RED_FLOWER, 1, 6));
 	}
-
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerModels() { }
+	
 }

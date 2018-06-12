@@ -2,19 +2,18 @@ package com.ferreusveritas.stargarden;
 
 import java.util.ArrayList;
 
+import com.ferreusveritas.mcf.features.IFeature;
+import com.ferreusveritas.stargarden.features.Banners;
+import com.ferreusveritas.stargarden.features.ComputerCraft;
+import com.ferreusveritas.stargarden.features.ProjectRed;
+import com.ferreusveritas.stargarden.features.Thermal;
+import com.ferreusveritas.stargarden.features.Vanilla;
 import com.ferreusveritas.stargarden.proxy.CommonProxy;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemMonsterPlacer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -51,54 +50,23 @@ import scala.actors.threadpool.Arrays;
 * </p>
 *
 */
-@Mod(modid = ModConstants.MODID, version=ModConstants.VERSION,dependencies=StarGarden.DEPEND)
+@Mod(modid = ModConstants.MODID, version=ModConstants.VERSION,dependencies=ModConstants.DEPENDENCIES)
 public class StarGarden {
 	
 	@Mod.Instance(ModConstants.MODID)
 	public static StarGarden instance;
 	
-	public static final String DEPEND = 
-			"required-after:projectred-core;" +
-			"required-after:projectred-transmission;" +
-			"required-after:thermalfoundation;" +
-			"required-after:thermalexpansion;" +
-			"required-after:jei;" +
-			"required-after:" + ComputerCraft.COMPUTERCRAFT + ";" +
-			"required-after:biomesoplenty";
-	
 	@SidedProxy(clientSide = "com.ferreusveritas.stargarden.proxy.ClientProxy", serverSide = "com.ferreusveritas.stargarden.proxy.CommonProxy")
 	public static CommonProxy proxy;
 	
-	public static Item logo;
-	
 	public static ArrayList<IFeature> features = new ArrayList<>();
 	
-	/*public static final CreativeTabs starGardenTab = new CreativeTabs(ModConstants.MODID) {
-		@SideOnly(Side.CLIENT)
-		@Override
-		public ItemStack getTabIconItem() {
-			return new ItemStack(logo);
-		}
-	};*/
-	
-	public static final CreativeTabs spawnEggs = new CreativeTabs("spawneggs") {
-		@SideOnly(Side.CLIENT)
-		@Override
-		public ItemStack getTabIconItem() {
-			ItemStack egg = new ItemStack(Items.SPAWN_EGG);
-			ItemMonsterPlacer.applyEntityIdToItemStack(egg, new ResourceLocation("minecraft", "zombie"));
-			return egg;
-		}
-	};
-	
 	public StarGarden() {
-		features.addAll(Arrays.asList(new IFeature[] { new Vanilla(), new Thermal(), new ProjectRed(), new ComputerCraft(), new Banners(), new Security() }));
+		features.addAll(Arrays.asList(new IFeature[] { new Vanilla(), new Thermal(), new ProjectRed(), new ComputerCraft(), new Banners() }));
 	}
 	
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		logo = new ItemLogo();
-
 		features.forEach(i -> i.preInit());
 		proxy.preInit();
 	}
@@ -128,7 +96,7 @@ public class StarGarden {
 		
 		@SubscribeEvent
 		public static void registerItems(RegistryEvent.Register<Item> event) {
-			event.getRegistry().register(logo);
+			features.forEach(i -> i.registerItems(event.getRegistry()));
 		}
 		
 		@SubscribeEvent
@@ -139,7 +107,7 @@ public class StarGarden {
 		@SubscribeEvent
 		@SideOnly(Side.CLIENT)
 		public static void registerModels(ModelRegistryEvent event) {
-			ModelLoader.setCustomModelResourceLocation(logo, 0, new ModelResourceLocation(logo.getRegistryName(), "inventory"));
+			features.forEach(i -> i.registerModels());
 		}
 		
 	}

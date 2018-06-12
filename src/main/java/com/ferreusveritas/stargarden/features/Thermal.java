@@ -1,9 +1,12 @@
-package com.ferreusveritas.stargarden;
+package com.ferreusveritas.stargarden.features;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.IntStream;
+
+import com.ferreusveritas.mcf.features.IFeature;
+import com.ferreusveritas.stargarden.ModConstants;
 
 import cofh.core.item.ItemMulti;
 import cofh.thermalexpansion.ThermalExpansion;
@@ -26,16 +29,18 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreIngredient;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class Thermal implements IFeature {
 
-	private static final String BIOMESOPLENTY = "biomesoplenty";
-	private static final String QUARK = "quark";
-	private static final String THERMALEXPANSION = "thermalexpansion";
-	private static final String THERMALFOUNDATION = "thermalfoundation";
-	private static final String THERMALDYNAMICS = "thermaldynamics";
+	public static final String BIOMESOPLENTY = "biomesoplenty";
+	public static final String QUARK = "quark";
+	public static final String THERMALEXPANSION = "thermalexpansion";
+	public static final String THERMALFOUNDATION = "thermalfoundation";
+	public static final String THERMALDYNAMICS = "thermaldynamics";
 
 	public static Item getThermalExpansionItem(String name) {
 		return Item.REGISTRY.getObject(new ResourceLocation(THERMALEXPANSION, name));
@@ -278,6 +283,9 @@ public class Thermal implements IFeature {
 	}
 	
 	@Override
+	public void registerItems(IForgeRegistry<Item> registry) { }
+	
+	@Override
 	public void registerRecipes(IForgeRegistry<IRecipe> registry) {
 		
 		//Recreate rockwool recipes to respect Ore Dictionary Dyes
@@ -317,5 +325,9 @@ public class Thermal implements IFeature {
 			e.printStackTrace();
 		}
 	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerModels() { }
 	
 }
