@@ -14,8 +14,10 @@ import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+@Mod.EventBusSubscriber
 public class SecurityHandler {
 	
 	public static HashSet<DimBlockBounds> breakDenyBounds = new HashSet<>();
@@ -41,24 +43,22 @@ public class SecurityHandler {
 	
 	@SubscribeEvent
 	public static void onBreakEvent(BlockEvent.BreakEvent event) {
-		EntityPlayer player = event.getPlayer(); System.out.println(player);
+		EntityPlayer player = event.getPlayer();
 		BlockPos pos = event.getPos();
 		int dim = event.getWorld().provider.getDimension();
 		if(player != null && !player.isCreative() && breakDenyBounds.parallelStream().anyMatch(bb -> bb.inBounds(pos, dim)) ) {
 			event.setCanceled(true);
 		}
-		
 	}
 	
 	@SubscribeEvent
 	public static void onPlaceEvent(BlockEvent.PlaceEvent event) {
-		EntityPlayer player = event.getPlayer(); System.out.println(player);
+		EntityPlayer player = event.getPlayer();
 		BlockPos pos = event.getPos();
 		int dim = event.getWorld().provider.getDimension();
 		if(player != null && !player.isCreative() && placeDenyBounds.parallelStream().anyMatch(bb -> bb.inBounds(pos, dim)) ) {
 			event.setCanceled(true);
 		}
-		
 	}
 	
 	@SubscribeEvent
@@ -68,7 +68,6 @@ public class SecurityHandler {
 		if(explodeDenyBounds.parallelStream().anyMatch(bb -> bb.inBounds(pos, dim))) {
 			event.setCanceled(true);
 		}
-		
 	}
 
 	@SubscribeEvent
@@ -79,7 +78,6 @@ public class SecurityHandler {
 	
 	@SubscribeEvent
 	public static void onSpawnEvent(LivingSpawnEvent.CheckSpawn event) {
-		System.out.println(event.getEntity());
 		int dim = event.getWorld().provider.getDimension();
 		if(isMobHostile(event.getEntityLiving())) {
 			BlockPos pos = new BlockPos(event.getX(), event.getY(), event.getZ());
@@ -91,7 +89,6 @@ public class SecurityHandler {
 	
 	@SubscribeEvent
 	public static void onEnderTeleportEvent(EnderTeleportEvent event) {
-		System.out.println(event.getEntity());
 		EntityLivingBase living = event.getEntityLiving();
 		int dim = living.getEntityWorld().provider.getDimension();
 		BlockPos pos = new BlockPos(event.getTargetX(), event.getTargetY(), event.getTargetZ());
