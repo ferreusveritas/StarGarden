@@ -92,7 +92,7 @@ public class StarGarden {
 	};
 	
 	public StarGarden() {
-		features.addAll(Arrays.asList(new IFeature[] { new Vanilla(), new Thermal(), new ProjectRed(), new ComputerCraft(), new Banners() }));
+		features.addAll(Arrays.asList(new IFeature[] { new Vanilla(), new Thermal(), new ProjectRed(), new ComputerCraft(), new Banners(), new Security() }));
 	}
 	
 	@Mod.EventHandler
