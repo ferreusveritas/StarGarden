@@ -8,9 +8,7 @@ public class ClientProxy extends CommonProxy {
 		registerClientEventHandlers();
 	}
 	
-	public void registerClientEventHandlers() {
-
-	}
+	public void registerClientEventHandlers() { }
 	
 	@Override
 	public void init() {
@@ -19,12 +17,8 @@ public class ClientProxy extends CommonProxy {
 	}
 	
 	@Override
-	public void registerModels() {
-		
-	}
+	public void registerModels() { }
 	
-	public void registerColorHandlers() {
-		
-	}
+	public void registerColorHandlers() { }
 	
 }
