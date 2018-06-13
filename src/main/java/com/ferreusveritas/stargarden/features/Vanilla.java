@@ -2,12 +2,15 @@ package com.ferreusveritas.stargarden.features;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import com.ferreusveritas.mcf.features.IFeature;
 import com.ferreusveritas.stargarden.ModConstants;
-import com.ferreusveritas.stargarden.items.ItemLogo;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -41,6 +44,55 @@ public class Vanilla implements IFeature {
 		}
 	};
 	
+	public static HashMap<CreativeTabs, HashSet<ItemStack>> contraband = new HashMap<>();
+	public static HashMap<CreativeTabs, HashSet<ItemStack>> additions = new HashMap<>();
+	
+	public static void addContraband(ItemStack stack, CreativeTabs tab) {
+		contraband.computeIfAbsent(tab, k -> new HashSet<ItemStack>()).add(stack);
+	}
+	
+	public static void addItem(ItemStack stack, CreativeTabs tab) {
+		additions.computeIfAbsent(tab, k -> new HashSet<ItemStack>()).add(stack);
+	}
+	
+	public static void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+		if(Vanilla.contraband.containsKey(tab)) {
+			HashSet<Item> itemSet = new HashSet<Item>();
+			HashSet<ItemStack> relocation = Vanilla.contraband.get(tab);//Get the set of itemStacks for this tab
+			relocation.forEach( i -> itemSet.add(i.getItem()) );//Create a set of items from the itemStacks
+			itemSet.forEach(i -> items.addAll(getFilteredItemStacks(i, null, relocation)));//Add all of the ItemStacks that are not contraband
+		}
+
+		if(Vanilla.additions.containsKey(tab)) {
+			items.addAll(Vanilla.additions.get(tab));
+		}
+	}
+	
+	/**
+	 * Gets a list of subItems from {@link Item} "item" that belong in parameter {@link CreativeTabs} "tab" and removes from it the items in
+	 * parameter "remList".
+	 * 
+	 * @param item
+	 * @param tab
+	 * @param remList
+	 * @return
+	 */
+	public static NonNullList<ItemStack> getFilteredItemStacks(Item item, CreativeTabs tab, Collection<ItemStack> remList) {
+		NonNullList<ItemStack> itemList = NonNullList.<ItemStack>create();
+		item.getSubItems(tab, itemList);
+		
+		Iterator<ItemStack> it = itemList.iterator();
+		while (it.hasNext()) {
+			ItemStack stack = it.next();
+			for(ItemStack rem : remList) {
+				if(ItemStack.areItemsEqual(stack, rem)) {
+					it.remove();
+				}
+			}
+		}
+		return itemList;
+	}
+	
 	@Override
 	public void preInit() { }
 
@@ -67,14 +119,6 @@ public class Vanilla implements IFeature {
 		removeOre(new ItemStack(Items.DYE, 1, 15), "dyeWhite");//Bonemeal
 		
 		removeRecipe("minecraft:light_gray_dye_from_white_tulip");
-	}
-	
-	public static void addContraband(ItemStack stack, CreativeTabs tab) {
-		((ItemLogo) Logo.logo).addContraband(stack, tab);
-	}
-	
-	public static void addItem(ItemStack stack, CreativeTabs tab) {
-		((ItemLogo) Logo.logo).addItem(stack, tab);
 	}
 	
 	public static void removeRecipe(String resource) {
