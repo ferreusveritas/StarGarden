@@ -3,6 +3,7 @@ package com.ferreusveritas.stargarden.features;
 import com.ferreusveritas.mcf.features.IFeature;
 import com.ferreusveritas.stargarden.items.ItemLogo;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
@@ -16,9 +17,18 @@ public class Logo implements IFeature {
 	public static Item logo;
 	
 	@Override
-	public void preInit() {
+	public void preInit() { }
+	
+	@Override
+	public void createBlocks() { }
+
+	@Override
+	public void createItems() {
 		logo = new ItemLogo();
 	}
+
+	@Override
+	public void registerEvents() { }
 	
 	@Override
 	public void init() { }
@@ -28,6 +38,9 @@ public class Logo implements IFeature {
 	
 	@Override
 	public void onLoadComplete() { }
+	
+	@Override
+	public void registerBlocks(IForgeRegistry<Block> event) { }
 	
 	@Override
 	public void registerItems(IForgeRegistry<Item> registry) {

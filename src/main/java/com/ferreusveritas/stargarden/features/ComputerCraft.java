@@ -5,6 +5,7 @@ import com.ferreusveritas.stargarden.ModConstants;
 
 import dan200.computercraft.shared.media.items.ItemDiskExpanded;
 import dan200.computercraft.shared.media.items.ItemDiskLegacy;
+import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -30,6 +31,15 @@ public class ComputerCraft implements IFeature {
 	
 	@Override
 	public void preInit() { }
+	
+	@Override
+	public void createBlocks() { }
+
+	@Override
+	public void createItems() { }
+
+	@Override
+	public void registerEvents() { }
 	
 	@Override
 	public void init() { }
@@ -84,6 +94,9 @@ public class ComputerCraft implements IFeature {
 			}
 		);
 	}
+	
+	@Override
+	public void registerBlocks(IForgeRegistry<Block> event) { }
 	
 	@Override
 	public void registerItems(IForgeRegistry<Item> registry) { }

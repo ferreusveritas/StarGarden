@@ -9,6 +9,7 @@ import com.ferreusveritas.mcf.features.IFeature;
 import com.ferreusveritas.stargarden.ModConstants;
 import com.ferreusveritas.stargarden.items.ItemLogo;
 
+import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -43,6 +44,15 @@ public class Vanilla implements IFeature {
 	@Override
 	public void preInit() { }
 
+	@Override
+	public void createBlocks() { }
+
+	@Override
+	public void createItems() { }
+
+	@Override
+	public void registerEvents() { }
+	
 	@Override
 	public void init() { }
 
@@ -166,6 +176,9 @@ public class Vanilla implements IFeature {
 		safeDye.setCount(count);
 		GameRegistry.addShapedRecipe( new ResourceLocation(ModConstants.MODID, "dye" + color.getDyeColorName()), null, safeDye, "x", 'x', new ItemStack(Items.DYE, 1, color.getDyeDamage()) );
 	}
+	
+	@Override
+	public void registerBlocks(IForgeRegistry<Block> event) { }
 	
 	@Override
 	public void registerItems(IForgeRegistry<Item> event) { }

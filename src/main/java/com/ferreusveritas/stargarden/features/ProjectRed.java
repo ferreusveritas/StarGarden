@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.ferreusveritas.mcf.features.IFeature;
 
+import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -98,12 +99,22 @@ public class ProjectRed implements IFeature {
 		return list;
 	}
 	
-	public void preInit() {
-	}
+	@Override
+	public void preInit() { }
 	
-	public void init() {
-	}
+	@Override
+	public void createBlocks() { }
+
+	@Override
+	public void createItems() { }
+
+	@Override
+	public void registerEvents() { }
 	
+	@Override
+	public void init() { }
+	
+	@Override
 	public void postInit() {
 		Item resItem = getProjectRedItem("resource_item");
 		Item resPlate = getProjectRedItem("drawplate");
@@ -163,6 +174,9 @@ public class ProjectRed implements IFeature {
 		}
 		
 	}
+	
+	@Override
+	public void registerBlocks(IForgeRegistry<Block> event) { }
 	
 	@Override
 	public void registerItems(IForgeRegistry<Item> registry) { }

@@ -3,6 +3,7 @@ package com.ferreusveritas.stargarden.features;
 import com.ferreusveritas.mcf.features.IFeature;
 import com.ferreusveritas.stargarden.ModConstants;
 
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -18,12 +19,6 @@ import net.minecraftforge.registries.IForgeRegistry;
 public class Banners implements IFeature {
 
 	@Override
-	public void init() { }
-
-	@Override
-	public void postInit() { }
-	
-	@Override
 	public void preInit() {
 		addCraftingPattern("diamond", new ItemStack(Items.DIAMOND));
 		addCraftingPattern("pinwheel", new ItemStack(Blocks.YELLOW_FLOWER));
@@ -33,7 +28,22 @@ public class Banners implements IFeature {
 		addCraftingPattern("pickaxe", new ItemStack(Items.WOODEN_PICKAXE));
 		addCraftingPattern("logo", new ItemStack(Logo.logo));
 	}
+
+	@Override
+	public void createBlocks() { }
+
+	@Override
+	public void createItems() { }
+
+	@Override
+	public void registerEvents() { }
 	
+	@Override
+	public void init() { }
+
+	@Override
+	public void postInit() { }
+
 	public BannerPattern addCraftingPattern (String name, ItemStack craftingStack) {
 		final Class<?>[] paramTypes = { String.class, String.class, ItemStack.class };
 		final Object[] paramValues = { ModConstants.MODID + "_" + name, ModConstants.MODID + "." + name, craftingStack };
@@ -42,6 +52,9 @@ public class Banners implements IFeature {
 	
 	@Override
 	public void onLoadComplete() { }
+	
+	@Override
+	public void registerBlocks(IForgeRegistry<Block> event) { }
 	
 	@Override
 	public void registerItems(IForgeRegistry<Item> registry) { }

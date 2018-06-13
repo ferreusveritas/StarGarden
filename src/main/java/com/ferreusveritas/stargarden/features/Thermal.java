@@ -198,6 +198,15 @@ public class Thermal implements IFeature {
 	}
 	
 	@Override
+	public void createBlocks() { }
+
+	@Override
+	public void createItems() { }
+
+	@Override
+	public void registerEvents() { }
+	
+	@Override
 	public void init() {
 		ThermalExpansion.CONFIG.set("Device.Tapper", "Enable", false);
 		ThermalExpansion.CONFIG.set("Device.MobCatcher", "Enable", false);
@@ -281,6 +290,9 @@ public class Thermal implements IFeature {
 		//Force options to disable Numismatic Dynamo
 		cofh.thermalexpansion.block.dynamo.BlockDynamo.enable[5] = false;
 	}
+	
+	@Override
+	public void registerBlocks(IForgeRegistry<Block> event) { }
 	
 	@Override
 	public void registerItems(IForgeRegistry<Item> registry) { }
