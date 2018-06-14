@@ -9,7 +9,10 @@ import com.ferreusveritas.stargarden.features.Thermal;
 import com.ferreusveritas.stargarden.features.Vanilla;
 
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLStateEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
 * <p><pre><tt><b>
@@ -54,6 +57,23 @@ public class StarGarden extends FeatureableMod {
 	}
 	
 	@Mod.EventHandler
-	public void stateEvent(FMLStateEvent event) { super.stateEvent(event); }
+	public void preInit(FMLPreInitializationEvent event) {
+		super.preInit(event);
+	}
+
+	@Mod.EventHandler
+	public void init(FMLInitializationEvent event) {
+		super.init(event);
+	}
+
+	@Mod.EventHandler
+	public void postInit(FMLPostInitializationEvent event) {
+		super.postInit(event);
+	}
+
+	@Mod.EventHandler
+	public void onLoadComplete(FMLLoadCompleteEvent event) {
+		super.onLoadComplete(event);
+	}
 	
 }
