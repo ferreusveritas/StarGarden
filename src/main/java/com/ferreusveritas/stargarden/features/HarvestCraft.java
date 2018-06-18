@@ -2,6 +2,8 @@ package com.ferreusveritas.stargarden.features;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.ferreusveritas.mcf.ModConstants;
@@ -27,11 +29,39 @@ public class HarvestCraft implements IFeature {
 		return Item.REGISTRY.getObject(new ResourceLocation(HARVESTCRAFT, name));
 	}
 	
+	public static List<ItemStack> toItemStackList(List<String> names) {
+		return names.stream().map(name -> new ItemStack(getHarvestCraftItem(name))).collect(Collectors.toList());
+	}
+
+	public static List<ResourceLocation> toResourceLocationList(List<String> names, String ModId) {
+		return names.stream().map(name -> new ResourceLocation(HARVESTCRAFT, name)).collect(Collectors.toList());
+	}
+	
+	public static List<ResourceLocation> toResourceLocationList(List<String> names) {
+		return toResourceLocationList(names, HARVESTCRAFT);
+	}
+	
+	public static List<ItemStack> getRawTofuList() {
+		//Abominations all!
+		return toItemStackList(Arrays.asList(
+			"rawtofuttonitem",
+			"rawtofurkeyitem",
+			"rawtofuduckitem",
+			"rawtofishitem",
+			"rawtofickenitem",
+			"rawtofenisonitem",
+			"rawtofeegitem",
+			"rawtofeakitem",
+			"rawtofaconitem",
+			"rawtofabbititem"
+		));
+	}
+	
 	public static ArrayList<ItemStack> getRemoveItemList() {
 		ArrayList<ItemStack> list = new ArrayList<>();
 		
 		//Misc stupid items
-		Arrays.asList(
+		list.addAll( toItemStackList( Arrays.asList(
 			"chaoscookieitem",//Chaos cookie?  Purple dye? What?!
 			"cottoncandyitem",//The dye recipe is screwed up and I don't feel like fixing it.  Cya!
 			"creepercookieitem",//How cute
@@ -40,10 +70,10 @@ public class HarvestCraft implements IFeature {
 			"minerstewitem",//Sorry we don't eat ingots, diamonds and flint
 			"netherstartoastitem",//Are you fucking serious?
 			"rainbowcurryitem"//Rainbow curry is not just curry with rainbow food coloring in it
-		).forEach( name -> list.add(new ItemStack(getHarvestCraftItem(name))) );
+		)));
 
 		//All tofu related religious garbage
-		//TODO
+		list.addAll( getRawTofuList() );
 		
 		//Ugly candles.  Quark candles are way better.
 		IntStream.rangeClosed(1, 16).forEach(i -> list.add(new ItemStack(getHarvestCraftItem("candledeco" + i)) ));
@@ -56,14 +86,21 @@ public class HarvestCraft implements IFeature {
 		//Harvestcraft names the recipes the same as the item
 		getRemoveItemList().forEach(i -> list.add(i.getItem().getRegistryName()));
 		
+		//Tofu recipes that have salt variations
+		list.addAll(toResourceLocationList( Arrays.asList( "rawtofaconitem_itemsalt", "rawtofaconitem_foodsalt", "rawtofaconitem_dustsalt" )));
+		
 		//Recipes to be redone
-		Arrays.asList(
-			"fairybreaditem",
-			"gummybearsitem",
-			"frosteddonutitem",
-			"chocolatesprinklecakeitem"
-		).
-		forEach(name -> list.add(new ResourceLocation(HARVESTCRAFT, name)));
+		list.addAll(toResourceLocationList( Arrays.asList( "fairybreaditem", "gummybearsitem", "frosteddonutitem", "chocolatesprinklecakeitem" )));
+		
+		//Remove tofu from the Ore Dictionary as a valid type of meat
+		Arrays.asList("meatraw", "beefraw", "porkraw", "egg", "muttonraw", "chickenraw", "rabbitraw", "venisonraw", "duckraw")
+			.stream().map(meat -> "listAll" + meat).forEach( meat -> getRawTofuList().forEach(item -> Vanilla.removeOre(item, meat)) );
+		
+		//Remove tofu as a source of dairy
+		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("silkentofuitem")), "listAllicecream");
+		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("silkentofuitem")), "listAllheavycream");
+		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("soymilkitem")), "listAllmilk");
+
 		
 		return list;
 	}
@@ -171,7 +208,7 @@ public class HarvestCraft implements IFeature {
 		registry.register(
 				new ShapelessOreRecipe(
 					null,
-					new ItemStack(getHarvestCraftItem("chocolatesprinklecakeitem")),
+					new ItemStack(getHarvestCraftItem("chocolatesprinklecake")),
 					new Object[] {
 						"toolBakeware",
 						"foodCocoapowder",
@@ -179,7 +216,7 @@ public class HarvestCraft implements IFeature {
 						"foodDough",
 						new ItemStack(nonpareils)
 					}
-				).setRegistryName(new ResourceLocation(ModConstants.MODID, "chocolatesprinklecakeitem"))
+				).setRegistryName(new ResourceLocation(ModConstants.MODID, "chocolatesprinklecake"))
 			);
 		
 	}
