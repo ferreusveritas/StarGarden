@@ -48,7 +48,7 @@ public class HarvestCraft implements IFeature {
 	}
 	
 	public static List<ItemStack> getRawTofuList() {
-		//Abominations all!
+		//Abominations all!  Tofu is tofu.
 		return toItemStackList(Arrays.asList(
 			"rawtofuttonitem",
 			"rawtofurkeyitem",
@@ -111,7 +111,7 @@ public class HarvestCraft implements IFeature {
 		//Harvestcraft names the recipes the same as the item
 		getRemoveItemList().forEach(i -> list.add(i.getItem().getRegistryName()));
 		
-		//Tofu recipes that have salt variations
+		//Tofu bacon recipes that have salt variations
 		list.addAll(toResourceLocationList( Arrays.asList( "rawtofaconitem_itemsalt", "rawtofaconitem_foodsalt", "rawtofaconitem_dustsalt" )));
 		
 		//Recipes to be redone
@@ -180,78 +180,36 @@ public class HarvestCraft implements IFeature {
 		getCookedTofuList().forEach(Vanilla::removeSmelterRecipe);
 		
 		//Nonpareils(Colored Sprinkles)
-		registry.register(
-			new ShapelessOreRecipe(
-				null,
-				new ItemStack(nonpareils),
-				new Object[] {
-					"toolSaucepan",
-					"listAllsugar",
-					"dyeRed",
-					"dyeGreen",
-					"dyeYellow",
-					"dyeBlue",
-					"dyePink"
-				}
-			).setRegistryName(new ResourceLocation(ModConstants.MODID, "nonpareils"))
+		easyShapelessOreRecipe(registry, "nonpareils", nonpareils, 
+			new Object[] { "toolSaucepan", "listAllsugar", "dyeRed", "dyeGreen", "dyeYellow", "dyeBlue", "dyePink" }
 		);
 		
 		//Fairy Bread
-		registry.register(
-			new ShapelessOreRecipe(
-				null,
-				new ItemStack(getHarvestCraftItem("fairybreaditem")),
-				new Object[] {
-					"toolBakeware",
-					"bread",
-					"foodButter",
-					new ItemStack(nonpareils)
-				}
-			).setRegistryName(new ResourceLocation(ModConstants.MODID, "fairybreaditem"))
+		easyShapelessOreRecipe(registry, "fairybreaditem", getHarvestCraftItem("fairybreaditem"),
+			new Object[] { "toolBakeware", "bread", "foodButter", nonpareils }
 		);
 		
 		//Gummy Bears
-		registry.register(
-				new ShapelessOreRecipe(
-					null,
-					new ItemStack(getHarvestCraftItem("gummybearsitem")),
-					new Object[] {
-						"toolSaucepan",
-						"listAllsugar",
-						"dyeRed",
-						"dyeGreen"
-					}
-				).setRegistryName(new ResourceLocation(ModConstants.MODID, "gummybearsitem"))
-			);
+		easyShapelessOreRecipe(registry, "gummybearsitem", getHarvestCraftItem("gummybearsitem"),
+			new Object[] { "toolSaucepan", "listAllsugar", "dyeRed", "dyeGreen" }
+		);
 		
 		//Frosted Donut
-		registry.register(
-				new ShapelessOreRecipe(
-					null,
-					new ItemStack(getHarvestCraftItem("frosteddonutitem")),
-					new Object[] {
-						"foodDonut",
-						"listAllsugar",
-						new ItemStack(nonpareils)
-					}
-				).setRegistryName(new ResourceLocation(ModConstants.MODID, "frosteddonutitem"))
-			);
+		easyShapelessOreRecipe(registry, "frosteddonutitem", getHarvestCraftItem("frosteddonutitem"), 
+			new Object[] { "foodDonut", "listAllsugar", nonpareils }
+		);
 		
 		//Chocolate Sprinkle Cake
-		registry.register(
-				new ShapelessOreRecipe(
-					null,
-					new ItemStack(getHarvestCraftItem("chocolatesprinklecake")),
-					new Object[] {
-						"toolBakeware",
-						"foodCocoapowder",
-						"listAllsugar",
-						"foodDough",
-						new ItemStack(nonpareils)
-					}
-				).setRegistryName(new ResourceLocation(ModConstants.MODID, "chocolatesprinklecake"))
-			);
+		easyShapelessOreRecipe(registry, "chocolatesprinklecake", getHarvestCraftItem("chocolatesprinklecake"),
+			new Object[] { "toolBakeware", "foodCocoapowder", "listAllsugar", "foodDough" }
+		);
 		
+	}
+	
+	public void easyShapelessOreRecipe(IForgeRegistry<IRecipe> registry, String recipeName, Item output, Object[] ingredients) {
+		registry.register(
+			new ShapelessOreRecipe(null, new ItemStack(output), ingredients).setRegistryName(new ResourceLocation(ModConstants.MODID, recipeName))
+		);
 	}
 	
 	@Override

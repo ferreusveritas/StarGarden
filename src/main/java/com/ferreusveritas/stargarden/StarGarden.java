@@ -38,7 +38,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 * <p>
 * 2018 Ferreusveritas
 * </p>
-*
+* 
+* Disclaimer: This mod is meant to be used for a personal modpack.  It makes invasive 
+* changes to several mods and may cause errors in doing so.  Do not report errors to
+* the authors of the modified mods if this project is active.
 */
 @Mod(modid = ModConstants.MODID, version=ModConstants.VERSION, dependencies=ModConstants.DEPENDENCIES)
 public class StarGarden extends FeatureableMod {
