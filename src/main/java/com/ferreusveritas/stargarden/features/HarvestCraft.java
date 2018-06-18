@@ -40,7 +40,11 @@ public class HarvestCraft implements IFeature {
 	}
 
 	public static List<ResourceLocation> toResourceLocationList(List<String> names, String ModId) {
-		return names.stream().map(name -> new ResourceLocation(HARVESTCRAFT, name)).collect(Collectors.toList());
+		return names.stream().map(name -> new ResourceLocation(ModId, name)).collect(Collectors.toList());
+	}
+	
+	public static List<ResourceLocation> toResourceLocationListFromItemStackList(List<ItemStack> items) {
+		return items.stream().map(item -> item.getItem().getRegistryName()).collect(Collectors.toList());
 	}
 	
 	public static List<ResourceLocation> toResourceLocationList(List<String> names) {
@@ -79,12 +83,9 @@ public class HarvestCraft implements IFeature {
 		));
 	}
 	
-	
-	public static ArrayList<ItemStack> getRemoveItemList() {
-		ArrayList<ItemStack> list = new ArrayList<>();
-		
+	public static List<ItemStack> getCrazyItemList() {
 		//Misc stupid items
-		list.addAll( toItemStackList( Arrays.asList(
+		return toItemStackList( Arrays.asList(
 			"chaoscookieitem",//Chaos cookie?  Purple dye? What?!
 			"cottoncandyitem",//The dye recipe is screwed up and I don't feel like fixing it.  Cya!
 			"creepercookieitem",//How pointlessly cute
@@ -93,7 +94,14 @@ public class HarvestCraft implements IFeature {
 			"minerstewitem",//Sorry, we don't eat ingots, diamonds or flint
 			"netherstartoastitem",//Are you fucking serious?
 			"rainbowcurryitem"//Rainbow curry is not just curry with rainbow food coloring in it
-		)));
+		));
+	}
+	
+	public static ArrayList<ItemStack> getRemoveItemList() {
+		ArrayList<ItemStack> list = new ArrayList<>();
+		
+		//Misc stupid items
+		list.addAll( getCrazyItemList() );
 		
 		//All tofu related religious garbage
 		list.addAll( getRawTofuList() );
@@ -109,22 +117,13 @@ public class HarvestCraft implements IFeature {
 		ArrayList<ResourceLocation> list = new ArrayList<>();
 
 		//Harvestcraft names the recipes the same as the item
-		getRemoveItemList().forEach(i -> list.add(i.getItem().getRegistryName()));
+		list.addAll(toResourceLocationListFromItemStackList(getRemoveItemList()));
 		
 		//Tofu bacon recipes that have salt variations
 		list.addAll(toResourceLocationList( Arrays.asList( "rawtofaconitem_itemsalt", "rawtofaconitem_foodsalt", "rawtofaconitem_dustsalt" )));
 		
 		//Recipes to be redone
 		list.addAll(toResourceLocationList( Arrays.asList( "fairybreaditem", "gummybearsitem", "frosteddonutitem", "chocolatesprinklecakeitem" )));
-		
-		//Remove tofu from the Ore Dictionary as a valid type of meat
-		Arrays.asList("meatraw", "beefraw", "porkraw", "egg", "muttonraw", "chickenraw", "rabbitraw", "venisonraw", "duckraw")
-			.stream().map(meat -> "listAll" + meat).forEach( meat -> getRawTofuList().forEach(item -> Vanilla.removeOre(item, meat)) );
-		
-		//Remove tofu as a valid source of dairy
-		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("silkentofuitem")), "listAllicecream");
-		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("silkentofuitem")), "listAllheavycream");
-		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("soymilkitem")), "listAllmilk");
 		
 		return list;
 	}
@@ -178,6 +177,15 @@ public class HarvestCraft implements IFeature {
 
 		//Remove Tofu Smelting
 		getCookedTofuList().forEach(Vanilla::removeSmelterRecipe);
+		
+		//Remove tofu from the Ore Dictionary as a valid type of meat
+		Arrays.asList("meatraw", "beefraw", "porkraw", "egg", "muttonraw", "chickenraw", "rabbitraw", "venisonraw", "duckraw")
+			.stream().map(meat -> "listAll" + meat).forEach( meat -> getRawTofuList().forEach(item -> Vanilla.removeOre(item, meat)) );
+		
+		//Remove tofu as a valid source of dairy
+		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("silkentofuitem")), "listAllicecream");
+		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("silkentofuitem")), "listAllheavycream");
+		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("soymilkitem")), "listAllmilk");
 		
 		//Nonpareils(Colored Sprinkles)
 		easyShapelessOreRecipe(registry, "nonpareils", nonpareils, 

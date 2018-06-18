@@ -1,6 +1,5 @@
 package com.ferreusveritas.stargarden.features;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.IntStream;
@@ -303,14 +302,14 @@ public class Thermal implements IFeature {
 		//Recreate rockwool recipes to respect Ore Dictionary Dyes
 		for(EnumDyeColor color : EnumDyeColor.values()) {
 			GameRegistry.addShapelessRecipe(
-					new ResourceLocation(ModConstants.MODID, "coloredRockwool_" + color.getDyeColorName()),//Name
-					null,//Group
-					new ItemStack(getThermalFoundationItem("rockwool"), 1, color.getDyeDamage()),//Output
-					new Ingredient[] {
-							new OreIngredient("blockRockwool"),
-							new OreIngredient("dye" + Vanilla.dyeValues[color.getDyeDamage()])
-					}
-				);
+				new ResourceLocation(ModConstants.MODID, "coloredRockwool_" + color.getDyeColorName()),//Name
+				null,//Group
+				new ItemStack(getThermalFoundationItem("rockwool"), 1, color.getDyeDamage()),//Output
+				new Ingredient[] {
+					new OreIngredient("blockRockwool"),
+					new OreIngredient("dye" + Vanilla.dyeValues[color.getDyeDamage()])
+				}
+			);
 		}
 
 	}
@@ -320,21 +319,15 @@ public class Thermal implements IFeature {
 		getJeiRemoveList().forEach(i -> Vanilla.removeItemStackFromJEI(i));
 		
 		//Dirty hack to remove Numismatic Press and Lapidary Calibration from the creative tabs
-		try {
-			ItemMulti augment = (ItemMulti) getThermalExpansionItem("augment");
-			Field declaredField = ItemMulti.class.getDeclaredField("itemList");
-			declaredField.setAccessible(true);
-			ArrayList<Integer> list = (ArrayList<Integer>) declaredField.get(augment);
-			for(int meta : new int[] {336, 720}) {//meta for Numismatic Press and Lapidary Calibration respectively
-				for(int i = 0; i < list.size(); i++) {
-					if(list.get(i) == meta) {
-						list.remove(i);
-						break;
-					}
+		ItemMulti augment = (ItemMulti) getThermalExpansionItem("augment");
+		ArrayList<Integer> list = (ArrayList<Integer>) Vanilla.getRestrictedObject(ItemMulti.class, augment, "itemList");
+		for(int meta : new int[] {336, 720}) {//meta for Numismatic Press and Lapidary Calibration respectively
+			for(int i = 0; i < list.size(); i++) {
+				if(list.get(i) == meta) {
+					list.remove(i);
+					break;
 				}
 			}
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			e.printStackTrace();
 		}
 	}
 	

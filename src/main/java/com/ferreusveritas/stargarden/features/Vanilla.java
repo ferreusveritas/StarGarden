@@ -149,6 +149,9 @@ public class Vanilla implements IFeature {
 		removals.add(stack);
 		mezz.jei.Internal.getIngredientRegistry().removeIngredientsAtRuntime(ItemStack.class, removals);
 	}
+
+	public static List<NonNullList<ItemStack>> ores = null;
+	public static List<NonNullList<ItemStack>> oresUn = null;
 	
 	/**
 	 * Effectively removes an ore entry or all ore entries for an item or ore name
@@ -176,25 +179,32 @@ public class Vanilla implements IFeature {
 			return;
 		}
 		
-		try {
-			Field OREDICTIONARY_IDTOSTACK = OreDictionary.class.getDeclaredField("idToStack");
-			Field OREDICTIONARY_IDTOSTACKUN = OreDictionary.class.getDeclaredField("idToStackUn");
-			OREDICTIONARY_IDTOSTACK.setAccessible(true);
-			OREDICTIONARY_IDTOSTACKUN.setAccessible(true);
-			List<NonNullList<ItemStack>> ores = (List<NonNullList<ItemStack>>) OREDICTIONARY_IDTOSTACK.get(null);
-			List<NonNullList<ItemStack>> oresUn = (List<NonNullList<ItemStack>>) OREDICTIONARY_IDTOSTACKUN.get(null);
-			int oreId = OreDictionary.getOreID(oreName);
-			for(ItemStack item : OreDictionary.getOres(oreName)) {
-				if(ItemStack.areItemsEqual(oreItem, item)) {
-					oreItem = item;//get actual reference
-					break;
-				}
-			}
-			ores.get(oreId).remove(oreItem);
-			oresUn.get(oreId).remove(oreItem);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			System.err.println(e.getMessage());
+		if(ores == null || oresUn == null) {
+			ores = (List<NonNullList<ItemStack>>) getRestrictedObject(OreDictionary.class, null, "idToStack");//Minecraft forge is not obfuscated
+			oresUn = (List<NonNullList<ItemStack>>) getRestrictedObject(OreDictionary.class, null, "idToStackUn");//Minecraft forge is not obfuscated
 		}
+		
+		int oreId = OreDictionary.getOreID(oreName);
+		for(ItemStack item : OreDictionary.getOres(oreName)) {
+			if(ItemStack.areItemsEqual(oreItem, item)) {
+				oreItem = item;//get actual reference
+				break;
+			}
+		}
+		ores.get(oreId).remove(oreItem);
+		oresUn.get(oreId).remove(oreItem);
+	}
+	
+	public static Object getRestrictedObject(Class clazz, Object from, String ... objNames) {
+		for(String objName: objNames) {
+			try {
+				Field field = OreDictionary.class.getDeclaredField(objName);
+				field.setAccessible(true);
+				return field.get(null);
+			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) { }
+		}
+		
+		return null;
 	}
 	
 	public static void listAllOres() {
