@@ -10,10 +10,12 @@ import com.ferreusveritas.mcf.ModConstants;
 import com.ferreusveritas.mcf.features.IFeature;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -27,6 +29,10 @@ public class HarvestCraft implements IFeature {
 	
 	public static Item getHarvestCraftItem(String name) {
 		return Item.REGISTRY.getObject(new ResourceLocation(HARVESTCRAFT, name));
+	}
+	
+	public static Block getHarvestCraftBlock(String name) {
+		return Block.REGISTRY.getObject(new ResourceLocation(HARVESTCRAFT, name));
 	}
 	
 	public static List<ItemStack> toItemStackList(List<String> names) {
@@ -57,6 +63,23 @@ public class HarvestCraft implements IFeature {
 		));
 	}
 	
+	public static List<ItemStack> getCookedTofuList() {
+		//Abominations all!
+		return toItemStackList(Arrays.asList(
+			"cookedtofeakitem",
+			"cookedtofaconitem",
+			"cookedtofishitem",
+			"cookedtofeegitem",
+			"cookedtofuttonitem",
+			"cookedtofickenitem",
+			"cookedtofabbititem",
+			"cookedtofurkeyitem",
+			"cookedtofenisonitem",
+			"cookedtofuduckitem"
+		));
+	}
+	
+	
 	public static ArrayList<ItemStack> getRemoveItemList() {
 		ArrayList<ItemStack> list = new ArrayList<>();
 		
@@ -64,25 +87,27 @@ public class HarvestCraft implements IFeature {
 		list.addAll( toItemStackList( Arrays.asList(
 			"chaoscookieitem",//Chaos cookie?  Purple dye? What?!
 			"cottoncandyitem",//The dye recipe is screwed up and I don't feel like fixing it.  Cya!
-			"creepercookieitem",//How cute
+			"creepercookieitem",//How pointlessly cute
 			"epicbaconitem",//Bacon dyed with rainbow colors.. Yeah, whatever.
-			"epicbltitem",//I'm wretching right now
-			"minerstewitem",//Sorry we don't eat ingots, diamonds and flint
+			"epicbltitem",//I'm retching right now
+			"minerstewitem",//Sorry, we don't eat ingots, diamonds or flint
 			"netherstartoastitem",//Are you fucking serious?
 			"rainbowcurryitem"//Rainbow curry is not just curry with rainbow food coloring in it
 		)));
-
+		
 		//All tofu related religious garbage
 		list.addAll( getRawTofuList() );
+		list.addAll( getCookedTofuList() );
 		
 		//Ugly candles.  Quark candles are way better.
-		IntStream.rangeClosed(1, 16).forEach(i -> list.add(new ItemStack(getHarvestCraftItem("candledeco" + i)) ));
+		IntStream.rangeClosed(1, 16).forEach(i -> list.add(new ItemStack(getHarvestCraftBlock("candledeco" + i)) ));
 		
 		return list;
 	}
 	
 	public static ArrayList<ResourceLocation> getRemoveRecipeList() {
 		ArrayList<ResourceLocation> list = new ArrayList<>();
+
 		//Harvestcraft names the recipes the same as the item
 		getRemoveItemList().forEach(i -> list.add(i.getItem().getRegistryName()));
 		
@@ -96,11 +121,10 @@ public class HarvestCraft implements IFeature {
 		Arrays.asList("meatraw", "beefraw", "porkraw", "egg", "muttonraw", "chickenraw", "rabbitraw", "venisonraw", "duckraw")
 			.stream().map(meat -> "listAll" + meat).forEach( meat -> getRawTofuList().forEach(item -> Vanilla.removeOre(item, meat)) );
 		
-		//Remove tofu as a source of dairy
+		//Remove tofu as a valid source of dairy
 		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("silkentofuitem")), "listAllicecream");
 		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("silkentofuitem")), "listAllheavycream");
 		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("soymilkitem")), "listAllmilk");
-
 		
 		return list;
 	}
@@ -113,7 +137,7 @@ public class HarvestCraft implements IFeature {
 	
 	@Override
 	public void createItems() {
-		String name = "nonpareils";
+		String name = "nonpareils";//(Colored Sprinkles)
 		nonpareils = new Item().setRegistryName(new ResourceLocation(ModConstants.MODID, name)).setUnlocalizedName(name);
 	}
 	
@@ -125,11 +149,17 @@ public class HarvestCraft implements IFeature {
 	
 	@Override
 	public void postInit() {
-		//Remove items from creative tabs(this is usually enough to remove from JEI as well)
+		//Remove items from creative tabs
 		getRemoveItemList().forEach(i -> i.getItem().setCreativeTab(null));
+		getRemoveItemList().forEach( Vanilla::removeItemStackFromJEI );
 		
 		//Remove Recipes
 		getRemoveRecipeList().forEach(Vanilla::removeRecipe);
+		
+		//Remove Smelter Recipes
+		toItemStackList(Arrays.asList( "tofeak", "tofacon", "tofish", "tofeeg", "tofutton", "toficken", "tofabbit", "tofurkey", "tofenison", "tofuduck")
+			.stream().map( n -> "cooked" + n + "item" ).collect(Collectors.toList())).forEach(Vanilla::removeSmelterRecipe);
+		
 	}
 	
 	@Override
@@ -146,7 +176,10 @@ public class HarvestCraft implements IFeature {
 	@Override
 	public void registerRecipes(IForgeRegistry<IRecipe> registry) {
 
-		//Nonpareils
+		//Remove Tofu Smelting
+		getCookedTofuList().forEach(Vanilla::removeSmelterRecipe);
+		
+		//Nonpareils(Colored Sprinkles)
 		registry.register(
 			new ShapelessOreRecipe(
 				null,
@@ -223,6 +256,8 @@ public class HarvestCraft implements IFeature {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerModels() { }
+	public void registerModels() {
+		ModelLoader.setCustomModelResourceLocation(nonpareils, 0, new ModelResourceLocation(nonpareils.getRegistryName(), "inventory"));
+	}
 	
 }
