@@ -2,6 +2,7 @@ package com.ferreusveritas.stargarden;
 
 import com.ferreusveritas.mcf.ModDepend;
 import com.ferreusveritas.stargarden.features.ComputerCraft;
+import com.ferreusveritas.stargarden.features.HarvestCraft;
 import com.ferreusveritas.stargarden.features.ProjectRed;
 import com.ferreusveritas.stargarden.features.Thermal;
 
@@ -26,6 +27,8 @@ public class ModConstants extends ModDepend {
 			+ NEXT
 			+ REQ_AFTER + BIOMESOPLENTY
 			+ NEXT
-			+ REQ_AFTER + MCF;
+			+ REQ_AFTER + MCF
+			+ NEXT
+			+ REQ_AFTER + HarvestCraft.HARVESTCRAFT;
 	
 }
