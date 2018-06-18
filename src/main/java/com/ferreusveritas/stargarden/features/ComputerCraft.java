@@ -1,5 +1,9 @@
 package com.ferreusveritas.stargarden.features;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.IntStream;
+
 import com.ferreusveritas.mcf.features.IFeature;
 import com.ferreusveritas.stargarden.ModConstants;
 
@@ -29,6 +33,21 @@ public class ComputerCraft implements IFeature {
 		return Item.REGISTRY.getObject(new ResourceLocation(COMPUTERCRAFT, name));
 	}
 	
+	public static ArrayList<ResourceLocation> getRemoveRecipeList() {
+		ArrayList<ResourceLocation> list = new ArrayList<>();
+		
+		Arrays.asList("disk_impostor", "normal_computer", "advanced_computer", "normal_monitor", "advanced_monitor",
+				"normal_turtle",  "advanced_turtle", "cable", "wired_modem", "wireless_modem", "ender_modem", 
+				"normal_pocket_computer",  "advanced_pocket_computer", "disk_drive", "printer")
+		.forEach(name -> list.add(new ResourceLocation(COMPUTERCRAFT, name)));
+
+		//Remove oreDict insensitive recipes
+		IntStream.range(0, 16).forEach(i -> list.add(new ResourceLocation(COMPUTERCRAFT, "disk_imposter_" + i)));
+		IntStream.range(0, 16).forEach(i -> list.add(new ResourceLocation(COMPUTERCRAFT, "disk_imposter_convert_" + i)));
+		
+		return list;
+	}
+	
 	@Override
 	public void preInit() { }
 	
@@ -50,28 +69,14 @@ public class ComputerCraft implements IFeature {
 		getComputerCraftItem("disk").setCreativeTab(null);
 		getComputerCraftItem("disk_expanded").setCreativeTab(null);
 		
-		//Remove oreDict insensitive recipes
-		for(int i = 0; i < 16; i++) {
-			Vanilla.removeRecipe(COMPUTERCRAFT + ":disk_imposter_" + i);
-			Vanilla.removeRecipe(COMPUTERCRAFT + ":disk_imposter_convert_" + i);
-		}
-		
-		String removals[] = { "disk_impostor", "normal_computer", "advanced_computer", "normal_monitor", "advanced_monitor",
-			"normal_turtle",  "advanced_turtle", "cable", "wired_modem", "wireless_modem", "ender_modem", 
-			"normal_pocket_computer",  "advanced_pocket_computer", "disk_drive", "printer"};
-		
-		for(String recipe: removals) {
-			Vanilla.removeRecipe(COMPUTERCRAFT + ":" + recipe);
-		}
+		//Remove Recipes
+		getRemoveRecipeList().forEach(Vanilla::removeRecipe);
 		
 		//Remove subItems from Project Red
 		CreativeTabs computerCraftTab = Vanilla.findCreativeTab("ComputerCraft");
 
 		//Add colored disks to creative tabs
-		for( EnumDyeColor color : EnumDyeColor.values()) {
-			Vanilla.addItem(ItemDiskLegacy.createFromIDAndColour( -1, null, color.getColorValue()), computerCraftTab);
-		}
-
+		Arrays.asList(EnumDyeColor.values()).forEach(color -> Vanilla.addItem(ItemDiskLegacy.createFromIDAndColour( -1, null, color.getColorValue()), computerCraftTab));
 	}
 	
 	@Override

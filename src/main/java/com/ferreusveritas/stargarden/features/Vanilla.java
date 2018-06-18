@@ -121,8 +121,12 @@ public class Vanilla implements IFeature {
 		removeRecipe("minecraft:light_gray_dye_from_white_tulip");
 	}
 	
-	public static void removeRecipe(String resource) {
-		((IForgeRegistryModifiable)ForgeRegistries.RECIPES).remove(new ResourceLocation(resource));
+	public static void removeRecipe(ResourceLocation location) {
+		((IForgeRegistryModifiable)ForgeRegistries.RECIPES).remove(location);
+	}
+	
+	public static void removeRecipe(String location) {
+		removeRecipe(new ResourceLocation(location));
 	}
 	
 	public static void removeSmelterRecipe(ItemStack output) {

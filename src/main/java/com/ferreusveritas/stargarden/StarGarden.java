@@ -4,6 +4,7 @@ import com.ferreusveritas.mcf.FeatureableMod;
 import com.ferreusveritas.stargarden.features.Banners;
 import com.ferreusveritas.stargarden.features.CommonProxy;
 import com.ferreusveritas.stargarden.features.ComputerCraft;
+import com.ferreusveritas.stargarden.features.HarvestCraft;
 import com.ferreusveritas.stargarden.features.Logo;
 import com.ferreusveritas.stargarden.features.ProjectRed;
 import com.ferreusveritas.stargarden.features.Thermal;
@@ -54,6 +55,7 @@ public class StarGarden extends FeatureableMod {
 			new Thermal(),
 			new ProjectRed(),
 			new ComputerCraft(),
+			new HarvestCraft(),
 			new Banners(),
 			new Logo(),
 			proxy
