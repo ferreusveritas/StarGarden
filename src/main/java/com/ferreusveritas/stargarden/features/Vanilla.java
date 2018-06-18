@@ -47,10 +47,12 @@ public class Vanilla implements IFeature {
 	public static HashMap<CreativeTabs, HashSet<ItemStack>> contraband = new HashMap<>();
 	public static HashMap<CreativeTabs, HashSet<ItemStack>> additions = new HashMap<>();
 	
+	//This will allow itemStacks(subItems) to be removed when they are registered in a creative tab as part of a greater item.
 	public static void addContraband(ItemStack stack, CreativeTabs tab) {
 		contraband.computeIfAbsent(tab, k -> new HashSet<ItemStack>()).add(stack);
 	}
 	
+	//This will allow itemStacks to be added to creative tabs without moving the entire item
 	public static void addItem(ItemStack stack, CreativeTabs tab) {
 		additions.computeIfAbsent(tab, k -> new HashSet<ItemStack>()).add(stack);
 	}
