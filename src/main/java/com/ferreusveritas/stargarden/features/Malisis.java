@@ -1,12 +1,15 @@
 package com.ferreusveritas.stargarden.features;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import com.ferreusveritas.mcf.features.IFeature;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
@@ -25,9 +28,28 @@ public class Malisis implements IFeature {
 	}
 	
 	public static void removeItemFromMalisisTab(Item item) {
-		
-		//Class malisisTab = Class.forName("net.malisis.core.inventory.MalisisTab");
-		
+		removeObjectFromMalisisTab(item);
+	}
+
+	public static void removeBlockFromMalisisTab(Block block) {
+		removeObjectFromMalisisTab(block);
+	}
+
+	private static void removeObjectFromMalisisTab(Object object) {
+		if(object instanceof Block || object instanceof Item) {
+			try {
+				Class malisisDoorsClass = Class.forName("net.malisis.doors.MalisisDoors");
+				Class malisisTabClass = Class.forName("net.malisis.core.inventory.MalisisTab");
+				Field malisisTabField = malisisDoorsClass.getDeclaredField("tab");
+				Object malisisTab = malisisTabField.get(null); 
+				Field itemsField = malisisTabClass.getDeclaredField("items");
+				itemsField.setAccessible(true);
+				List<Object> items = (List<Object>)itemsField.get(malisisTab);
+				items.remove(object);
+			} catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public static ArrayList<ItemStack> getRemoveItemList() {
@@ -67,7 +89,18 @@ public class Malisis implements IFeature {
 	@Override
 	public void postInit() {
 		//Remove items from creative 
-		getRemoveItemList().forEach(i -> i.getItem().setCreativeTab(null));
+		for(ItemStack stack: getRemoveItemList()) {
+			Item item = stack.getItem();
+			item.setCreativeTab(null);
+			
+			if(item instanceof ItemBlock ) {
+				Block block = ((ItemBlock)item).getBlock();
+				removeBlockFromMalisisTab(block);
+			} else {
+				removeItemFromMalisisTab(item);
+			}
+			
+		}
 		
 		//Remove Recipes
 		getRemoveRecipeList().forEach(Vanilla::removeRecipe);
