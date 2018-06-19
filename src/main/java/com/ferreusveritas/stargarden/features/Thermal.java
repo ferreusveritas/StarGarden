@@ -247,9 +247,9 @@ public class Thermal implements IFeature {
 		Item pigment = getThermalFoundationItem("dye");
 		pigment.setCreativeTab(null);
 		
-		getRecipeRemoveList().forEach(i -> Vanilla.removeRecipe(i));
-		getPulverizerRemoveList().forEach(i -> PulverizerManager.removeRecipe(i));
-		getMintRemoveList().forEach(i -> removeCompactorMintRecipe(i));
+		getRecipeRemoveList().forEach(Vanilla::removeRecipe);
+		getPulverizerRemoveList().forEach(PulverizerManager::removeRecipe);
+		getMintRemoveList().forEach(Thermal::removeCompactorMintRecipe);
 		
 		for(EnumDyeColor c: EnumDyeColor.values()) {
 			//Remove Thermal Expansion Pigments

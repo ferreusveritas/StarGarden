@@ -198,9 +198,9 @@ public class Vanilla implements IFeature {
 	public static Object getRestrictedObject(Class clazz, Object from, String ... objNames) {
 		for(String objName: objNames) {
 			try {
-				Field field = OreDictionary.class.getDeclaredField(objName);
+				Field field = clazz.getDeclaredField(objName);
 				field.setAccessible(true);
-				return field.get(null);
+				return field.get(from);
 			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) { }
 		}
 		

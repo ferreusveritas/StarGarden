@@ -1,16 +1,26 @@
 package com.ferreusveritas.stargarden.features;
 
+import static java.util.Arrays.asList;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.ferreusveritas.mcf.ModConstants;
 import com.ferreusveritas.mcf.features.IFeature;
+import com.pam.harvestcraft.item.GrinderRecipes;
 
+import cofh.thermalexpansion.util.managers.machine.CentrifugeManager;
+import cofh.thermalexpansion.util.managers.machine.PulverizerManager;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -49,6 +59,25 @@ public class HarvestCraft implements IFeature {
 	
 	public static List<ResourceLocation> toResourceLocationList(List<String> names) {
 		return toResourceLocationList(names, HARVESTCRAFT);
+	}
+
+	private static Map<ItemStack, ItemStack[]> grindingList = null;
+	
+	public static void removeGrinderRecipe(ItemStack input) {
+		if(grindingList == null) {
+			grindingList = (Map<ItemStack, ItemStack[]>) Vanilla.getRestrictedObject(GrinderRecipes.class, null, "grindingList");
+		}
+		
+		//We are resorted to using iterators because the ItemStack::equals method compares addresses which is almost always not what we want
+		Iterator<Entry<ItemStack, ItemStack[]>> iter = grindingList.entrySet().iterator();
+		
+		while(iter.hasNext()) {
+			Entry<ItemStack, ItemStack[]> set = iter.next();
+			if( input.getItem().equals(set.getKey().getItem()) ) {
+				iter.remove();
+			}
+		}
+		
 	}
 	
 	public static List<ItemStack> getRawTofuList() {
@@ -93,7 +122,8 @@ public class HarvestCraft implements IFeature {
 			"epicbltitem",//I'm retching right now
 			"minerstewitem",//Sorry, we don't eat ingots, diamonds or flint
 			"netherstartoastitem",//Are you fucking serious?
-			"rainbowcurryitem"//Rainbow curry is not just curry with rainbow food coloring in it
+			"rainbowcurryitem",//Rainbow curry is not just curry with rainbow food coloring in it
+			"mobsoupitem"//Meh,  I'm not buyin' it
 		));
 	}
 	
@@ -119,11 +149,18 @@ public class HarvestCraft implements IFeature {
 		//Harvestcraft names the recipes the same as the item
 		list.addAll(toResourceLocationListFromItemStackList(getRemoveItemList()));
 		
+		//Candles recipes
+		IntStream.rangeClosed(1, 16).forEach(i -> list.add(new ResourceLocation(HARVESTCRAFT, "candledeco" + i + "_x4") ));
+		
 		//Tofu bacon recipes that have salt variations
 		list.addAll(toResourceLocationList( Arrays.asList( "rawtofaconitem_itemsalt", "rawtofaconitem_foodsalt", "rawtofaconitem_dustsalt" )));
 		
 		//Recipes to be redone
 		list.addAll(toResourceLocationList( Arrays.asList( "fairybreaditem", "gummybearsitem", "frosteddonutitem", "chocolatesprinklecakeitem" )));
+		
+		//Remove the ability to convert grass seeds into cooking oil
+		list.add(new ResourceLocation(HARVESTCRAFT, "oliveoilitem_x2_listallseed_listallseed"));
+		list.add(new ResourceLocation(HARVESTCRAFT, "oliveoilitem_croptea"));
 		
 		return list;
 	}
@@ -144,13 +181,15 @@ public class HarvestCraft implements IFeature {
 	public void registerEvents() { }
 	
 	@Override
-	public void init() { }
+	public void init() {
+		//Remove Tofu Smelting
+		getCookedTofuList().forEach(Vanilla::removeSmelterRecipe);
+	}
 	
 	@Override
 	public void postInit() {
 		//Remove items from creative tabs
 		getRemoveItemList().forEach(i -> i.getItem().setCreativeTab(null));
-		getRemoveItemList().forEach( Vanilla::removeItemStackFromJEI );
 		
 		//Remove Recipes
 		getRemoveRecipeList().forEach(Vanilla::removeRecipe);
@@ -158,11 +197,26 @@ public class HarvestCraft implements IFeature {
 		//Remove Smelter Recipes
 		toItemStackList(Arrays.asList( "tofeak", "tofacon", "tofish", "tofeeg", "tofutton", "toficken", "tofabbit", "tofurkey", "tofenison", "tofuduck")
 			.stream().map( n -> "cooked" + n + "item" ).collect(Collectors.toList())).forEach(Vanilla::removeSmelterRecipe);
+
+		//Remove Grinder Recipes
+		getRawTofuList().forEach(PulverizerManager::removeRecipe);
+		getRawTofuList().forEach(HarvestCraft::removeGrinderRecipe);
 		
+		//Remove Centrifuge recipes that make Cooking oil.  Cotton Seed Oil is toxic,  Tea leaf oil is not suitable for cooking.
+		List<ItemStack> csRemoveList = toItemStackList(Arrays.asList("mustardseeditem", "cottonseeditem", "tealeafitem"));
+		csRemoveList.addAll(Arrays.asList(new ItemStack(Blocks.PUMPKIN), new ItemStack(Items.PUMPKIN_SEEDS)));
+		csRemoveList.forEach(CentrifugeManager::removeRecipe);
+		
+		//Fix sesame seed Centrifuge recipe
+		ItemStack oilSesame = new ItemStack(getHarvestCraftItem("sesameoilitem"));
+		ItemStack baitGrain = new ItemStack(getHarvestCraftItem("grainbaititem"));
+		CentrifugeManager.addRecipe(4000, new ItemStack(getHarvestCraftItem("sesameseedsitem")), asList(oilSesame, baitGrain), null);
 	}
 	
 	@Override
-	public void onLoadComplete() { }
+	public void onLoadComplete() {
+		getRemoveItemList().forEach( Vanilla::removeItemStackFromJEI );
+	}
 	
 	@Override
 	public void registerBlocks(IForgeRegistry<Block> registry) { }
@@ -174,18 +228,22 @@ public class HarvestCraft implements IFeature {
 	
 	@Override
 	public void registerRecipes(IForgeRegistry<IRecipe> registry) {
-
-		//Remove Tofu Smelting
-		getCookedTofuList().forEach(Vanilla::removeSmelterRecipe);
 		
 		//Remove tofu from the Ore Dictionary as a valid type of meat
-		Arrays.asList("meatraw", "beefraw", "porkraw", "egg", "muttonraw", "chickenraw", "rabbitraw", "venisonraw", "duckraw")
+		Arrays.asList("meatraw", "beefraw", "porkraw", "muttonraw", "chickenraw", "rabbitraw", "venisonraw", "duckraw", "turkeyraw", "fishraw", "eggraw", "egg")
 			.stream().map(meat -> "listAll" + meat).forEach( meat -> getRawTofuList().forEach(item -> Vanilla.removeOre(item, meat)) );
+		
+		Arrays.asList("meatcooked", "beefcooked", "porkcooked", "muttoncooked", "chickencooked", "rabbitcooked", "venisoncooked", "duckcooked", "turkeycooked", "fishcooked", "eggcooked", "tofu")
+			.stream().map(meat -> "listAll" + meat).forEach( meat -> getCookedTofuList().forEach(item -> Vanilla.removeOre(item, meat)) );
 		
 		//Remove tofu as a valid source of dairy
 		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("silkentofuitem")), "listAllicecream");
 		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("silkentofuitem")), "listAllheavycream");
 		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("soymilkitem")), "listAllmilk");
+		
+		//Remove cookies from ore dictionary
+		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("chaoscookieitem")), "listAllcookie");
+		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("creepercookieitem")), "listAllcookie");
 		
 		//Nonpareils(Colored Sprinkles)
 		easyShapelessOreRecipe(registry, "nonpareils", nonpareils, 
