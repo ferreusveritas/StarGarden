@@ -55,10 +55,10 @@ public class Malisis implements IFeature {
 	public static ArrayList<ItemStack> getRemoveItemList() {
 		ArrayList<ItemStack> list = new ArrayList<>();
 		
-		Arrays.asList("saloon", "verticalhatch", "carriage_door", "medieval_door", "rustyhatch", "rustyladder")
+		Arrays.asList("carriage_door", "medieval_door", "rustyhatch", "rustyladder")
 		.forEach(name -> list.add(new ItemStack(getMalisisDoorsBlock(name))));
 
-		Arrays.asList("rustyhandle", "forcefielditem")
+		Arrays.asList("saloon", "verticalhatch", "rustyhandle", "forcefielditem")
 		.forEach(name -> list.add(new ItemStack(getMalisisDoorsItem(name))));
 		
 		return list;
@@ -96,10 +96,9 @@ public class Malisis implements IFeature {
 			if(item instanceof ItemBlock ) {
 				Block block = ((ItemBlock)item).getBlock();
 				removeBlockFromMalisisTab(block);
-			} else {
-				removeItemFromMalisisTab(item);
 			}
 			
+			removeItemFromMalisisTab(item);
 		}
 		
 		//Remove Recipes
