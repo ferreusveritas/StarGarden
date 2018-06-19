@@ -145,9 +145,11 @@ public class Vanilla implements IFeature {
 	}
 	
 	public static void removeItemStackFromJEI(ItemStack stack) {
-		ArrayList<ItemStack> removals = new ArrayList<>();
-		removals.add(stack);
-		mezz.jei.Internal.getIngredientRegistry().removeIngredientsAtRuntime(ItemStack.class, removals);
+		if(!stack.isEmpty()) {
+			ArrayList<ItemStack> removals = new ArrayList<>();
+			removals.add(stack);
+			mezz.jei.Internal.getIngredientRegistry().removeIngredientsAtRuntime(ItemStack.class, removals);
+		}
 	}
 
 	public static List<NonNullList<ItemStack>> ores = null;

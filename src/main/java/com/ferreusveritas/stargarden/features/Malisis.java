@@ -24,6 +24,12 @@ public class Malisis implements IFeature {
 		return Block.REGISTRY.getObject(new ResourceLocation(MALISISDOORS, name));
 	}
 	
+	public static void removeItemFromMalisisTab(Item item) {
+		
+		//Class malisisTab = Class.forName("net.malisis.core.inventory.MalisisTab");
+		
+	}
+	
 	public static ArrayList<ItemStack> getRemoveItemList() {
 		ArrayList<ItemStack> list = new ArrayList<>();
 		
@@ -60,7 +66,7 @@ public class Malisis implements IFeature {
 
 	@Override
 	public void postInit() {
-		//Remove items from creative tabs
+		//Remove items from creative 
 		getRemoveItemList().forEach(i -> i.getItem().setCreativeTab(null));
 		
 		//Remove Recipes
