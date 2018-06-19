@@ -6,6 +6,7 @@ import com.ferreusveritas.stargarden.features.CommonProxy;
 import com.ferreusveritas.stargarden.features.ComputerCraft;
 import com.ferreusveritas.stargarden.features.HarvestCraft;
 import com.ferreusveritas.stargarden.features.Logo;
+import com.ferreusveritas.stargarden.features.Malisis;
 import com.ferreusveritas.stargarden.features.ProjectRed;
 import com.ferreusveritas.stargarden.features.Thermal;
 import com.ferreusveritas.stargarden.features.Vanilla;
@@ -59,7 +60,8 @@ public class StarGarden extends FeatureableMod {
 			new Thermal(),		//Fixes colors. Removes pigments, coins, and nomismatic engines. Removes Morbs and related equipment.
 			new ProjectRed(),	//Removes ingredient items for Project Red mods that aren't installed.  Redo recipes to use Thermal Expansion equipment.
 			new ComputerCraft(),//Fixes colors. Redo recipes to use Thermal Expansion and Project Red items
-			new HarvestCraft(), //Fixes colors. Removes crazy items. Removes fake Tofu related food items. 
+			new HarvestCraft(), //Fixes colors. Removes crazy items. Removes fake Tofu related food items.
+			new Malisis(),		//Removes doors that are not stylistically consistent with the Minecraft aesthetic.
 			new Banners(),		//Adds banner patterns
 			new Logo(),			//Adds a logo item for the server that acts as a method to move around items in creative tabs
 			proxy
