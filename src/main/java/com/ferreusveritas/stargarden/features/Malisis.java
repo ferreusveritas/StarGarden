@@ -1,14 +1,48 @@
 package com.ferreusveritas.stargarden.features;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import com.ferreusveritas.mcf.features.IFeature;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class Malisis implements IFeature {
 
+	public static String MALISISDOORS = "malisisdoors";
+	
+	public static Item getMalisisDoorsItem(String name) {
+		return Item.REGISTRY.getObject(new ResourceLocation(MALISISDOORS, name));
+	}
+	
+	public static Block getMalisisDoorsBlock(String name) {
+		return Block.REGISTRY.getObject(new ResourceLocation(MALISISDOORS, name));
+	}
+	
+	public static ArrayList<ItemStack> getRemoveItemList() {
+		ArrayList<ItemStack> list = new ArrayList<>();
+		
+		Arrays.asList("saloon", "verticalhatch", "carriage_door", "medieval_door", "rustyhatch", "rustyladder")
+		.forEach(name -> list.add(new ItemStack(getMalisisDoorsBlock(name))));
+
+		Arrays.asList("rustyhandle", "forcefielditem")
+		.forEach(name -> list.add(new ItemStack(getMalisisDoorsItem(name))));
+		
+		return list;
+	}
+	
+	public static ArrayList<ResourceLocation> getRemoveRecipeList() {
+		ArrayList<ResourceLocation> list = new ArrayList<>();
+		Arrays.asList("forcefield_item", "saloon_door", "vertical_hatch", "rusty_hatch", "rusty_handle", "rusty_ladder")
+			.forEach(name -> list.add(new ResourceLocation(MALISISDOORS, name)));
+		return list;
+	}
+	
 	@Override
 	public void preInit() { }
 
@@ -25,10 +59,18 @@ public class Malisis implements IFeature {
 	public void init() { }
 
 	@Override
-	public void postInit() { }
+	public void postInit() {
+		//Remove items from creative tabs
+		getRemoveItemList().forEach(i -> i.getItem().setCreativeTab(null));
+		
+		//Remove Recipes
+		getRemoveRecipeList().forEach(Vanilla::removeRecipe);
+	}
 
 	@Override
-	public void onLoadComplete() { }
+	public void onLoadComplete() {
+		getRemoveItemList().forEach( Vanilla::removeItemStackFromJEI );
+	}
 
 	@Override
 	public void registerBlocks(IForgeRegistry<Block> registry) { }
