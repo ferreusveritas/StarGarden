@@ -34,9 +34,11 @@ public class Malisis implements IFeature {
 	public static void removeBlockFromMalisisTab(Block block) {
 		removeObjectFromMalisisTab(block);
 	}
-
-	private static void removeObjectFromMalisisTab(Object object) {
-		if(object instanceof Block || object instanceof Item) {
+	
+	private static List<Object> malisisTabItemList = null;
+	
+	public static List<Object> getMalisisTabItemList() {
+		if(malisisTabItemList == null) {
 			try {
 				Class malisisDoorsClass = Class.forName("net.malisis.doors.MalisisDoors");
 				Class malisisTabClass = Class.forName("net.malisis.core.inventory.MalisisTab");
@@ -44,11 +46,18 @@ public class Malisis implements IFeature {
 				Object malisisTab = malisisTabField.get(null); 
 				Field itemsField = malisisTabClass.getDeclaredField("items");
 				itemsField.setAccessible(true);
-				List<Object> items = (List<Object>)itemsField.get(malisisTab);
-				items.remove(object);
+				malisisTabItemList = (List<Object>)itemsField.get(malisisTab);
 			} catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 				e.printStackTrace();
 			}
+		}
+
+		return malisisTabItemList;
+	}
+	
+	private static void removeObjectFromMalisisTab(Object object) {
+		if(object instanceof Block || object instanceof Item) {
+			getMalisisTabItemList().remove(object);
 		}
 	}
 	
