@@ -4,6 +4,7 @@ import com.ferreusveritas.mcf.features.IFeature;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -44,5 +45,7 @@ public class CommonProxy implements IFeature {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerModels() {}
+	
+	public void removeItemStackFromJEI(ItemStack stack) { }
 
 }

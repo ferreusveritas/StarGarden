@@ -51,7 +51,11 @@ public class Malisis implements IFeature {
 				e.printStackTrace();
 			}
 		}
-
+		
+		if(malisisTabItemList == null) {
+			malisisTabItemList = new ArrayList<Object>();
+		}
+		
 		return malisisTabItemList;
 	}
 	

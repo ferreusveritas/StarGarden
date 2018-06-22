@@ -3,6 +3,7 @@ package com.ferreusveritas.stargarden.features;
 import java.util.ArrayList;
 
 import com.ferreusveritas.mcf.features.IFeature;
+import com.ferreusveritas.mcf.util.Util;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -156,7 +157,7 @@ public class ProjectRed implements IFeature {
 		Vanilla.removeRecipe(PROJECTREDCORE + ":resource/glowing_silicon_compound");
 		
 		//Remove subItems from Project Red
-		CreativeTabs projectRedCoreTab = Vanilla.findCreativeTab("projectred.core");
+		CreativeTabs projectRedCoreTab = Util.findCreativeTab("projectred.core");
 		
 		for(ItemStack stack : getRemoveList()) {
 			Vanilla.addContraband(stack, projectRedCoreTab);

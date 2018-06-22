@@ -159,7 +159,7 @@ public class Thermal implements IFeature {
 		for(EnumDyeColor color : EnumDyeColor.values()) {
 			pulverizerRemoveList.add(new ItemStack(Blocks.WOOL, 1, color.getMetadata()));
 			pulverizerRemoveList.add(new ItemStack(quiltedWool, 1, color.getMetadata()));
-			pulverizerRemoveList.add(new ItemStack(Block.REGISTRY.getObject(new ResourceLocation(QUARK, "colored_flowerpot_" + color.getDyeColorName()))));
+			pulverizerRemoveList.add(new ItemStack(Block.REGISTRY.getObject(new ResourceLocation(QUARK, "colored_flowerpot_" + color.getName()))));
 		}
 		
 		pulverizerRemoveList.add(new ItemStack(Blocks.RED_FLOWER, 1, 6));
@@ -302,7 +302,7 @@ public class Thermal implements IFeature {
 		//Recreate rockwool recipes to respect Ore Dictionary Dyes
 		for(EnumDyeColor color : EnumDyeColor.values()) {
 			GameRegistry.addShapelessRecipe(
-				new ResourceLocation(ModConstants.MODID, "coloredRockwool_" + color.getDyeColorName()),//Name
+				new ResourceLocation(ModConstants.MODID, "coloredRockwool_" + color.getName()),//Name
 				null,//Group
 				new ItemStack(getThermalFoundationItem("rockwool"), 1, color.getDyeDamage()),//Output
 				new Ingredient[] {

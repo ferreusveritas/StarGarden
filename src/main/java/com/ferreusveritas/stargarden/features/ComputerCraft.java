@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import com.ferreusveritas.mcf.features.IFeature;
+import com.ferreusveritas.mcf.util.Util;
 import com.ferreusveritas.stargarden.ModConstants;
 
 import dan200.computercraft.shared.media.items.ItemDiskExpanded;
@@ -73,10 +74,10 @@ public class ComputerCraft implements IFeature {
 		getRemoveRecipeList().forEach(Vanilla::removeRecipe);
 		
 		//Remove subItems from Project Red
-		CreativeTabs computerCraftTab = Vanilla.findCreativeTab("ComputerCraft");
+		CreativeTabs computerCraftTab = Util.findCreativeTab("ComputerCraft");
 
 		//Add colored disks to creative tabs
-		Arrays.asList(EnumDyeColor.values()).forEach(color -> Vanilla.addItem(ItemDiskLegacy.createFromIDAndColour( -1, null, color.getColorValue()), computerCraftTab));
+		Arrays.asList(EnumDyeColor.values()).forEach(color -> Vanilla.addItem(ItemDiskLegacy.createFromIDAndColour( -1, null, getColorValue(color)), computerCraftTab));
 	}
 	
 	@Override
@@ -86,10 +87,10 @@ public class ComputerCraft implements IFeature {
 	
 	public void addColoredFloppyRecipe(EnumDyeColor color) {
 		
-		ItemStack output = ItemDiskExpanded.createFromIDAndColour(-1, null, color.getColorValue());
+		ItemStack output = ItemDiskExpanded.createFromIDAndColour(-1, null, getColorValue(color));
 		
 		GameRegistry.addShapelessRecipe(
-			new ResourceLocation(ModConstants.MODID, "coloredFloppy_" + color.getDyeColorName()),//Name
+			new ResourceLocation(ModConstants.MODID, "coloredFloppy_" + color.getName()),//Name
 			null,//Group
 			output,//Output
 			new Ingredient[] {
@@ -98,6 +99,10 @@ public class ComputerCraft implements IFeature {
 				new OreIngredient("dye" + Vanilla.dyeValues[color.getDyeDamage()])
 			}
 		);
+	}
+	
+	public int getColorValue(EnumDyeColor from) {
+		return (int) Vanilla.getRestrictedObject(EnumDyeColor.class, from, "field_193351_w", "colorValue");
 	}
 	
 	@Override

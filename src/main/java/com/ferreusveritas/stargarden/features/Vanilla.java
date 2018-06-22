@@ -1,7 +1,6 @@
 package com.ferreusveritas.stargarden.features;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +10,7 @@ import java.util.Map;
 
 import com.ferreusveritas.mcf.features.IFeature;
 import com.ferreusveritas.stargarden.ModConstants;
+import com.ferreusveritas.stargarden.StarGarden;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -145,11 +145,7 @@ public class Vanilla implements IFeature {
 	}
 	
 	public static void removeItemStackFromJEI(ItemStack stack) {
-		if(!stack.isEmpty()) {
-			ArrayList<ItemStack> removals = new ArrayList<>();
-			removals.add(stack);
-			mezz.jei.Internal.getIngredientRegistry().removeIngredientsAtRuntime(ItemStack.class, removals);
-		}
+		StarGarden.proxy.removeItemStackFromJEI(stack);
 	}
 
 	public static List<NonNullList<ItemStack>> ores = null;
@@ -221,22 +217,13 @@ public class Vanilla implements IFeature {
 	
 	public static String[] dyeValues = new String[] { "Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "LightGray", "Gray", "Pink", "Lime", "Yellow", "LightBlue", "Magenta", "Orange", "White" };
 	
-	public static CreativeTabs findCreativeTab(String label) {
-		for(CreativeTabs iTab: CreativeTabs.CREATIVE_TAB_ARRAY) {
-			if(iTab.getTabLabel().equals(label)) {
-				return iTab;
-			}
-		}
-		return null;
-	}
-	
 	@Override
 	public void onLoadComplete() { }
 	
 	void addSafeColorRecipe (EnumDyeColor color, int count) {
 		ItemStack safeDye = Thermal.getSafeDyesList().get(color.getDyeDamage()).copy();
 		safeDye.setCount(count);
-		GameRegistry.addShapedRecipe( new ResourceLocation(ModConstants.MODID, "dye" + color.getDyeColorName()), null, safeDye, "x", 'x', new ItemStack(Items.DYE, 1, color.getDyeDamage()) );
+		GameRegistry.addShapedRecipe( new ResourceLocation(ModConstants.MODID, "dye" + color.getName()), null, safeDye, "x", 'x', new ItemStack(Items.DYE, 1, color.getDyeDamage()) );
 	}
 	
 	@Override
