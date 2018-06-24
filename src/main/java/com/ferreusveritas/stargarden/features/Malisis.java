@@ -17,7 +17,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 public class Malisis implements IFeature {
 
-	public static String MALISISDOORS = "malisisdoors";
+	public static final String MALISISDOORS = "malisisdoors";
 	
 	public static Item getMalisisDoorsItem(String name) {
 		return Item.REGISTRY.getObject(new ResourceLocation(MALISISDOORS, name));

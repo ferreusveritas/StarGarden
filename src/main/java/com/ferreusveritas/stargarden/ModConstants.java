@@ -29,6 +29,9 @@ public class ModConstants extends ModDepend {
 			+ NEXT
 			+ REQ_AFTER + MCF
 			+ NEXT
-			+ REQ_AFTER + HarvestCraft.HARVESTCRAFT;
+			+ REQ_AFTER + HarvestCraft.HARVESTCRAFT
+			//+ NEXT
+			//+ REQ_AFTER + Malisis.MALISISDOORS;
+			;
 	
 }

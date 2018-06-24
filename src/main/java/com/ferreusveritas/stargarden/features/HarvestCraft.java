@@ -11,9 +11,9 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.ferreusveritas.mcf.ModConstants;
 import com.ferreusveritas.mcf.features.IFeature;
 import com.ferreusveritas.mcf.util.Util;
+import com.ferreusveritas.stargarden.ModConstants;
 import com.pam.harvestcraft.item.GrinderRecipes;
 
 import cofh.thermalexpansion.util.managers.machine.CentrifugeManager;
@@ -175,7 +175,7 @@ public class HarvestCraft implements IFeature {
 	@Override
 	public void createItems() {
 		String name = "nonpareils";//(Colored Sprinkles)
-		nonpareils = new Item().setRegistryName(new ResourceLocation(ModConstants.MODID, name)).setUnlocalizedName(name);
+		nonpareils = new Item().setRegistryName(new ResourceLocation(ModConstants.MODID, name)).setUnlocalizedName(name).setCreativeTab(Util.findCreativeTab(HARVESTCRAFT));
 	}
 	
 	@Override
