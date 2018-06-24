@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import com.ferreusveritas.mcf.features.IFeature;
+import com.ferreusveritas.mcf.util.Util;
 import com.ferreusveritas.stargarden.ModConstants;
 
 import cofh.core.item.ItemMulti;
@@ -320,7 +321,7 @@ public class Thermal implements IFeature {
 		
 		//Dirty hack to remove Numismatic Press and Lapidary Calibration from the creative tabs
 		ItemMulti augment = (ItemMulti) getThermalExpansionItem("augment");
-		ArrayList<Integer> list = (ArrayList<Integer>) Vanilla.getRestrictedObject(ItemMulti.class, augment, "itemList");
+		ArrayList<Integer> list = (ArrayList<Integer>) Util.getRestrictedObject(ItemMulti.class, augment, "itemList");
 		for(int meta : new int[] {336, 720}) {//meta for Numismatic Press and Lapidary Calibration respectively
 			for(int i = 0; i < list.size(); i++) {
 				if(list.get(i) == meta) {

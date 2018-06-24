@@ -1,6 +1,5 @@
 package com.ferreusveritas.stargarden.features;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ferreusveritas.mcf.features.IFeature;
+import com.ferreusveritas.mcf.util.Util;
 import com.ferreusveritas.stargarden.ModConstants;
 import com.ferreusveritas.stargarden.StarGarden;
 
@@ -178,8 +178,8 @@ public class Vanilla implements IFeature {
 		}
 		
 		if(ores == null || oresUn == null) {
-			ores = (List<NonNullList<ItemStack>>) getRestrictedObject(OreDictionary.class, null, "idToStack");//Minecraft forge is not obfuscated
-			oresUn = (List<NonNullList<ItemStack>>) getRestrictedObject(OreDictionary.class, null, "idToStackUn");//Minecraft forge is not obfuscated
+			ores = (List<NonNullList<ItemStack>>) Util.getRestrictedObject(OreDictionary.class, null, "idToStack");//Minecraft forge is not obfuscated
+			oresUn = (List<NonNullList<ItemStack>>) Util.getRestrictedObject(OreDictionary.class, null, "idToStackUn");//Minecraft forge is not obfuscated
 		}
 		
 		int oreId = OreDictionary.getOreID(oreName);
@@ -191,18 +191,6 @@ public class Vanilla implements IFeature {
 		}
 		ores.get(oreId).remove(oreItem);
 		oresUn.get(oreId).remove(oreItem);
-	}
-	
-	public static Object getRestrictedObject(Class clazz, Object from, String ... objNames) {
-		for(String objName: objNames) {
-			try {
-				Field field = clazz.getDeclaredField(objName);
-				field.setAccessible(true);
-				return field.get(from);
-			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) { }
-		}
-		
-		return null;
 	}
 	
 	public static void listAllOres() {

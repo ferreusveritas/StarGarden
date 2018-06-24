@@ -102,7 +102,7 @@ public class ComputerCraft implements IFeature {
 	}
 	
 	public int getColorValue(EnumDyeColor from) {
-		return (int) Vanilla.getRestrictedObject(EnumDyeColor.class, from, "field_193351_w", "colorValue");
+		return (int) Util.getRestrictedObject(EnumDyeColor.class, from, "field_193351_w", "colorValue");
 	}
 	
 	@Override

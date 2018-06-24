@@ -13,6 +13,7 @@ import java.util.stream.IntStream;
 
 import com.ferreusveritas.mcf.ModConstants;
 import com.ferreusveritas.mcf.features.IFeature;
+import com.ferreusveritas.mcf.util.Util;
 import com.pam.harvestcraft.item.GrinderRecipes;
 
 import cofh.thermalexpansion.util.managers.machine.CentrifugeManager;
@@ -65,7 +66,7 @@ public class HarvestCraft implements IFeature {
 	
 	public static void removeGrinderRecipe(ItemStack input) {
 		if(grindingList == null) {
-			grindingList = (Map<ItemStack, ItemStack[]>) Vanilla.getRestrictedObject(GrinderRecipes.class, null, "grindingList");
+			grindingList = (Map<ItemStack, ItemStack[]>) Util.getRestrictedObject(GrinderRecipes.class, null, "grindingList");
 		}
 		
 		//We are resorted to using iterators because the ItemStack::equals method compares addresses which is almost always not what we want
