@@ -1,4 +1,4 @@
-package com.ferreusveritas.stargarden.features;
+package com.ferreusveritas.stargarden.util;
 
 import java.util.List;
 import java.util.Random;

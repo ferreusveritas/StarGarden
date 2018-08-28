@@ -2,14 +2,13 @@ package com.ferreusveritas.stargarden.features;
 
 import com.ferreusveritas.mcf.features.IFeature;
 import com.ferreusveritas.mcf.util.Util;
+import com.ferreusveritas.stargarden.features.ocean.BiomeProviderOceanSpawn;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
-import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -25,9 +24,7 @@ public class Ocean implements IFeature {
 		public void onWorldLoad(WorldEvent.Load event) {
 			World world = event.getWorld();
 			if(world.provider.getDimension() == 0) {
-				Biome ocean = Biome.REGISTRY.getObject(new ResourceLocation("deep_ocean"));
-				Biome deepOcean = Biome.REGISTRY.getObject(new ResourceLocation("deep_ocean"));
-				Util.setRestrictedObject(WorldProvider.class, world.provider, new BiomeProviderOceanSpawn(world.getBiomeProvider(), ocean, deepOcean), "biomeProvider", "field_76578_c");
+				Util.setRestrictedObject(WorldProvider.class, world.provider, new BiomeProviderOceanSpawn(world.getBiomeProvider()), "biomeProvider", "field_76578_c");
 			}
 		}
 		
