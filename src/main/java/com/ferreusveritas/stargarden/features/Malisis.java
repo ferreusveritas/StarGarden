@@ -13,6 +13,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class Malisis implements IFeature {
@@ -101,21 +102,26 @@ public class Malisis implements IFeature {
 
 	@Override
 	public void postInit() {
-		//Remove items from creative 
-		for(ItemStack stack: getRemoveItemList()) {
-			Item item = stack.getItem();
-			item.setCreativeTab(null);
+
+		if(Loader.isModLoaded(MALISISDOORS)) {
 			
-			if(item instanceof ItemBlock ) {
-				Block block = ((ItemBlock)item).getBlock();
-				removeBlockFromMalisisTab(block);
+			//Remove items from creative 
+			for(ItemStack stack: getRemoveItemList()) {
+				Item item = stack.getItem();
+				item.setCreativeTab(null);
+				
+				if(item instanceof ItemBlock ) {
+					Block block = ((ItemBlock)item).getBlock();
+					removeBlockFromMalisisTab(block);
+				}
+				
+				removeItemFromMalisisTab(item);
 			}
 			
-			removeItemFromMalisisTab(item);
+			//Remove Recipes
+			getRemoveRecipeList().forEach(Vanilla::removeRecipe);
+			
 		}
-		
-		//Remove Recipes
-		getRemoveRecipeList().forEach(Vanilla::removeRecipe);
 	}
 
 	@Override
