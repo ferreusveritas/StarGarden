@@ -16,6 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemMonsterPlacer;
@@ -24,6 +25,7 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -123,8 +125,26 @@ public class Vanilla implements IFeature {
 		removeRecipe("minecraft:light_gray_dye_from_white_tulip");
 	}
 	
+    private static class DummyRecipe implements IRecipe {
+        private static ItemStack result = new ItemStack(Items.DIAMOND, 64);
+        private ResourceLocation name;
+
+        @Override
+        public IRecipe setRegistryName(ResourceLocation name) {
+            this.name = name;
+            return this;
+        }
+        @Override public ResourceLocation getRegistryName() { return name; }
+        @Override public Class<IRecipe> getRegistryType() { return IRecipe.class; }
+        @Override public boolean matches(InventoryCrafting inv, World worldIn) { return false; } //dirt?
+        @Override public ItemStack getCraftingResult(InventoryCrafting inv) { return result; }
+        @Override public boolean canFit(int width, int height) { return false; }
+        @Override public ItemStack getRecipeOutput() { return result; }
+        @Override public boolean isDynamic() { return true; }
+    }
+	
 	public static void removeRecipe(ResourceLocation location) {
-		((IForgeRegistryModifiable)ForgeRegistries.RECIPES).remove(location);
+		((IForgeRegistryModifiable)ForgeRegistries.RECIPES).register(new DummyRecipe().setRegistryName(location));
 	}
 	
 	public static void removeRecipe(String location) {
