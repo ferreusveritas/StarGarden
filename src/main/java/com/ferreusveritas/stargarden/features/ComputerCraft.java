@@ -39,7 +39,9 @@ public class ComputerCraft implements IFeature {
 		
 		Arrays.asList("disk_impostor", "normal_computer", "advanced_computer", "normal_monitor", "advanced_monitor",
 				"normal_turtle",  "advanced_turtle", "cable", "wired_modem", "wireless_modem", "ender_modem", 
-				"normal_pocket_computer",  "advanced_pocket_computer", "disk_drive", "printer")
+				"normal_pocket_computer",  "advanced_pocket_computer", "disk_drive", "printer",
+				"advanced_computer_upgrade", "advanced_pocket_computer_upgrade", "advanced_turtle_upgrade"
+				)
 		.forEach(name -> list.add(new ResourceLocation(COMPUTERCRAFT, name)));
 
 		//Remove oreDict insensitive recipes
