@@ -7,10 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.ferreusveritas.mcf.features.IFeature;
-import com.ferreusveritas.mcf.util.Util;
 import com.ferreusveritas.stargarden.ModConstants;
 import com.ferreusveritas.stargarden.StarGarden;
+import com.ferreusveritas.stargarden.util.Util;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;

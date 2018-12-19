@@ -1,8 +1,7 @@
 package com.ferreusveritas.stargarden.features;
 
-import com.ferreusveritas.mcf.features.IFeature;
-import com.ferreusveritas.mcf.util.Util;
 import com.ferreusveritas.stargarden.features.ocean.BiomeProviderOceanSpawn;
+import com.ferreusveritas.stargarden.util.Util;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;

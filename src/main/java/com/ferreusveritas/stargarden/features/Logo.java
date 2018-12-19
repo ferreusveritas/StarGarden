@@ -1,6 +1,5 @@
 package com.ferreusveritas.stargarden.features;
 
-import com.ferreusveritas.mcf.features.IFeature;
 import com.ferreusveritas.stargarden.items.ItemLogo;
 
 import net.minecraft.block.Block;

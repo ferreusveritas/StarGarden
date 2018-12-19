@@ -1,8 +1,7 @@
 package com.ferreusveritas.stargarden.features;
 
-import com.ferreusveritas.mcf.features.IFeature;
-
 import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -47,5 +46,9 @@ public class CommonProxy implements IFeature {
 	public void registerModels() {}
 	
 	public void removeItemStackFromJEI(ItemStack stack) { }
+
+	public CreativeTabs findCreativeTab(String label) {
+		return null;
+	}
 
 }

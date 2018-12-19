@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
-import com.ferreusveritas.mcf.features.IFeature;
-import com.ferreusveritas.mcf.util.Util;
 import com.ferreusveritas.stargarden.ModConstants;
+import com.ferreusveritas.stargarden.util.Util;
 
 import dan200.computercraft.shared.media.items.ItemDiskExpanded;
 import dan200.computercraft.shared.media.items.ItemDiskLegacy;

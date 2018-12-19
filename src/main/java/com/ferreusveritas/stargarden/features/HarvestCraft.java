@@ -11,9 +11,8 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.ferreusveritas.mcf.features.IFeature;
-import com.ferreusveritas.mcf.util.Util;
 import com.ferreusveritas.stargarden.ModConstants;
+import com.ferreusveritas.stargarden.util.Util;
 import com.pam.harvestcraft.item.GrinderRecipes;
 
 import cofh.thermalexpansion.util.managers.machine.CentrifugeManager;

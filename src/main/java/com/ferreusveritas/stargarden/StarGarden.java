@@ -1,6 +1,5 @@
 package com.ferreusveritas.stargarden;
 
-import com.ferreusveritas.mcf.FeatureableMod;
 import com.ferreusveritas.stargarden.features.Banners;
 import com.ferreusveritas.stargarden.features.CommonProxy;
 import com.ferreusveritas.stargarden.features.ComputerCraft;

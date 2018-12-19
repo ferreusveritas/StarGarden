@@ -2,8 +2,7 @@ package com.ferreusveritas.stargarden.features;
 
 import java.util.ArrayList;
 
-import com.ferreusveritas.mcf.features.IFeature;
-import com.ferreusveritas.mcf.util.Util;
+import com.ferreusveritas.stargarden.util.Util;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;

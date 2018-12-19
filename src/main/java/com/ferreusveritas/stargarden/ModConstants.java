@@ -1,6 +1,5 @@
 package com.ferreusveritas.stargarden;
 
-import com.ferreusveritas.mcf.ModDepend;
 import com.ferreusveritas.stargarden.features.ComputerCraft;
 import com.ferreusveritas.stargarden.features.HarvestCraft;
 import com.ferreusveritas.stargarden.features.ProjectRed;
