@@ -13,6 +13,5 @@ public class ModDepend {
 	public static final String QUARK = "quark";
 	public static final String JEI = "jei";
 	public static final String BIOMESOPLENTY = "biomesoplenty";
-	public static final String MCF = ModConstants.MODID;
 	
 }
