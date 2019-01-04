@@ -2,6 +2,7 @@ package com.ferreusveritas.stargarden.features;
 
 import com.ferreusveritas.stargarden.util.Util;
 import com.ferreusveritas.stargarden.world.StarWorldType;
+import com.ferreusveritas.stargarden.world.duvotica.WorldTypeDuvotica;
 
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
@@ -32,7 +33,7 @@ public class Worlds extends BaseFeature {
 	public void preInit() {
 		MinecraftForge.EVENT_BUS.register(new EventHandler());
 		
-		duvotica = new StarWorldType("duvotica");
+		duvotica = new WorldTypeDuvotica("duvotica");
 	}
 	
 }
