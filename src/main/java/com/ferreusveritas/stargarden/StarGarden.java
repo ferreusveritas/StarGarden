@@ -11,6 +11,7 @@ import com.ferreusveritas.stargarden.features.ProjectRed;
 import com.ferreusveritas.stargarden.features.Rustic;
 import com.ferreusveritas.stargarden.features.Thermal;
 import com.ferreusveritas.stargarden.features.Vanilla;
+import com.ferreusveritas.stargarden.features.Worlds;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -67,6 +68,7 @@ public class StarGarden extends FeatureableMod {
 			new Banners(),		//Adds banner patterns
 			new Logo(),			//Adds a logo item for the server that acts as a method to move around items in creative tabs
 			new Ocean(),		//Adds deep ocean arounds coordinates [0,0]
+			new Worlds(),
 			proxy
 		);
 	}

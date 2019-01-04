@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.ferreusveritas.stargarden.util.Util;
 
-import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -13,12 +12,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
 
-public class ProjectRed implements IFeature {
+public class ProjectRed extends BaseFeature {
 	
 	public static final String PROJECTREDCORE = "projectred-core";
 	public static final String PROJECTREDTRANS = "projectred-transmission";
@@ -100,21 +97,6 @@ public class ProjectRed implements IFeature {
 	}
 	
 	@Override
-	public void preInit() { }
-	
-	@Override
-	public void createBlocks() { }
-
-	@Override
-	public void createItems() { }
-
-	@Override
-	public void registerEvents() { }
-	
-	@Override
-	public void init() { }
-	
-	@Override
 	public void postInit() {
 		Item resItem = getProjectRedItem("resource_item");
 		Item resPlate = getProjectRedItem("drawplate");
@@ -176,12 +158,6 @@ public class ProjectRed implements IFeature {
 	}
 	
 	@Override
-	public void registerBlocks(IForgeRegistry<Block> event) { }
-	
-	@Override
-	public void registerItems(IForgeRegistry<Item> registry) { }
-	
-	@Override
 	public void registerRecipes(IForgeRegistry<IRecipe> registry) {
 		
 		Item resItem = getProjectRedResItem();
@@ -200,9 +176,5 @@ public class ProjectRed implements IFeature {
 		Item resPlate = Item.REGISTRY.getObject(new ResourceLocation(PROJECTREDCORE, "drawplate"));
 		Vanilla.removeItemStackFromJEI(new ItemStack(resPlate, 1, 0));
 	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerModels() { }
 	
 }

@@ -31,7 +31,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import net.minecraftforge.registries.IForgeRegistry;
 
-public class HarvestCraft implements IFeature {
+public class HarvestCraft extends BaseFeature {
 	
 	public static final String HARVESTCRAFT = "harvestcraft";
 	
@@ -166,19 +166,10 @@ public class HarvestCraft implements IFeature {
 	}
 	
 	@Override
-	public void preInit() { }
-	
-	@Override
-	public void createBlocks() { }
-	
-	@Override
 	public void createItems() {
 		String name = "nonpareils";//(Colored Sprinkles)
 		nonpareils = new Item().setRegistryName(new ResourceLocation(ModConstants.MODID, name)).setUnlocalizedName(name).setCreativeTab(Util.findCreativeTab(HARVESTCRAFT));
 	}
-	
-	@Override
-	public void registerEvents() { }
 	
 	@Override
 	public void init() {
@@ -217,9 +208,6 @@ public class HarvestCraft implements IFeature {
 	public void onLoadComplete() {
 		getRemoveItemList().forEach( Vanilla::removeItemStackFromJEI );
 	}
-	
-	@Override
-	public void registerBlocks(IForgeRegistry<Block> registry) { }
 	
 	@Override
 	public void registerItems(IForgeRegistry<Item> registry) {

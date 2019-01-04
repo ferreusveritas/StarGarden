@@ -9,7 +9,6 @@ import com.ferreusveritas.stargarden.util.Util;
 
 import dan200.computercraft.shared.media.items.ItemDiskExpanded;
 import dan200.computercraft.shared.media.items.ItemDiskLegacy;
-import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -20,12 +19,10 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreIngredient;
 import net.minecraftforge.registries.IForgeRegistry;
 
-public class ComputerCraft implements IFeature {
+public class ComputerCraft extends BaseFeature {
 	
 	public static final String COMPUTERCRAFT = "computercraft";
 	
@@ -49,21 +46,6 @@ public class ComputerCraft implements IFeature {
 		
 		return list;
 	}
-	
-	@Override
-	public void preInit() { }
-	
-	@Override
-	public void createBlocks() { }
-
-	@Override
-	public void createItems() { }
-
-	@Override
-	public void registerEvents() { }
-	
-	@Override
-	public void init() { }
 	
 	@Override
 	public void postInit() {
@@ -105,12 +87,6 @@ public class ComputerCraft implements IFeature {
 	public int getColorValue(EnumDyeColor from) {
 		return (int) Util.getRestrictedObject(EnumDyeColor.class, from, "field_193351_w", "colorValue");
 	}
-	
-	@Override
-	public void registerBlocks(IForgeRegistry<Block> event) { }
-	
-	@Override
-	public void registerItems(IForgeRegistry<Item> registry) { }
 	
 	@Override
 	public void registerRecipes(IForgeRegistry<IRecipe> registry) {
@@ -338,9 +314,5 @@ public class ComputerCraft implements IFeature {
 		);
 		
 	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerModels() { }
 	
 }

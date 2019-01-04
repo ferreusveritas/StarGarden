@@ -11,7 +11,6 @@ import com.ferreusveritas.stargarden.ModConstants;
 import com.ferreusveritas.stargarden.StarGarden;
 import com.ferreusveritas.stargarden.util.Util;
 
-import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -33,7 +32,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryModifiable;
 
-public class Vanilla implements IFeature {
+public class Vanilla extends BaseFeature {
 
 	public static final CreativeTabs spawnEggs = new CreativeTabs("spawneggs") {
 		@SideOnly(Side.CLIENT)
@@ -96,21 +95,6 @@ public class Vanilla implements IFeature {
 		return itemList;
 	}
 	
-	@Override
-	public void preInit() { }
-
-	@Override
-	public void createBlocks() { }
-
-	@Override
-	public void createItems() { }
-
-	@Override
-	public void registerEvents() { }
-	
-	@Override
-	public void init() { }
-
 	@Override
 	public void postInit() {
 		Items.SPAWN_EGG.setCreativeTab(spawnEggs);
@@ -224,20 +208,11 @@ public class Vanilla implements IFeature {
 	
 	public static String[] dyeValues = new String[] { "Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "LightGray", "Gray", "Pink", "Lime", "Yellow", "LightBlue", "Magenta", "Orange", "White" };
 	
-	@Override
-	public void onLoadComplete() { }
-	
 	void addSafeColorRecipe (EnumDyeColor color, int count) {
 		ItemStack safeDye = Thermal.getSafeDyesList().get(color.getDyeDamage()).copy();
 		safeDye.setCount(count);
 		GameRegistry.addShapedRecipe( new ResourceLocation(ModConstants.MODID, "dye" + color.getName()), null, safeDye, "x", 'x', new ItemStack(Items.DYE, 1, color.getDyeDamage()) );
 	}
-	
-	@Override
-	public void registerBlocks(IForgeRegistry<Block> event) { }
-	
-	@Override
-	public void registerItems(IForgeRegistry<Item> event) { }
 	
 	@Override
 	public void registerRecipes(IForgeRegistry<IRecipe> registry) {
@@ -251,9 +226,5 @@ public class Vanilla implements IFeature {
 		ItemStack whiteDye = Thermal.getSafeDyesList().get(EnumDyeColor.WHITE.getDyeDamage()).copy();
 		GameRegistry.addShapedRecipe(new ResourceLocation(ModConstants.MODID, "white_gray_dye_from_white_tulip"), null, whiteDye, "x", 'x', new ItemStack(Blocks.RED_FLOWER, 1, 6));
 	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerModels() { }
 	
 }

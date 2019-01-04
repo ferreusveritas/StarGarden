@@ -9,13 +9,11 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.registries.IForgeRegistry;
 
-public class Malisis implements IFeature {
-
+public class Malisis extends BaseFeature {
+	
 	public static final String MALISISDOORS = "malisisdoors";
 	
 	public static Item getMalisisDoorsItem(String name) {
@@ -29,7 +27,7 @@ public class Malisis implements IFeature {
 	public static void removeItemFromMalisisTab(Item item) {
 		removeObjectFromMalisisTab(item);
 	}
-
+	
 	public static void removeBlockFromMalisisTab(Block block) {
 		removeObjectFromMalisisTab(block);
 	}
@@ -84,23 +82,8 @@ public class Malisis implements IFeature {
 	}
 	
 	@Override
-	public void preInit() { }
-
-	@Override
-	public void createBlocks() { }
-
-	@Override
-	public void createItems() { }
-
-	@Override
-	public void registerEvents() { }
-
-	@Override
-	public void init() { }
-
-	@Override
 	public void postInit() {
-
+		
 		if(Loader.isModLoaded(MALISISDOORS)) {
 			
 			//Remove items from creative 
@@ -121,22 +104,10 @@ public class Malisis implements IFeature {
 			
 		}
 	}
-
+	
 	@Override
 	public void onLoadComplete() {
 		getRemoveItemList().forEach( Vanilla::removeItemStackFromJEI );
 	}
-
-	@Override
-	public void registerBlocks(IForgeRegistry<Block> registry) { }
-
-	@Override
-	public void registerItems(IForgeRegistry<Item> registry) { }
-
-	@Override
-	public void registerRecipes(IForgeRegistry<IRecipe> registry) { }
-
-	@Override
-	public void registerModels() { }
 	
 }

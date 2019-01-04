@@ -28,12 +28,10 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreIngredient;
 import net.minecraftforge.registries.IForgeRegistry;
 
-public class Thermal implements IFeature {
+public class Thermal extends BaseFeature {
 
 	public static final String BIOMESOPLENTY = "biomesoplenty";
 	public static final String QUARK = "quark";
@@ -197,15 +195,6 @@ public class Thermal implements IFeature {
 	}
 	
 	@Override
-	public void createBlocks() { }
-
-	@Override
-	public void createItems() { }
-
-	@Override
-	public void registerEvents() { }
-	
-	@Override
 	public void init() {
 		ThermalExpansion.CONFIG.set("Device.Tapper", "Enable", false);
 		ThermalExpansion.CONFIG.set("Device.MobCatcher", "Enable", false);
@@ -291,12 +280,6 @@ public class Thermal implements IFeature {
 	}
 	
 	@Override
-	public void registerBlocks(IForgeRegistry<Block> event) { }
-	
-	@Override
-	public void registerItems(IForgeRegistry<Item> registry) { }
-	
-	@Override
 	public void registerRecipes(IForgeRegistry<IRecipe> registry) {
 		
 		//Recreate rockwool recipes to respect Ore Dictionary Dyes
@@ -330,9 +313,5 @@ public class Thermal implements IFeature {
 			}
 		}
 	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerModels() { }
 	
 }
