@@ -5,14 +5,17 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import biomesoplenty.api.block.BOPBlocks;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockChorusFlower;
 import net.minecraft.block.BlockFalling;
-import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityEndGateway;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -21,6 +24,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
+import net.minecraft.world.gen.NoiseGeneratorPerlin;
 import net.minecraft.world.gen.NoiseGeneratorSimplex;
 import net.minecraft.world.gen.feature.WorldGenEndGateway;
 import net.minecraft.world.gen.feature.WorldGenEndIsland;
@@ -29,11 +33,15 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	
 	/** RNG. */
 	private final Random rand;
-	protected static final IBlockState END_STONE = Blocks.END_STONE.getDefaultState();
 	protected static final IBlockState AIR = Blocks.AIR.getDefaultState();
-	private NoiseGeneratorOctaves lperlinNoise1;
-	private NoiseGeneratorOctaves lperlinNoise2;
-	private NoiseGeneratorOctaves perlinNoise1;
+	protected static final IBlockState WATER = Blocks.WATER.getDefaultState();
+	protected final IBlockState STONE = getStone();
+	protected final IBlockState SAND = getSand();
+
+	private NoiseGeneratorOctaves lPerlinNoise1;
+	private NoiseGeneratorOctaves lPerlinNoise2;
+	private NoiseGeneratorOctaves sPerlinNoise1;
+    private NoiseGeneratorPerlin surfaceNoise;
 	/** A NoiseGeneratorOctaves used in generating terrain */
 	public NoiseGeneratorOctaves noiseGen5;
 	/** A NoiseGeneratorOctaves used in generating terrain */
@@ -47,46 +55,49 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	private double[] buffer;
 	/** The biomes that are used to generate the chunk */
 	private Biome[] biomesForGeneration;
-	double[] pnr;
-	double[] ar;
-	double[] br;
+	double[] sPOct1;
+	double[] lPOct1;
+	double[] lPOct2;
 	private final WorldGenEndIsland endIslands = new WorldGenEndIsland();
-	// temporary variables used during event handling
-	private int chunkX = 0;
-	private int chunkZ = 0;
+	
+	private final int seaLevel = 63;
 	
 	public ChunkGeneratorDuvotica(World world, boolean mapFeaturesEnabled, long rand, BlockPos spawnPoint) {
 		this.world = world;
 		this.mapFeaturesEnabled = mapFeaturesEnabled;
 		this.spawnPoint = spawnPoint;
 		this.rand = new Random(rand);
-		this.lperlinNoise1 = new NoiseGeneratorOctaves(this.rand, 16);
-		this.lperlinNoise2 = new NoiseGeneratorOctaves(this.rand, 16);
-		this.perlinNoise1 = new NoiseGeneratorOctaves(this.rand, 8);
+		this.lPerlinNoise1 = new NoiseGeneratorOctaves(this.rand, 16);
+		this.lPerlinNoise2 = new NoiseGeneratorOctaves(this.rand, 16);
+		this.sPerlinNoise1 = new NoiseGeneratorOctaves(this.rand, 8);
+        this.surfaceNoise = new NoiseGeneratorPerlin(this.rand, 4);
 		this.noiseGen5 = new NoiseGeneratorOctaves(this.rand, 10);
 		this.noiseGen6 = new NoiseGeneratorOctaves(this.rand, 16);
 		this.islandNoise = new NoiseGeneratorSimplex(this.rand);
 		
-		net.minecraftforge.event.terraingen.InitNoiseGensEvent.ContextEnd ctx =
-				new net.minecraftforge.event.terraingen.InitNoiseGensEvent.ContextEnd(lperlinNoise1, lperlinNoise2, perlinNoise1, noiseGen5, noiseGen6, islandNoise);
+		/*net.minecraftforge.event.terraingen.InitNoiseGensEvent.ContextEnd ctx =
+				new net.minecraftforge.event.terraingen.InitNoiseGensEvent.ContextEnd(lPerlinNoise1, lPerlinNoise2, sPerlinNoise1, noiseGen5, noiseGen6, islandNoise);
 		ctx = net.minecraftforge.event.terraingen.TerrainGen.getModdedNoiseGenerators(world, this.rand, ctx);
-		this.lperlinNoise1 = ctx.getLPerlin1();
-		this.lperlinNoise2 = ctx.getLPerlin2();
-		this.perlinNoise1 = ctx.getPerlin();
+		this.lPerlinNoise1 = ctx.getLPerlin1();
+		this.lPerlinNoise2 = ctx.getLPerlin2();
+		this.sPerlinNoise1 = ctx.getPerlin();
+        this.surfaceNoise = ctx.getHeight();
 		this.noiseGen5 = ctx.getDepth();
 		this.noiseGen6 = ctx.getScale();
-		this.islandNoise = ctx.getIsland();
+		this.islandNoise = ctx.getIsland();*/
+		
+		world.setSeaLevel(seaLevel);
 	}
 	
 	/**
 	 * Generates a bare-bones chunk of nothing but stone or ocean blocks, formed, but featureless.
 	 */
-	public void setBlocksInChunk(int x, int z, ChunkPrimer primer) {
+	public void setBlocksInChunk(int chunkPosX, int chunkPosZ, ChunkPrimer primer) {
 		int i = 2;
 		int xSamples = 3;
 		int ySamples = 33;
 		int zSamples = 3;
-		this.buffer = this.getHeights(this.buffer, x * 2, 0, z * 2, xSamples, ySamples, zSamples);
+		this.buffer = this.getDensities(this.buffer, chunkPosX * 2, 0, chunkPosZ * 2, xSamples, ySamples, zSamples);
 
 		final double qtr = 0.25D;
 		final double eighth = 0.125D;
@@ -96,20 +107,20 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 				for (int yTall = 0; yTall < 32; ++yTall) {
 					
 					//Here we sample the 8 corners of a cube in the noise space.  This will later be used as interpolation points
-					double sample000 = this.buffer[((xHalf + 0) * 3 + zHalf + 0) * 33 + yTall + 0];
-					double sample001 = this.buffer[((xHalf + 0) * 3 + zHalf + 1) * 33 + yTall + 0];
-					double sample100 = this.buffer[((xHalf + 1) * 3 + zHalf + 0) * 33 + yTall + 0];
-					double sample101 = this.buffer[((xHalf + 1) * 3 + zHalf + 1) * 33 + yTall + 0];
-					double sample010 = (this.buffer[((xHalf + 0) * 3 + zHalf + 0) * 33 + yTall + 1] - sample000) * qtr;
-					double sample011 = (this.buffer[((xHalf + 0) * 3 + zHalf + 1) * 33 + yTall + 1] - sample001) * qtr;
-					double sample110 = (this.buffer[((xHalf + 1) * 3 + zHalf + 0) * 33 + yTall + 1] - sample100) * qtr;
-					double sample111 = (this.buffer[((xHalf + 1) * 3 + zHalf + 1) * 33 + yTall + 1] - sample101) * qtr;
+					double start_MinX_MinZ = this.buffer[((xHalf + 0) * 3 + zHalf + 0) * 33 + yTall + 0];
+					double start_MinX_MaxZ = this.buffer[((xHalf + 0) * 3 + zHalf + 1) * 33 + yTall + 0];
+					double start_MaxX_MinZ = this.buffer[((xHalf + 1) * 3 + zHalf + 0) * 33 + yTall + 0];
+					double start_MaxX_MaxZ = this.buffer[((xHalf + 1) * 3 + zHalf + 1) * 33 + yTall + 0];
+					double delta_MinX_MinZ = (this.buffer[((xHalf + 0) * 3 + zHalf + 0) * 33 + yTall + 1] - start_MinX_MinZ) * qtr;
+					double delta_MinX_MaxZ = (this.buffer[((xHalf + 0) * 3 + zHalf + 1) * 33 + yTall + 1] - start_MinX_MaxZ) * qtr;
+					double delta_MaxX_MinZ = (this.buffer[((xHalf + 1) * 3 + zHalf + 0) * 33 + yTall + 1] - start_MaxX_MinZ) * qtr;
+					double delta_MaxX_MaxZ = (this.buffer[((xHalf + 1) * 3 + zHalf + 1) * 33 + yTall + 1] - start_MaxX_MaxZ) * qtr;
 					
 					for (int ySub = 0; ySub < 4; ++ySub) {
-						double minZ = sample000;
-						double maxZ = sample001;
-						double delXminZ = (sample100 - sample000) * eighth;
-						double delXmaxZ = (sample101 - sample001) * eighth;
+						double minZ = start_MinX_MinZ;
+						double maxZ = start_MinX_MaxZ;
+						double delta_X_minZ = (start_MaxX_MinZ - start_MinX_MinZ) * eighth;
+						double delta_X_maxZ = (start_MaxX_MaxZ - start_MinX_MaxZ) * eighth;
 						
 						for (int xSub = 0; xSub < 8; ++xSub) {
 							double density = minZ;
@@ -119,70 +130,75 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 								int setX = xSub + xHalf * 8;
 								int setY = ySub + yTall * 4;
 								int setZ = zSub + zHalf * 8;
-								primer.setBlockState(setX, setY, setZ, density > 0.0D ? END_STONE : AIR);
+								
+								setY += 48;
+								
+								boolean isAir = density < 0.0;
+								IBlockState toSet = isAir ? AIR : STONE;
+								
+								if(toSet == AIR) {
+									if(setY <= seaLevel - 4) {
+										toSet = STONE;
+									} else
+									if(setY <= seaLevel - 2) {
+										toSet = SAND;
+									} else
+									if(setY <= seaLevel) {
+										toSet = WATER;
+									}
+								}
+								
+								primer.setBlockState(setX, setY, setZ, toSet);
 								density += delZ;
 							}
 							
-							minZ += delXminZ;
-							maxZ += delXmaxZ;
+							minZ += delta_X_minZ;
+							maxZ += delta_X_maxZ;
 						}
 						
-						sample000 += sample010;
-						sample001 += sample011;
-						sample100 += sample110;
-						sample101 += sample111;
+						start_MinX_MinZ += delta_MinX_MinZ;
+						start_MinX_MaxZ += delta_MinX_MaxZ;
+						start_MaxX_MinZ += delta_MaxX_MinZ;
+						start_MaxX_MaxZ += delta_MaxX_MaxZ;
 					}
 				}
 			}
 		}
+
+		
+		IBlockState toSet = STONE;
+
+		for(int iy = 0; iy < 48; iy++) {
+			for(int ix = 0; ix < 16; ix++) {
+				for(int iz = 0; iz < 16; iz++) {
+					primer.setBlockState(ix, iy, iz, STONE);
+				}
+			}
+		}
+		
 	}
 	
-	public void buildSurfaces(ChunkPrimer primer) {
-		if (!net.minecraftforge.event.ForgeEventFactory.onReplaceBiomeBlocks(this, this.chunkX, this.chunkZ, primer, this.world)) return;
-		for (int i = 0; i < 16; ++i) {
-			for (int j = 0; j < 16; ++j) {
-				int k = 1;
-				int l = -1;
-				IBlockState iblockstate = END_STONE;
-				IBlockState iblockstate1 = END_STONE;
-				
-				for (int i1 = 127; i1 >= 0; --i1) {
-					IBlockState iblockstate2 = primer.getBlockState(i, i1, j);
-					
-					if (iblockstate2.getMaterial() == Material.AIR) {
-						l = -1;
-					}
-					else if (iblockstate2.getBlock() == Blocks.STONE) {
-						if (l == -1) {
-							l = 1;
-							
-							if (i1 >= 0) {
-								primer.setBlockState(i, i1, j, iblockstate);
-							}
-							else {
-								primer.setBlockState(i, i1, j, iblockstate1);
-							}
-						}
-						else if (l > 0) {
-							--l;
-							primer.setBlockState(i, i1, j, iblockstate1);
-						}
-					}
-				}
-			}
-		}
+	public static IBlockState getStone() {
+		Block marble = Block.REGISTRY.getObject(new ResourceLocation("chisel", "marble2"));
+		IProperty<Integer> property = (IProperty<Integer>) marble.getBlockState().getProperty("variation");
+		return marble.getDefaultState().withProperty(property, 7);
 	}
+
+	public static IBlockState getSand() {
+		return BOPBlocks.white_sand.getDefaultState();
+	}
+	
+	
 	
 	/**
 	 * Generates the chunk at the specified position, from scratch
 	 */
 	public Chunk generateChunk(int x, int z) {
-		this.chunkX = x; this.chunkZ = z;
 		this.rand.setSeed((long)x * 341873128712L + (long)z * 132897987541L);
 		ChunkPrimer chunkprimer = new ChunkPrimer();
 		this.biomesForGeneration = this.world.getBiomeProvider().getBiomes(this.biomesForGeneration, x * 16, z * 16, 16, 16);
 		this.setBlocksInChunk(x, z, chunkprimer);
-		this.buildSurfaces(chunkprimer);
+        this.replaceBiomeBlocks(x, z, chunkprimer, this.biomesForGeneration);
 		
 		Chunk chunk = new Chunk(this.world, chunkprimer, x, z);
 		byte[] abyte = chunk.getBiomeArray();
@@ -195,117 +211,136 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 		return chunk;
 	}
 	
-	private float getIslandHeightValue(int p_185960_1_, int p_185960_2_, int p_185960_3_, int p_185960_4_) {
-		float f = (float)(p_185960_1_ * 2 + p_185960_3_);
-		float f1 = (float)(p_185960_2_ * 2 + p_185960_4_);
-		float f2 = 100.0F - MathHelper.sqrt(f * f + f1 * f1) * 8.0F;
+	private float getIslandDensityValue(int chunkX, int chunkZ, int offX, int offZ) {
+		float x = (float)(chunkX * 2 + offX);
+		float z = (float)(chunkZ * 2 + offZ);
+		float height = 50.0f - MathHelper.sqrt(x * x + z * z) * 8.0f;
 		
-		if (f2 > 80.0F)
-		{
-			f2 = 80.0F;
+		if (height > 80.0F) {
+			height = 80.0F;
 		}
 		
-		if (f2 < -100.0F)
-		{
-			f2 = -100.0F;
+		if (height < -100.0F) {
+			height = -100.0F;
 		}
 		
-		for (int i = -12; i <= 12; ++i) {
-			for (int j = -12; j <= 12; ++j) {
-				long k = (long)(p_185960_1_ + i);
-				long l = (long)(p_185960_2_ + j);
+		for (int xi = -12; xi <= 12; ++xi) {
+			for (int zi = -12; zi <= 12; ++zi) {
+				long absX = (long)(chunkX + xi);
+				long absZ = (long)(chunkZ + zi);
 				
-				if (k * k + l * l > 4096L && this.islandNoise.getValue((double)k, (double)l) < -0.8999999761581421D) {
-					float f3 = (MathHelper.abs((float)k) * 3439.0F + MathHelper.abs((float)l) * 147.0F) % 13.0F + 9.0F;
-					f = (float)(p_185960_3_ - i * 2);
-					f1 = (float)(p_185960_4_ - j * 2);
-					float f4 = 100.0F - MathHelper.sqrt(f * f + f1 * f1) * f3;
+				if (absX * absX + absZ * absZ > 10 * 10 && this.islandNoise.getValue((double)absX, (double)absZ) < -0.9) {
+					float psuedoRand = (MathHelper.abs((float)absX) * 3439.0F + MathHelper.abs((float)absZ) * 147.0F) % 13.0F + 9.0F;
+					x = (float)(offX - xi * 2);
+					z = (float)(offZ - zi * 2);
+					float newHeight = 100.0F - MathHelper.sqrt(x * x + z * z) * psuedoRand;
 					
-					if (f4 > 80.0F) {
-						f4 = 80.0F;
+					if (newHeight > 80.0F) {
+						newHeight = 80.0F;
 					}
 					
-					if (f4 < -100.0F) {
-						f4 = -100.0F;
+					if (newHeight < -100.0F) {
+						newHeight = -100.0F;
 					}
 					
-					if (f4 > f2) {
-						f2 = f4;
+					if (newHeight > height) {
+						height = newHeight;
 					}
 				}
 			}
 		}
 		
-		return f2;
+		return height;
 	}
 	
-	public boolean isIslandChunk(int p_185961_1_, int p_185961_2_) {
-		return (long)p_185961_1_ * (long)p_185961_1_ + (long)p_185961_2_ * (long)p_185961_2_ > 4096L && this.getIslandHeightValue(p_185961_1_, p_185961_2_, 1, 1) >= 0.0F;
-	}
+    private double[] depthBuffer = new double[256];
 	
-	private double[] getHeights(double[] p_185963_1_, int p_185963_2_, int p_185963_3_, int p_185963_4_, int p_185963_5_, int p_185963_6_, int p_185963_7_) {
-		net.minecraftforge.event.terraingen.ChunkGeneratorEvent.InitNoiseField event = new net.minecraftforge.event.terraingen.ChunkGeneratorEvent.InitNoiseField(this, p_185963_1_, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_);
+    public void replaceBiomeBlocks(int x, int z, ChunkPrimer primer, Biome[] biomesIn) {
+        if (!net.minecraftforge.event.ForgeEventFactory.onReplaceBiomeBlocks(this, x, z, primer, this.world)) return;
+        double d0 = 0.03125D;
+        this.depthBuffer = this.surfaceNoise.getRegion(this.depthBuffer, (double)(x * 16), (double)(z * 16), 16, 16, 0.0625D, 0.0625D, 1.0D);
+        
+        for (int xi = 0; xi < 16; ++xi) {
+            for (int zi = 0; zi < 16; ++zi) {
+                Biome biome = biomesIn[zi + xi * 16];
+                biome.genTerrainBlocks(this.world, this.rand, primer, x * 16 + xi, z * 16 + zi, this.depthBuffer[zi + xi * 16]);
+            }
+        }
+    }
+    
+	private double[] getDensities(double[] buffer, int chunkPosX, int chunkPosY, int chunkPosZ, int xSamples, int ySamples, int zSamples) {
+		net.minecraftforge.event.terraingen.ChunkGeneratorEvent.InitNoiseField event = new net.minecraftforge.event.terraingen.ChunkGeneratorEvent.InitNoiseField(this, buffer, chunkPosX, chunkPosY, chunkPosZ, xSamples, ySamples, zSamples);
 		net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
 		if (event.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) return event.getNoisefield();
 		
-		if (p_185963_1_ == null) {
-			p_185963_1_ = new double[p_185963_5_ * p_185963_6_ * p_185963_7_];
+		if (buffer == null) {
+			buffer = new double[xSamples * ySamples * zSamples];
 		}
 		
 		double d0 = 684.412D;
 		double d1 = 684.412D;
 		d0 = d0 * 2.0D;
-		this.pnr = this.perlinNoise1.generateNoiseOctaves(this.pnr, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0 / 80.0D, 4.277575000000001D, d0 / 80.0D);
-		this.ar = this.lperlinNoise1.generateNoiseOctaves(this.ar, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0, 684.412D, d0);
-		this.br = this.lperlinNoise2.generateNoiseOctaves(this.br, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0, 684.412D, d0);
-		int i = p_185963_2_ / 2;
-		int j = p_185963_4_ / 2;
-		int k = 0;
+		this.sPOct1 = this.sPerlinNoise1.generateNoiseOctaves(this.sPOct1, chunkPosX, chunkPosY, chunkPosZ, xSamples, ySamples, zSamples, d0 / 80.0D, 4.277575000000001D, d0 / 80.0D);
+		this.lPOct1 = this.lPerlinNoise1.generateNoiseOctaves(this.lPOct1, chunkPosX, chunkPosY, chunkPosZ, xSamples, ySamples, zSamples, d0, 684.412D, d0);
+		this.lPOct2 = this.lPerlinNoise2.generateNoiseOctaves(this.lPOct2, chunkPosX, chunkPosY, chunkPosZ, xSamples, ySamples, zSamples, d0, 684.412D, d0);
+		int chunkX = chunkPosX / 2;
+		int chunkZ = chunkPosZ / 2;
+		int bufferPos = 0;
 		
-		for (int l = 0; l < p_185963_5_; ++l) {
-			for (int i1 = 0; i1 < p_185963_7_; ++i1) {
-				float f = this.getIslandHeightValue(i, j, l, i1);
+		for (int xi = 0; xi < xSamples; ++xi) {
+			for (int zi = 0; zi < zSamples; ++zi) {
+				float islandDensity = this.getIslandDensityValue(chunkX, chunkZ, xi, zi);
 				
-				for (int j1 = 0; j1 < p_185963_6_; ++j1) {
-					double d2 = this.ar[k] / 512.0D;
-					double d3 = this.br[k] / 512.0D;
-					double d5 = (this.pnr[k] / 10.0D + 1.0D) / 2.0D;
-					double d4;
+				for (int yi = 0; yi < ySamples; ++yi) {
+					double lOct1 = this.lPOct1[bufferPos] / 512.0D;
+					double lOct2 = this.lPOct2[bufferPos] / 512.0D;
+					double sOct1 = (this.sPOct1[bufferPos] / 10.0D + 1.0D) / 2.0D;
+					double result;
 					
-					if (d5 < 0.0D) {
-						d4 = d2;
+					if (sOct1 < 0.0D) {
+						result = lOct1;
 					}
-					else if (d5 > 1.0D) {
-						d4 = d3;
+					else if (sOct1 > 1.0D) {
+						result = lOct2;
 					}
 					else {
-						d4 = d2 + (d3 - d2) * d5;
+						result = lOct1 + (lOct2 - lOct1) * sOct1;
 					}
 					
-					d4 = d4 - 8.0D;
-					d4 = d4 + (double)f;
-					int k1 = 2;
+					result = result - 8.0D;
+					result = result + (double)islandDensity;
+
 					
-					if (j1 > p_185963_6_ / 2 - k1) {
-						double d6 = (double)((float)(j1 - (p_185963_6_ / 2 - k1)) / 64.0F);
-						d6 = MathHelper.clamp(d6, 0.0D, 1.0D);
-						d4 = d4 * (1.0D - d6) + -3000.0D * d6;
+					int limit = 2;
+					
+					//Limit for top side of islands
+					if (yi > ySamples / 2 - limit) {
+						double depthMixer = (double)((float)(yi - (ySamples / 2 - limit)) / 64.0F);
+						depthMixer = MathHelper.clamp(depthMixer, 0.0D, 1.0D);
+						result = mix(result, -3000.0, depthMixer);
 					}
 					
-					k1 = 8;
+					//Limit for bottom side of islands
+					limit = 24;
 					
-					if (j1 < k1) {
-						double d7 = (double)((float)(k1 - j1) / ((float)k1 - 1.0F));
-						d4 = d4 * (1.0D - d7) + -30.0D * d7;
+					if (yi < limit) {
+						double depthMixer = (limit - yi) / (limit - 1.0);
+						result = mix(result, result - 40.0, depthMixer);
 					}
 					
-					p_185963_1_[k] = d4;
-					++k;
+					//System.out.println(islandHeight + " -> " + result);
+					
+					buffer[bufferPos] = result;
+					++bufferPos;
 				}
 			}
 		}
 		
-		return p_185963_1_;
+		return buffer;
+	}
+	
+	double mix(double atZero, double atOne, double mixer) {
+		return (atZero * (1.0 - mixer)) + (atOne * mixer);
 	}
 	
 	/**
@@ -317,58 +352,78 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 		BlockPos blockpos = new BlockPos(x * 16, 0, z * 16);
 		
 		this.world.getBiome(blockpos.add(16, 0, 16)).decorate(this.world, this.world.rand, blockpos);
-		long i = (long)x * (long)x + (long)z * (long)z;
 		
-		if (i > 4096L) {
-			float f = this.getIslandHeightValue(x, z, 1, 1);
+		long distSquared = (long)x * (long)x + (long)z * (long)z;
+		
+		if (distSquared > 64 * 64) { //Must be 64 chunks(1024 blocks) from the world origin(0, 0) to run this populator
+
+			populateEndIslands(x, z);
 			
-			if (f < -20.0F && this.rand.nextInt(14) == 0) {
-				this.endIslands.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16) + 8, 55 + this.rand.nextInt(16), this.rand.nextInt(16) + 8));
-				
-				if (this.rand.nextInt(4) == 0) {
-					this.endIslands.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16) + 8, 55 + this.rand.nextInt(16), this.rand.nextInt(16) + 8));
-				}
-			}
-			
-			if (this.getIslandHeightValue(x, z, 1, 1) > 40.0F) {
-				int j = this.rand.nextInt(5);
-				
-				for (int k = 0; k < j; ++k) {
-					int l = this.rand.nextInt(16) + 8;
-					int i1 = this.rand.nextInt(16) + 8;
-					int j1 = this.world.getHeight(blockpos.add(l, 0, i1)).getY();
-					
-					if (j1 > 0) {
-						int k1 = j1 - 1;
-						
-						if (this.world.isAirBlock(blockpos.add(l, k1 + 1, i1)) && this.world.getBlockState(blockpos.add(l, k1, i1)).getBlock() == Blocks.END_STONE) {
-							BlockChorusFlower.generatePlant(this.world, blockpos.add(l, k1 + 1, i1), this.rand, 8);
-						}
-					}
-				}
-				
-				if (this.rand.nextInt(700) == 0) {
-					int l1 = this.rand.nextInt(16) + 8;
-					int i2 = this.rand.nextInt(16) + 8;
-					int j2 = this.world.getHeight(blockpos.add(l1, 0, i2)).getY();
-					
-					if (j2 > 0) {
-						int k2 = j2 + 3 + this.rand.nextInt(7);
-						BlockPos blockpos1 = blockpos.add(l1, k2, i2);
-						(new WorldGenEndGateway()).generate(this.world, this.rand, blockpos1);
-						TileEntity tileentity = this.world.getTileEntity(blockpos1);
-						
-						if (tileentity instanceof TileEntityEndGateway) {
-							TileEntityEndGateway tileentityendgateway = (TileEntityEndGateway)tileentity;
-							tileentityendgateway.setExactPosition(this.spawnPoint);
-						}
-					}
-				}
+			if (this.getIslandDensityValue(x, z, 1, 1) > 40.0F) {
+				populateChorusFlowers(x, z);
+				populateEndGateways(x, z);
 			}
 		}
 		
 		net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(false, this, this.world, this.rand, x, z, false);
 		BlockFalling.fallInstantly = false;
+	}
+	
+	private void populateEndIslands(int chunkX, int chunkZ) {
+		BlockPos blockpos = new BlockPos(chunkX * 16, 0, chunkZ * 16);
+		
+		float islandHeight = this.getIslandDensityValue(chunkX, chunkZ, 1, 1);
+		
+		if (islandHeight < -20.0F && this.rand.nextInt(14) == 0) {
+			this.endIslands.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16) + 8, 55 + this.rand.nextInt(16), this.rand.nextInt(16) + 8));
+			
+			if (this.rand.nextInt(4) == 0) {
+				this.endIslands.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16) + 8, 55 + this.rand.nextInt(16), this.rand.nextInt(16) + 8));
+			}
+		}
+	}
+	
+	private void populateChorusFlowers(int chunkX, int chunkZ) {
+		BlockPos blockpos = new BlockPos(chunkX * 16, 0, chunkZ * 16);
+		
+		int j = this.rand.nextInt(5);
+		
+		for (int k = 0; k < j; ++k) {
+			int l = this.rand.nextInt(16) + 8;
+			int i1 = this.rand.nextInt(16) + 8;
+			int j1 = this.world.getHeight(blockpos.add(l, 0, i1)).getY();
+			
+			if (j1 > 0) {
+				int k1 = j1 - 1;
+				
+				if (this.world.isAirBlock(blockpos.add(l, k1 + 1, i1)) && this.world.getBlockState(blockpos.add(l, k1, i1)).getBlock() == Blocks.END_STONE) {
+					BlockChorusFlower.generatePlant(this.world, blockpos.add(l, k1 + 1, i1), this.rand, 8);
+				}
+			}
+		}
+	}
+	
+	private void populateEndGateways(int chunkX, int chunkZ) {
+		
+		if (this.rand.nextInt(700) == 0) {
+			BlockPos blockpos = new BlockPos(chunkX * 16, 0, chunkZ * 16);
+			
+			int l1 = this.rand.nextInt(16) + 8;
+			int i2 = this.rand.nextInt(16) + 8;
+			int j2 = this.world.getHeight(blockpos.add(l1, 0, i2)).getY();
+			
+			if (j2 > 0) {
+				int k2 = j2 + 3 + this.rand.nextInt(7);
+				BlockPos blockpos1 = blockpos.add(l1, k2, i2);
+				(new WorldGenEndGateway()).generate(this.world, this.rand, blockpos1);
+				TileEntity tileentity = this.world.getTileEntity(blockpos1);
+				
+				if (tileentity instanceof TileEntityEndGateway) {
+					TileEntityEndGateway tileentityendgateway = (TileEntityEndGateway)tileentity;
+					tileentityendgateway.setExactPosition(this.spawnPoint);
+				}
+			}
+		}
 	}
 	
 	/**

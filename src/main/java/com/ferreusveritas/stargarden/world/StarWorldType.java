@@ -18,7 +18,7 @@ public class StarWorldType extends WorldType {
 		return false;
 	}
 	
-	public WorldProvider createCustomWorldProvider() {
+	public WorldProvider createCustomWorldProvider(WorldProvider worldProvider) {
 		return DimensionType.OVERWORLD.createDimension();
 	}
 	
