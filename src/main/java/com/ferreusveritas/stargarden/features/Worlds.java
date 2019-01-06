@@ -8,6 +8,8 @@ import com.ferreusveritas.dynamictrees.api.worldgen.BiomePropertySelectors.EnumC
 import com.ferreusveritas.dynamictrees.api.worldgen.BiomePropertySelectors.ISpeciesSelector;
 import com.ferreusveritas.dynamictrees.api.worldgen.BiomePropertySelectors.RandomSpeciesSelector;
 import com.ferreusveritas.dynamictrees.api.worldgen.IBiomeDataBasePopulator;
+import com.ferreusveritas.dynamictrees.systems.featuregen.FeatureGenPredicate;
+import com.ferreusveritas.dynamictrees.systems.featuregen.FeatureGenVine;
 import com.ferreusveritas.dynamictrees.trees.Species;
 import com.ferreusveritas.dynamictrees.worldgen.BiomeDataBase;
 import com.ferreusveritas.dynamictrees.worldgen.BiomeDataBase.Operation;
@@ -85,6 +87,12 @@ public class Worlds extends BaseFeature {
 	
 	@Override
 	public void postInit() {
+		Species darkoak = TreeRegistry.findSpecies(new ResourceLocation("dynamictrees", "darkoak"));
+		darkoak.addGenFeature(new FeatureGenPredicate(
+			new FeatureGenVine().setQuantity(16).setMaxLength(8)//Generate vines
+			).setBiomePredicate(biome -> biome == duvoticaBiome)
+		);
+		
 		duvoticaBiome.assignMaterials();
 	}
 	
