@@ -19,7 +19,6 @@ import net.minecraft.entity.monster.EntityWitherSkeleton;
 import net.minecraft.entity.passive.EntityParrot;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkPrimer;
@@ -30,7 +29,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BiomeDuvotica extends Biome {
-
+	
 	protected IBlockState stone;
 	protected IBlockState sand;
 	
@@ -79,29 +78,29 @@ public class BiomeDuvotica extends Biome {
 	}
 	
 	public static class WorldGenBOPPlant extends WorldGenerator {
-
-	    private final IBlockState plantState;
-
-	    public WorldGenBOPPlant(BOPPlants type) {
-	    	this.plantState = BlockBOPPlant.paging.getVariantState(type);
-	    }
 		
-	    public boolean generate(World worldIn, Random rand, BlockPos position) {
-	        for (IBlockState iblockstate = worldIn.getBlockState(position); (iblockstate.getBlock().isAir(iblockstate, worldIn, position) || iblockstate.getBlock().isLeaves(iblockstate, worldIn, position)) && position.getY() > 0; iblockstate = worldIn.getBlockState(position)) {
-	            position = position.down();
-	        }
-
-	        Block block = plantState.getBlock();
-	        
-	        for (int i = 0; i < 128; ++i) {
-	        	BlockPos blockpos = position.add(rand.nextInt(8) - rand.nextInt(8), rand.nextInt(4) - rand.nextInt(4), rand.nextInt(8) - rand.nextInt(8));
-	        	if(worldIn.isAirBlock(blockpos) && ((BlockBOPPlant)block).canBlockStay(worldIn, blockpos, plantState)) {
-	        		worldIn.setBlockState(blockpos, plantState, 2);	
-	        	}
-	        }
-            
-	        return true;
-	    }
+		private final IBlockState plantState;
+		
+		public WorldGenBOPPlant(BOPPlants type) {
+			this.plantState = BlockBOPPlant.paging.getVariantState(type);
+		}
+		
+		public boolean generate(World worldIn, Random rand, BlockPos position) {
+			for (IBlockState iblockstate = worldIn.getBlockState(position); (iblockstate.getBlock().isAir(iblockstate, worldIn, position) || iblockstate.getBlock().isLeaves(iblockstate, worldIn, position)) && position.getY() > 0; iblockstate = worldIn.getBlockState(position)) {
+				position = position.down();
+			}
+			
+			Block block = plantState.getBlock();
+			
+			for (int i = 0; i < 128; ++i) {
+				BlockPos blockpos = position.add(rand.nextInt(8) - rand.nextInt(8), rand.nextInt(4) - rand.nextInt(4), rand.nextInt(8) - rand.nextInt(8));
+				if(worldIn.isAirBlock(blockpos) && ((BlockBOPPlant)block).canBlockStay(worldIn, blockpos, plantState)) {
+					worldIn.setBlockState(blockpos, plantState, 2);	
+				}
+			}
+			
+			return true;
+		}
 		
 	}
 	
@@ -141,80 +140,63 @@ public class BiomeDuvotica extends Biome {
 		int density = -1;
 		int random = rand.nextInt(2) + 1;//(int)(noiseVal / 3.0D + 3.0D + rand.nextDouble() * 0.25D);
 		int clipX = x & 15;
-        int clipZ = z & 15;
-        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-        
-        //System.out.println(random);
-        
-        for (int yi = 255; yi >= 0; --yi) {
-            if (yi <= rand.nextInt(5)) {
-                chunkPrimerIn.setBlockState(clipZ, yi, clipX, BEDROCK);
-            }
-            else {
-                IBlockState sample = chunkPrimerIn.getBlockState(clipZ, yi, clipX);
-
-                if (sample.getMaterial() == Material.AIR) {
-                    density = -1;
-                }
-                else if (sample == stone) {
-                    if (density == -1) {
-                    	
-                        if (random <= 0) {
-                            top = AIR;
-                            fill = stone;
-                        }
-                        else if (yi >= seaLevel - 4 && yi <= seaLevel + 1) {
-                            top = this.topBlock;
-                            fill = this.fillerBlock;
-                        }
-                        
-                        if (yi < seaLevel && (top == null || top.getMaterial() == Material.AIR)) {
-                            if (this.getTemperature(blockpos$mutableblockpos.setPos(x, yi, z)) < 0.15F) {
-                                top = ICE;
-                            }
-                            else {
-                                top = WATER;
-                            }
-                        }
-
-                        density = random;
-                        
-                        if (yi >= seaLevel - 1) { //Set the top layer of grass
-                            chunkPrimerIn.setBlockState(clipZ, yi, clipX, top);
-                        }
-                        /*else if (yi < seaLevel - 7 - random) {
-                            top = AIR;
-                            fill = STONE;
-                            chunkPrimerIn.setBlockState(clipZ, yi, clipX, GRAVEL);
-                        }*/
-                        else {
-                            chunkPrimerIn.setBlockState(clipZ, yi, clipX, fill);
-                        }
-                    }
-                    else if (density > 0) {
-                        --density;
-                        chunkPrimerIn.setBlockState(clipZ, yi, clipX, fill);
-                    }
-                }
-            }
-        }
-        
-	}
-	
-	public void generateGrass(World world, ChunkPos chunkPos) {
-		/*BlockPos pos = chunkPos.getBlock(0, 0, 0);
-		Random random = world.rand;
+		int clipZ = z & 15;
+		BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 		
-        for (int iter = 0; iter < this.decorator.grassPerChunk; ++iter) {
-            int xOff = random.nextInt(16) + 8;
-            int zOff = random.nextInt(16) + 8;
-            int height = world.getHeight(pos.add(xOff, 0, zOff)).getY() * 2;
-
-            if (height > 0) {
-                int butwhy = random.nextInt(height);
-                getRandomWorldGenForGrass(random).generate(world, random, pos.add(xOff, butwhy, zOff));
-            }
-        }*/
+		//System.out.println(random);
+		
+		for (int yi = 255; yi >= 0; --yi) {
+			if (yi <= rand.nextInt(5)) {
+				chunkPrimerIn.setBlockState(clipZ, yi, clipX, BEDROCK);
+			}
+			else {
+				IBlockState sample = chunkPrimerIn.getBlockState(clipZ, yi, clipX);
+				
+				if (sample.getMaterial() == Material.AIR) {
+					density = -1;
+				}
+				else if (sample == stone) {
+					if (density == -1) {
+						
+						if (random <= 0) {
+							top = AIR;
+							fill = stone;
+						}
+						else if (yi >= seaLevel - 4 && yi <= seaLevel + 1) {
+							top = this.topBlock;
+							fill = this.fillerBlock;
+						}
+						
+						if (yi < seaLevel && (top == null || top.getMaterial() == Material.AIR)) {
+							if (this.getTemperature(blockpos$mutableblockpos.setPos(x, yi, z)) < 0.15F) {
+								top = ICE;
+							}
+							else {
+								top = WATER;
+							}
+						}
+						
+						density = random;
+						
+						if (yi >= seaLevel - 1) { //Set the top layer of grass
+							chunkPrimerIn.setBlockState(clipZ, yi, clipX, top);
+						}
+						/*else if (yi < seaLevel - 7 - random) {
+							top = AIR;
+							fill = STONE;
+							chunkPrimerIn.setBlockState(clipZ, yi, clipX, GRAVEL);
+						}*/
+						else {
+							chunkPrimerIn.setBlockState(clipZ, yi, clipX, fill);
+						}
+					}
+					else if (density > 0) {
+						--density;
+						chunkPrimerIn.setBlockState(clipZ, yi, clipX, fill);
+					}
+				}
+			}
+		}
 		
 	}
 	

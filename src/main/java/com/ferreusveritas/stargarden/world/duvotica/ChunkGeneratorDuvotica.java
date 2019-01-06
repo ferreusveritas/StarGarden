@@ -37,11 +37,11 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	protected static final IBlockState WATER = Blocks.WATER.getDefaultState();
 	protected final IBlockState STONE = getStone();
 	protected final IBlockState SAND = getSand();
-
+	
 	private NoiseGeneratorOctaves lPerlinNoise1;
 	private NoiseGeneratorOctaves lPerlinNoise2;
 	private NoiseGeneratorOctaves sPerlinNoise1;
-    private NoiseGeneratorPerlin surfaceNoise;
+	private NoiseGeneratorPerlin surfaceNoise;
 	/** A NoiseGeneratorOctaves used in generating terrain */
 	public NoiseGeneratorOctaves noiseGen5;
 	/** A NoiseGeneratorOctaves used in generating terrain */
@@ -49,7 +49,7 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	/** Reference to the World object. */
 	private final World world;
 	/** are map structures going to be generated (e.g. strongholds) */
-	private final boolean mapFeaturesEnabled;
+	//private final boolean mapFeaturesEnabled;
 	private final BlockPos spawnPoint;
 	private NoiseGeneratorSimplex islandNoise;
 	private double[] buffer;
@@ -64,13 +64,13 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	
 	public ChunkGeneratorDuvotica(World world, boolean mapFeaturesEnabled, long rand, BlockPos spawnPoint) {
 		this.world = world;
-		this.mapFeaturesEnabled = mapFeaturesEnabled;
+		//this.mapFeaturesEnabled = mapFeaturesEnabled;
 		this.spawnPoint = spawnPoint;
 		this.rand = new Random(rand);
 		this.lPerlinNoise1 = new NoiseGeneratorOctaves(this.rand, 16);
 		this.lPerlinNoise2 = new NoiseGeneratorOctaves(this.rand, 16);
 		this.sPerlinNoise1 = new NoiseGeneratorOctaves(this.rand, 8);
-        this.surfaceNoise = new NoiseGeneratorPerlin(this.rand, 4);
+		this.surfaceNoise = new NoiseGeneratorPerlin(this.rand, 4);
 		this.noiseGen5 = new NoiseGeneratorOctaves(this.rand, 10);
 		this.noiseGen6 = new NoiseGeneratorOctaves(this.rand, 16);
 		this.islandNoise = new NoiseGeneratorSimplex(this.rand);
@@ -81,7 +81,7 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 		this.lPerlinNoise1 = ctx.getLPerlin1();
 		this.lPerlinNoise2 = ctx.getLPerlin2();
 		this.sPerlinNoise1 = ctx.getPerlin();
-        this.surfaceNoise = ctx.getHeight();
+			this.surfaceNoise = ctx.getHeight();
 		this.noiseGen5 = ctx.getDepth();
 		this.noiseGen6 = ctx.getScale();
 		this.islandNoise = ctx.getIsland();*/
@@ -93,12 +93,12 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	 * Generates a bare-bones chunk of nothing but stone or ocean blocks, formed, but featureless.
 	 */
 	public void setBlocksInChunk(int chunkPosX, int chunkPosZ, ChunkPrimer primer) {
-		int i = 2;
+		//int i = 2;
 		int xSamples = 3;
 		int ySamples = 33;
 		int zSamples = 3;
 		this.buffer = this.getDensities(this.buffer, chunkPosX * 2, 0, chunkPosZ * 2, xSamples, ySamples, zSamples);
-
+		
 		final double qtr = 0.25D;
 		final double eighth = 0.125D;
 		
@@ -164,10 +164,7 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 				}
 			}
 		}
-
 		
-		IBlockState toSet = STONE;
-
 		for(int iy = 0; iy < 48; iy++) {
 			for(int ix = 0; ix < 16; ix++) {
 				for(int iz = 0; iz < 16; iz++) {
@@ -183,7 +180,7 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 		IProperty<Integer> property = (IProperty<Integer>) marble.getBlockState().getProperty("variation");
 		return marble.getDefaultState().withProperty(property, 7);
 	}
-
+	
 	public static IBlockState getSand() {
 		return BOPBlocks.white_sand.getDefaultState();
 	}
@@ -198,7 +195,7 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 		ChunkPrimer chunkprimer = new ChunkPrimer();
 		this.biomesForGeneration = this.world.getBiomeProvider().getBiomes(this.biomesForGeneration, x * 16, z * 16, 16, 16);
 		this.setBlocksInChunk(x, z, chunkprimer);
-        this.replaceBiomeBlocks(x, z, chunkprimer, this.biomesForGeneration);
+		this.replaceBiomeBlocks(x, z, chunkprimer, this.biomesForGeneration);
 		
 		Chunk chunk = new Chunk(this.world, chunkprimer, x, z);
 		byte[] abyte = chunk.getBiomeArray();
@@ -253,21 +250,21 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 		return height;
 	}
 	
-    private double[] depthBuffer = new double[256];
+	private double[] depthBuffer = new double[256];
 	
-    public void replaceBiomeBlocks(int x, int z, ChunkPrimer primer, Biome[] biomesIn) {
-        if (!net.minecraftforge.event.ForgeEventFactory.onReplaceBiomeBlocks(this, x, z, primer, this.world)) return;
-        double d0 = 0.03125D;
-        this.depthBuffer = this.surfaceNoise.getRegion(this.depthBuffer, (double)(x * 16), (double)(z * 16), 16, 16, 0.0625D, 0.0625D, 1.0D);
-        
-        for (int xi = 0; xi < 16; ++xi) {
-            for (int zi = 0; zi < 16; ++zi) {
-                Biome biome = biomesIn[zi + xi * 16];
-                biome.genTerrainBlocks(this.world, this.rand, primer, x * 16 + xi, z * 16 + zi, this.depthBuffer[zi + xi * 16]);
-            }
-        }
-    }
-    
+	public void replaceBiomeBlocks(int x, int z, ChunkPrimer primer, Biome[] biomesIn) {
+		if (!net.minecraftforge.event.ForgeEventFactory.onReplaceBiomeBlocks(this, x, z, primer, this.world)) return;
+		double d0 = 0.03125D;
+		this.depthBuffer = this.surfaceNoise.getRegion(this.depthBuffer, (double)(x * 16), (double)(z * 16), 16, 16, d0, d0, 1.0D);
+		
+		for (int xi = 0; xi < 16; ++xi) {
+			for (int zi = 0; zi < 16; ++zi) {
+				Biome biome = biomesIn[zi + xi * 16];
+				biome.genTerrainBlocks(this.world, this.rand, primer, x * 16 + xi, z * 16 + zi, this.depthBuffer[zi + xi * 16]);
+			}
+		}
+	}
+	
 	private double[] getDensities(double[] buffer, int chunkPosX, int chunkPosY, int chunkPosZ, int xSamples, int ySamples, int zSamples) {
 		net.minecraftforge.event.terraingen.ChunkGeneratorEvent.InitNoiseField event = new net.minecraftforge.event.terraingen.ChunkGeneratorEvent.InitNoiseField(this, buffer, chunkPosX, chunkPosY, chunkPosZ, xSamples, ySamples, zSamples);
 		net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
@@ -278,7 +275,7 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 		}
 		
 		double d0 = 684.412D;
-		double d1 = 684.412D;
+		//double d1 = 684.412D;
 		d0 = d0 * 2.0D;
 		this.sPOct1 = this.sPerlinNoise1.generateNoiseOctaves(this.sPOct1, chunkPosX, chunkPosY, chunkPosZ, xSamples, ySamples, zSamples, d0 / 80.0D, 4.277575000000001D, d0 / 80.0D);
 		this.lPOct1 = this.lPerlinNoise1.generateNoiseOctaves(this.lPOct1, chunkPosX, chunkPosY, chunkPosZ, xSamples, ySamples, zSamples, d0, 684.412D, d0);
@@ -309,7 +306,7 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 					
 					result = result - 8.0D;
 					result = result + (double)islandDensity;
-
+					
 					
 					int limit = 2;
 					
@@ -356,7 +353,7 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 		long distSquared = (long)x * (long)x + (long)z * (long)z;
 		
 		if (distSquared > 64 * 64) { //Must be 64 chunks(1024 blocks) from the world origin(0, 0) to run this populator
-
+			
 			populateEndIslands(x, z);
 			
 			if (this.getIslandDensityValue(x, z, 1, 1) > 40.0F) {

@@ -32,12 +32,12 @@ public class BiomeProviderDuvotica extends BiomeProvider {
 		return oldBiomeList;
 	}
 	
-    /**
-     * Gets a list of biomes for the specified blocks.
-     */
+	/**
+ 	* Gets a list of biomes for the specified blocks.
+	 	*/
 	@Override
-    public Biome[] getBiomes(@Nullable Biome[] listToReuse, int x, int z, int width, int length, boolean cacheFlag) {
-        return this.getBiomes(listToReuse, x, z, width, length);
-    }
+	public Biome[] getBiomes(@Nullable Biome[] listToReuse, int x, int z, int width, int length, boolean cacheFlag) {
+		return this.getBiomes(listToReuse, x, z, width, length);
+	}
 
 }
