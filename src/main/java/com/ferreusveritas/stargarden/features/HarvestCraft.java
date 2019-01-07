@@ -234,7 +234,7 @@ public class HarvestCraft extends BaseFeature {
 		Vanilla.removeOre(new ItemStack(getHarvestCraftItem("creepercookieitem")), "listAllcookie");
 		
 		//Nonpareils(Colored Sprinkles)
-		easyShapelessOreRecipe(registry, "nonpareils", nonpareils, 
+		easyShapelessOreRecipe(registry, "nonpareils", new ItemStack(nonpareils, 8), 
 			new Object[] { "toolSaucepan", "listAllsugar", "dyeRed", "dyeGreen", "dyeYellow", "dyeBlue", "dyePink" }
 		);
 		
@@ -260,10 +260,14 @@ public class HarvestCraft extends BaseFeature {
 		
 	}
 	
-	public void easyShapelessOreRecipe(IForgeRegistry<IRecipe> registry, String recipeName, Item output, Object[] ingredients) {
+	public void easyShapelessOreRecipe(IForgeRegistry<IRecipe> registry, String recipeName, ItemStack output, Object[] ingredients) {
 		registry.register(
-			new ShapelessOreRecipe(null, new ItemStack(output), ingredients).setRegistryName(new ResourceLocation(ModConstants.MODID, recipeName))
+			new ShapelessOreRecipe(null, output, ingredients).setRegistryName(new ResourceLocation(ModConstants.MODID, recipeName))
 		);
+	}
+	
+	public void easyShapelessOreRecipe(IForgeRegistry<IRecipe> registry, String recipeName, Item output, Object[] ingredients) {
+		easyShapelessOreRecipe(registry, recipeName, new ItemStack(output), ingredients);
 	}
 	
 	@Override
