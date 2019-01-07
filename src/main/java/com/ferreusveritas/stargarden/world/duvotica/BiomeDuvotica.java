@@ -53,7 +53,7 @@ public class BiomeDuvotica extends Biome {
 		this.spawnableCaveCreatureList.clear();
 		
 		this.spawnableMonsterList.add(new Biome.SpawnListEntry(EntityWitherSkeleton.class, 5, 1, 1));
-		this.spawnableMonsterList.add(new Biome.SpawnListEntry(EntityCaveSpider.class, 15, 1, 1));
+		this.spawnableMonsterList.add(new Biome.SpawnListEntry(EntitySpiderDuvotica.class, 15, 1, 1));
 		this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityParrot.class, 10, 4, 4));
 		
 		//This is so the biomeDictionary doesn't crash

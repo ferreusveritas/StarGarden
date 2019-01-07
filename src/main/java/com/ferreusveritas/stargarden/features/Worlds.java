@@ -14,8 +14,11 @@ import com.ferreusveritas.dynamictrees.trees.Species;
 import com.ferreusveritas.dynamictrees.worldgen.BiomeDataBase;
 import com.ferreusveritas.dynamictrees.worldgen.BiomeDataBase.Operation;
 import com.ferreusveritas.stargarden.ModConstants;
+import com.ferreusveritas.stargarden.StarGarden;
+import com.ferreusveritas.stargarden.render.RenderSpiderDuvotica;
 import com.ferreusveritas.stargarden.world.StarWorldType;
 import com.ferreusveritas.stargarden.world.duvotica.BiomeDuvotica;
+import com.ferreusveritas.stargarden.world.duvotica.EntitySpiderDuvotica;
 import com.ferreusveritas.stargarden.world.duvotica.WorldTypeDuvotica;
 
 import net.minecraft.util.ResourceLocation;
@@ -26,9 +29,11 @@ import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
@@ -37,6 +42,9 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldExcep
 public class Worlds extends BaseFeature {
 	
 	public static final String DUVOTICA = "duvotica";
+	public static final String DUVOTICA_SPIDER = "knacker";
+	
+	public static final int DUVOTICA_SPIDER_ID = 100;
 	
 	public static WorldType duvotica = null;
 	public static BiomeDuvotica duvoticaBiome = null;
@@ -83,6 +91,14 @@ public class Worlds extends BaseFeature {
 		registerBiome(duvoticaBiome, new ResourceLocation(ModConstants.MODID, DUVOTICA));
 		
 		duvotica = new WorldTypeDuvotica(DUVOTICA);
+		
+		registerEntities();
+	}
+	
+	public void registerEntities() {
+		EntityRegistry.registerModEntity(new ResourceLocation(ModConstants.MODID, DUVOTICA_SPIDER), EntitySpiderDuvotica.class, DUVOTICA_SPIDER, DUVOTICA_SPIDER_ID, StarGarden.instance, 50, 1, true, 0xFFFFFF, 0x000000);
+		
+		RenderingRegistry.registerEntityRenderingHandler(EntitySpiderDuvotica.class, manager -> new RenderSpiderDuvotica(manager));
 	}
 	
 	@Override
