@@ -31,12 +31,6 @@ public class RenderSpiderDuvotica extends RenderSpider<EntitySpiderDuvotica> {
 		GlStateManager.scale(0.5F, 0.5F, 0.5F);
 	}
 	
-	@Override
-	public void doRender(EntitySpiderDuvotica entity, double x, double y, double z, float entityYaw, float partialTicks) {
-		//System.out.println("How about this?");
-		super.doRender(entity, x, y, z, entityYaw, partialTicks);
-	}
-	
 	/**
 	 * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
 	 */

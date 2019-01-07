@@ -42,7 +42,7 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldExcep
 public class Worlds extends BaseFeature {
 	
 	public static final String DUVOTICA = "duvotica";
-	public static final String DUVOTICA_SPIDER = "knacker";
+	public static final String DUVOTICA_SPIDER = "varroa";
 	
 	public static final int DUVOTICA_SPIDER_ID = 100;
 	
@@ -96,8 +96,7 @@ public class Worlds extends BaseFeature {
 	}
 	
 	public void registerEntities() {
-		EntityRegistry.registerModEntity(new ResourceLocation(ModConstants.MODID, DUVOTICA_SPIDER), EntitySpiderDuvotica.class, DUVOTICA_SPIDER, DUVOTICA_SPIDER_ID, StarGarden.instance, 50, 1, true, 0xFFFFFF, 0x000000);
-		
+		EntityRegistry.registerModEntity(new ResourceLocation(ModConstants.MODID, DUVOTICA_SPIDER), EntitySpiderDuvotica.class, DUVOTICA_SPIDER, DUVOTICA_SPIDER_ID, StarGarden.instance, 50, 1, true, 0x822B39, 0xFFE33D);
 		RenderingRegistry.registerEntityRenderingHandler(EntitySpiderDuvotica.class, manager -> new RenderSpiderDuvotica(manager));
 	}
 	
