@@ -1,11 +1,17 @@
 package com.ferreusveritas.stargarden.world.duvotica;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.init.MobEffects;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 
@@ -48,6 +54,33 @@ public class EntitySpiderDuvotica extends EntitySpider {
 		else {
 			return false;
 		}
+	}
+	
+	/**
+	 * Called only once on an entity when first time spawned, via egg, mob spawner, natural spawning etc, but not called
+	 * when entity is reloaded from nbt. Mainly used for initializing attributes and inventory
+	 */
+	@Nullable
+	public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
+		livingdata = super.onInitialSpawn(difficulty, livingdata);
+		
+		if (livingdata == null) {
+			livingdata = new EntitySpider.GroupData();
+			
+			if (this.world.getDifficulty() == EnumDifficulty.HARD && this.world.rand.nextFloat() < 0.1F * difficulty.getClampedAdditionalDifficulty()) {
+				((EntitySpider.GroupData)livingdata).setRandomEffect(this.world.rand);
+			}
+		}
+		
+		if (livingdata instanceof EntitySpider.GroupData) {
+			Potion potion = ((EntitySpider.GroupData)livingdata).effect;
+			
+			if (potion != null) {
+				this.addPotionEffect(new PotionEffect(potion, Integer.MAX_VALUE));
+			}
+		}
+		
+		return livingdata;
 	}
 	
 }

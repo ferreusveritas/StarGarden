@@ -35,10 +35,6 @@ public class BiomeDuvotica extends Biome {
 	protected static IBlockState grass;
 	protected static IBlockState dirt;
 	
-	protected static WorldGenerator koru;
-	private static WorldGenerator tallGrass;
-	private static WorldGenDoublePlant dTallGrass;
-	
 	public BiomeDuvotica() {
 		super(getBiomeProperties());
 		
@@ -52,8 +48,8 @@ public class BiomeDuvotica extends Biome {
 		this.spawnableCaveCreatureList.clear();
 		
 		this.spawnableMonsterList.add(new Biome.SpawnListEntry(EntityWitherSkeleton.class, 5, 1, 1));
-		this.spawnableMonsterList.add(new Biome.SpawnListEntry(EntitySpiderDuvotica.class, 15, 1, 1));
-		this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityParrot.class, 10, 4, 4));
+		this.spawnableMonsterList.add(new Biome.SpawnListEntry(EntitySpiderDuvotica.class, 25, 1, 1));
+		this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityParrot.class, 10, 1, 4));
 		
 		//This is so the biomeDictionary doesn't crash
 		topBlock = Blocks.GRASS.getDefaultState();
@@ -61,16 +57,26 @@ public class BiomeDuvotica extends Biome {
 		
 	}
 	
+	private static WorldGenerator grassOptions[];
+	
 	public void assignMaterials() {
 		stone = ChunkGeneratorDuvotica.getStone();
 		sand = ChunkGeneratorDuvotica.getSand();
 		grass = BOPBlocks.grass.getDefaultState().withProperty(BlockBOPGrass.VARIANT, BOPGrassType.SILTY);
 		dirt = BOPBlocks.dirt.getDefaultState().withProperty(BlockBOPDirt.VARIANT, BOPDirtType.SILTY);
 		
-		koru = new WorldGenBOPPlant(BOPPlants.KORU);
-		tallGrass = new WorldGenTallGrass(BlockTallGrass.EnumType.GRASS);
-		dTallGrass = new WorldGenDoublePlant();
-		dTallGrass.setPlantType(BlockDoublePlant.EnumPlantType.GRASS);
+		WorldGenerator koru = new WorldGenBOPPlant(BOPPlants.KORU);
+		WorldGenerator medGrass = new WorldGenBOPPlant(BOPPlants.MEDIUMGRASS);
+		WorldGenerator tallGrass = new WorldGenTallGrass(BlockTallGrass.EnumType.GRASS);
+		WorldGenerator dblGrass = new WorldGenDoublePlant();
+		((WorldGenDoublePlant) dblGrass).setPlantType(BlockDoublePlant.EnumPlantType.GRASS);
+		
+		grassOptions = new WorldGenerator[] {
+			koru, koru,
+			medGrass, medGrass,
+			tallGrass, tallGrass, tallGrass,
+			dblGrass
+		};
 		
 		topBlock = grass;
 		fillerBlock = dirt;
@@ -107,9 +113,11 @@ public class BiomeDuvotica extends Biome {
 		return new BiomeProperties("Duvotica").setTemperature(0.75f).setRainfall(0.75f).setWaterColor(0x00FF90);
 	}
 	
+
+	
 	@Override
 	public WorldGenerator getRandomWorldGenForGrass(Random rand) {
-		return rand.nextInt(3) == 0 ? koru : (rand.nextInt(6) == 0 ? dTallGrass : tallGrass);
+		return grassOptions[rand.nextInt() & 0x7];
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -128,6 +136,11 @@ public class BiomeDuvotica extends Biome {
 	@Override
 	public int getSkyColorByTemp(float currentTemperature) {
 		return 0X5AC4BA;
+	}
+	
+	@Override
+	public float getSpawningChance() {
+		return 0.07f;
 	}
 	
 	@Override
