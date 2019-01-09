@@ -20,8 +20,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.chunk.ChunkPrimer;
-import net.minecraft.world.gen.ChunkGeneratorSettings;
 import net.minecraft.world.gen.feature.WorldGenDoublePlant;
 import net.minecraft.world.gen.feature.WorldGenTallGrass;
 import net.minecraft.world.gen.feature.WorldGenerator;
@@ -40,25 +40,6 @@ public class BiomeDuvotica extends Biome {
 	public BiomeDuvotica() {
 		super(getBiomeProperties());
 		
-		this.decorator.treesPerChunk = -999;
-		this.decorator.grassPerChunk = 20;
-		this.decorator.flowersPerChunk = 0;
-		
-		ChunkGeneratorSettings.Factory factory = new ChunkGeneratorSettings.Factory();
-		
-	    factory.dirtCount = 0;
-	    factory.dirtSize = 0;
-	    factory.gravelCount = 0;
-	    factory.graniteSize = 0;
-	    factory.graniteCount = 0;
-	    factory.graniteSize = 0;
-	    factory.dioriteCount = 0;
-	    factory.dioriteSize = 0;
-	    factory.andesiteCount = 0;
-	    factory.andesiteSize = 0;
-		
-		this.decorator.chunkProviderSettings = factory.build();
-		
 		this.spawnableMonsterList.clear();
 		this.spawnableCreatureList.clear();
 		this.spawnableWaterCreatureList.clear();
@@ -71,7 +52,6 @@ public class BiomeDuvotica extends Biome {
 		//This is so the biomeDictionary doesn't crash
 		topBlock = Blocks.GRASS.getDefaultState();
 		fillerBlock = Blocks.DIRT.getDefaultState();
-		
 	}
 	
 	private static WorldGenerator grassOptions[];
@@ -131,7 +111,10 @@ public class BiomeDuvotica extends Biome {
 		return new BiomeProperties("Duvotica").setTemperature(0.75f).setRainfall(0.75f).setWaterColor(0x00FF90);
 	}
 	
-
+	@Override
+	public BiomeDecorator createBiomeDecorator() {
+		return getModdedBiomeDecorator(new BiomeDecoratorDuvotica());
+	}
 	
 	@Override
 	public WorldGenerator getRandomWorldGenForGrass(Random rand) {

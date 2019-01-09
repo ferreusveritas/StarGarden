@@ -1,5 +1,6 @@
 package com.ferreusveritas.stargarden.world.duvotica;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -7,14 +8,11 @@ import javax.annotation.Nullable;
 
 import biomesoplenty.api.block.BOPBlocks;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockChorusFlower;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Blocks;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityEndGateway;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -26,7 +24,6 @@ import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
 import net.minecraft.world.gen.NoiseGeneratorPerlin;
 import net.minecraft.world.gen.NoiseGeneratorSimplex;
-import net.minecraft.world.gen.feature.WorldGenEndGateway;
 import net.minecraft.world.gen.feature.WorldGenEndIsland;
 
 public class ChunkGeneratorDuvotica implements IChunkGenerator {
@@ -50,7 +47,7 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	private final World world;
 	/** are map structures going to be generated (e.g. strongholds) */
 	//private final boolean mapFeaturesEnabled;
-	private final BlockPos spawnPoint;
+	//private final BlockPos spawnPoint;
 	private NoiseGeneratorSimplex islandNoise;
 	private double[] buffer;
 	/** The biomes that are used to generate the chunk */
@@ -63,10 +60,10 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	private final int seaLevel = 63;
 	private final int seaLevel2 = 31;
 	
-	public ChunkGeneratorDuvotica(World world, boolean mapFeaturesEnabled, long rand, BlockPos spawnPoint) {
+	public ChunkGeneratorDuvotica(World world, long rand) {
 		this.world = world;
 		//this.mapFeaturesEnabled = mapFeaturesEnabled;
-		this.spawnPoint = spawnPoint;
+		//this.spawnPoint = spawnPoint;
 		this.rand = new Random(rand);
 		this.lPerlinNoise1 = new NoiseGeneratorOctaves(this.rand, 16);
 		this.lPerlinNoise2 = new NoiseGeneratorOctaves(this.rand, 16);
@@ -245,8 +242,6 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	public static IBlockState getSand() {
 		return BOPBlocks.white_sand.getDefaultState();
 	}
-	
-	
 	
 	/**
 	 * Generates the chunk at the specified position, from scratch
@@ -509,6 +504,7 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 		}
 	}
 	
+	/*
 	private void populateChorusFlowers(int chunkX, int chunkZ) {
 		BlockPos blockpos = new BlockPos(chunkX * 16, 0, chunkZ * 16);
 		
@@ -551,6 +547,8 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 			}
 		}
 	}
+	*/
+	
 	
 	/**
 	 * Called to generate additional structures after initial worldgen, used by ocean monuments
@@ -560,7 +558,12 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	}
 	
 	public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos) {
-		return this.world.getBiome(pos).getSpawnableList(creatureType);
+		
+		if(pos.getY() > seaLevel) {
+			return this.world.getBiome(pos).getSpawnableList(creatureType);
+		}
+		
+		return new ArrayList<>();
 	}
 	
 	@Nullable

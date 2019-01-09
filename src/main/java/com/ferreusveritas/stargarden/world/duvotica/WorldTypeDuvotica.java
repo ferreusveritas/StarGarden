@@ -2,7 +2,6 @@ package com.ferreusveritas.stargarden.world.duvotica;
 
 import com.ferreusveritas.stargarden.world.StarWorldType;
 
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
@@ -24,7 +23,7 @@ public class WorldTypeDuvotica extends StarWorldType {
 	
 	@Override
 	public IChunkGenerator getChunkGenerator(World world, String generatorOptions) {
-		return new ChunkGeneratorDuvotica(world, false, 0, new BlockPos(0, 70, 0));
+		return new ChunkGeneratorDuvotica(world, 0);
 	}
 	
 	@Override
@@ -50,6 +49,12 @@ public class WorldTypeDuvotica extends StarWorldType {
 			@Override
 			public Vec3d getFogColor(float p_76562_1_, float p_76562_2_) {
 				return fogColor;
+			}
+			
+			@Override
+			public IChunkGenerator createChunkGenerator() {
+				// TODO Auto-generated method stub
+				return super.createChunkGenerator();
 			}
 		};
 	}
