@@ -61,6 +61,7 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	private final WorldGenEndIsland endIslands = new WorldGenEndIsland();
 	
 	private final int seaLevel = 63;
+	private final int seaLevel2 = 31;
 	
 	public ChunkGeneratorDuvotica(World world, boolean mapFeaturesEnabled, long rand, BlockPos spawnPoint) {
 		this.world = world;
@@ -102,19 +103,19 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 		final double qtr = 0.25D;
 		final double eighth = 0.125D;
 		
-		for (int xHalf = 0; xHalf < 2; ++xHalf) {
-			for (int zHalf = 0; zHalf < 2; ++zHalf) {
-				for (int yTall = 0; yTall < 32; ++yTall) {
+		for (int xHalf = 0; xHalf < xSamples - 1; ++xHalf) {
+			for (int zHalf = 0; zHalf < zSamples - 1; ++zHalf) {
+				for (int yTall = 0; yTall < ySamples - 1; ++yTall) {
 					
 					//Here we sample the 8 corners of a cube in the noise space.  This will later be used as interpolation points
-					double start_MinX_MinZ = this.buffer[((xHalf + 0) * 3 + zHalf + 0) * 33 + yTall + 0];
-					double start_MinX_MaxZ = this.buffer[((xHalf + 0) * 3 + zHalf + 1) * 33 + yTall + 0];
-					double start_MaxX_MinZ = this.buffer[((xHalf + 1) * 3 + zHalf + 0) * 33 + yTall + 0];
-					double start_MaxX_MaxZ = this.buffer[((xHalf + 1) * 3 + zHalf + 1) * 33 + yTall + 0];
-					double delta_MinX_MinZ = (this.buffer[((xHalf + 0) * 3 + zHalf + 0) * 33 + yTall + 1] - start_MinX_MinZ) * qtr;
-					double delta_MinX_MaxZ = (this.buffer[((xHalf + 0) * 3 + zHalf + 1) * 33 + yTall + 1] - start_MinX_MaxZ) * qtr;
-					double delta_MaxX_MinZ = (this.buffer[((xHalf + 1) * 3 + zHalf + 0) * 33 + yTall + 1] - start_MaxX_MinZ) * qtr;
-					double delta_MaxX_MaxZ = (this.buffer[((xHalf + 1) * 3 + zHalf + 1) * 33 + yTall + 1] - start_MaxX_MaxZ) * qtr;
+					double start_MinX_MinZ = this.buffer[((xHalf + 0) * 3 + zHalf + 0) * ySamples + yTall + 0];
+					double start_MinX_MaxZ = this.buffer[((xHalf + 0) * 3 + zHalf + 1) * ySamples + yTall + 0];
+					double start_MaxX_MinZ = this.buffer[((xHalf + 1) * 3 + zHalf + 0) * ySamples + yTall + 0];
+					double start_MaxX_MaxZ = this.buffer[((xHalf + 1) * 3 + zHalf + 1) * ySamples + yTall + 0];
+					double delta_MinX_MinZ = (this.buffer[((xHalf + 0) * 3 + zHalf + 0) * ySamples + yTall + 1] - start_MinX_MinZ) * qtr;
+					double delta_MinX_MaxZ = (this.buffer[((xHalf + 0) * 3 + zHalf + 1) * ySamples + yTall + 1] - start_MinX_MaxZ) * qtr;
+					double delta_MaxX_MinZ = (this.buffer[((xHalf + 1) * 3 + zHalf + 0) * ySamples + yTall + 1] - start_MaxX_MinZ) * qtr;
+					double delta_MaxX_MaxZ = (this.buffer[((xHalf + 1) * 3 + zHalf + 1) * ySamples + yTall + 1] - start_MaxX_MaxZ) * qtr;
 					
 					for (int ySub = 0; ySub < 4; ++ySub) {
 						double minZ = start_MinX_MinZ;
@@ -164,11 +165,71 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 				}
 			}
 		}
-		
-		for(int iy = 0; iy < 48; iy++) {
+
+		/*for(int iy = 0; iy < 48; iy++) {
 			for(int ix = 0; ix < 16; ix++) {
 				for(int iz = 0; iz < 16; iz++) {
 					primer.setBlockState(ix, iy, iz, STONE);
+				}
+			}
+		}*/
+		
+		xSamples = 3;
+		ySamples = 15;
+		zSamples = 3;
+		this.buffer = this.getSubSeaDensities(this.buffer, chunkPosX * 2, 0, chunkPosZ * 2, xSamples, ySamples, zSamples);
+		
+		for (int xHalf = 0; xHalf < xSamples - 1; ++xHalf) {
+			for (int zHalf = 0; zHalf < zSamples - 1; ++zHalf) {
+				for (int yTall = 0; yTall < ySamples - 1; ++yTall) {
+					
+					//Here we sample the 8 corners of a cube in the noise space.  This will later be used as interpolation points
+					double start_MinX_MinZ = this.buffer[((xHalf + 0) * 3 + zHalf + 0) * ySamples + yTall + 0];
+					double start_MinX_MaxZ = this.buffer[((xHalf + 0) * 3 + zHalf + 1) * ySamples + yTall + 0];
+					double start_MaxX_MinZ = this.buffer[((xHalf + 1) * 3 + zHalf + 0) * ySamples + yTall + 0];
+					double start_MaxX_MaxZ = this.buffer[((xHalf + 1) * 3 + zHalf + 1) * ySamples + yTall + 0];
+					double delta_MinX_MinZ = (this.buffer[((xHalf + 0) * 3 + zHalf + 0) * ySamples + yTall + 1] - start_MinX_MinZ) * qtr;
+					double delta_MinX_MaxZ = (this.buffer[((xHalf + 0) * 3 + zHalf + 1) * ySamples + yTall + 1] - start_MinX_MaxZ) * qtr;
+					double delta_MaxX_MinZ = (this.buffer[((xHalf + 1) * 3 + zHalf + 0) * ySamples + yTall + 1] - start_MaxX_MinZ) * qtr;
+					double delta_MaxX_MaxZ = (this.buffer[((xHalf + 1) * 3 + zHalf + 1) * ySamples + yTall + 1] - start_MaxX_MaxZ) * qtr;
+					
+					for (int ySub = 0; ySub < 4; ++ySub) {
+						double minZ = start_MinX_MinZ;
+						double maxZ = start_MinX_MaxZ;
+						double delta_X_minZ = (start_MaxX_MinZ - start_MinX_MinZ) * eighth;
+						double delta_X_maxZ = (start_MaxX_MaxZ - start_MinX_MaxZ) * eighth;
+						
+						for (int xSub = 0; xSub < 8; ++xSub) {
+							double density = minZ;
+							double delZ = (maxZ - minZ) * eighth;
+							
+							for (int zSub = 0; zSub < 8; ++zSub) {
+								int setX = xSub + xHalf * 8;
+								int setY = ySub + yTall * 4;
+								int setZ = zSub + zHalf * 8;
+																
+								boolean isAir = density < 0.0;
+								IBlockState toSet = isAir ? AIR : STONE;
+								
+								if(toSet == AIR) {
+									if(setY <= seaLevel2 ) {
+										toSet = WATER;
+									}
+								}
+								
+								primer.setBlockState(setX, setY, setZ, toSet);
+								density += delZ;
+							}
+							
+							minZ += delta_X_minZ;
+							maxZ += delta_X_maxZ;
+						}
+						
+						start_MinX_MinZ += delta_MinX_MinZ;
+						start_MinX_MaxZ += delta_MinX_MaxZ;
+						start_MaxX_MinZ += delta_MaxX_MinZ;
+						start_MaxX_MaxZ += delta_MaxX_MaxZ;
+					}
 				}
 			}
 		}
@@ -336,6 +397,74 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 		return buffer;
 	}
 	
+	private double[] getSubSeaDensities(double[] buffer, int chunkPosX, int chunkPosY, int chunkPosZ, int xSamples, int ySamples, int zSamples) {
+		net.minecraftforge.event.terraingen.ChunkGeneratorEvent.InitNoiseField event = new net.minecraftforge.event.terraingen.ChunkGeneratorEvent.InitNoiseField(this, buffer, chunkPosX, chunkPosY, chunkPosZ, xSamples, ySamples, zSamples);
+		net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
+		if (event.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) return event.getNoisefield();
+		
+		if (buffer == null) {
+			buffer = new double[xSamples * ySamples * zSamples];
+		}
+		
+		double d0 = 684.412D;
+		//double d1 = 684.412D;
+		d0 = d0 * 2.0D;
+		this.sPOct1 = this.sPerlinNoise1.generateNoiseOctaves(this.sPOct1, chunkPosX, chunkPosY, chunkPosZ, xSamples, ySamples, zSamples, d0 / 80.0D, 4.277575000000001D, d0 / 80.0D);
+		this.lPOct1 = this.lPerlinNoise1.generateNoiseOctaves(this.lPOct1, chunkPosX, chunkPosY, chunkPosZ, xSamples, ySamples, zSamples, d0 * 8, 684.412D, d0 * 8);
+		this.lPOct2 = this.lPerlinNoise2.generateNoiseOctaves(this.lPOct2, chunkPosX, chunkPosY, chunkPosZ, xSamples, ySamples, zSamples, d0 * 8, 684.412D, d0 * 8);
+		int chunkX = chunkPosX / 2;
+		int chunkZ = chunkPosZ / 2;
+		int bufferPos = 0;
+		
+		for (int xi = 0; xi < xSamples; ++xi) {
+			for (int zi = 0; zi < zSamples; ++zi) {
+				float islandDensity = this.getIslandDensityValue(chunkX, chunkZ, xi, zi);
+				
+				for (int yi = 0; yi < ySamples; ++yi) {
+					double lOct1 = this.lPOct1[bufferPos] / 128.0D;
+					double lOct2 = this.lPOct2[bufferPos] / 128.0D;
+					double sOct1 = (this.sPOct1[bufferPos] / 10.0D + 1.0D) / 2.0D;
+					double result;
+					
+					if (sOct1 < 0.0D) {
+						result = lOct1;
+					}
+					else if (sOct1 > 1.0D) {
+						result = lOct2;
+					}
+					else {
+						result = lOct1 + (lOct2 - lOct1) * sOct1;
+					}
+										
+					result = result - 8.0D;
+					result = result + (double)islandDensity;
+					
+					int limit = 4;
+					
+					//Limit for top side of islands
+					if (yi > ySamples - limit) {
+						double depthMixer = (double)((float)(yi - (ySamples - limit)) / 32.0F);
+						depthMixer = MathHelper.clamp(depthMixer, 0.0D, 1.0D);
+						result = mix(result, 3000.0, depthMixer);
+					}
+					
+					//Limit for bottom side of islands
+					limit = 11;
+					
+					if (yi < limit) {
+						double depthMixer = (limit - yi) / (limit - 1.0);
+						result = mix(result, result + 500.0, depthMixer);
+					}
+					
+					buffer[bufferPos] = result;
+					++bufferPos;
+				}
+			}
+		}
+		
+		return buffer;
+	}
+	
 	double mix(double atZero, double atOne, double mixer) {
 		return (atZero * (1.0 - mixer)) + (atOne * mixer);
 	}
@@ -356,10 +485,10 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 			
 			populateEndIslands(x, z);
 			
-			if (this.getIslandDensityValue(x, z, 1, 1) > 40.0F) {
+			/*if (this.getIslandDensityValue(x, z, 1, 1) > 40.0F) {
 				populateChorusFlowers(x, z);
 				populateEndGateways(x, z);
-			}
+			}*/
 		}
 		
 		net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(false, this, this.world, this.rand, x, z, false);

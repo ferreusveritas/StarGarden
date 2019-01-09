@@ -21,6 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkPrimer;
+import net.minecraft.world.gen.ChunkGeneratorSettings;
 import net.minecraft.world.gen.feature.WorldGenDoublePlant;
 import net.minecraft.world.gen.feature.WorldGenTallGrass;
 import net.minecraft.world.gen.feature.WorldGenerator;
@@ -30,6 +31,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BiomeDuvotica extends Biome {
 	
 	protected IBlockState stone;
+	protected IBlockState deepStone;
 	protected IBlockState sand;
 	
 	protected static IBlockState grass;
@@ -41,6 +43,21 @@ public class BiomeDuvotica extends Biome {
 		this.decorator.treesPerChunk = -999;
 		this.decorator.grassPerChunk = 20;
 		this.decorator.flowersPerChunk = 0;
+		
+		ChunkGeneratorSettings.Factory factory = new ChunkGeneratorSettings.Factory();
+		
+	    factory.dirtCount = 0;
+	    factory.dirtSize = 0;
+	    factory.gravelCount = 0;
+	    factory.graniteSize = 0;
+	    factory.graniteCount = 0;
+	    factory.graniteSize = 0;
+	    factory.dioriteCount = 0;
+	    factory.dioriteSize = 0;
+	    factory.andesiteCount = 0;
+	    factory.andesiteSize = 0;
+		
+		this.decorator.chunkProviderSettings = factory.build();
 		
 		this.spawnableMonsterList.clear();
 		this.spawnableCreatureList.clear();
@@ -61,6 +78,7 @@ public class BiomeDuvotica extends Biome {
 	
 	public void assignMaterials() {
 		stone = ChunkGeneratorDuvotica.getStone();
+		deepStone = stone;
 		sand = ChunkGeneratorDuvotica.getSand();
 		grass = BOPBlocks.grass.getDefaultState().withProperty(BlockBOPGrass.VARIANT, BOPGrassType.SILTY);
 		dirt = BOPBlocks.dirt.getDefaultState().withProperty(BlockBOPDirt.VARIANT, BOPDirtType.SILTY);
@@ -170,13 +188,17 @@ public class BiomeDuvotica extends Biome {
 				else if (sample == stone) {
 					if (density == -1) {
 						
-						if (random <= 0) {
-							top = AIR;
-							fill = stone;
-						}
-						else if (yi >= seaLevel - 4 && yi <= seaLevel + 1) {
+						if (yi >= seaLevel + 3) {
 							top = this.topBlock;
 							fill = this.fillerBlock;
+						} else {
+							top = sand;
+							fill = sand;
+						}
+						
+						if(yi < 42) {
+							top = deepStone;
+							fill = deepStone;
 						}
 						
 						if (yi < seaLevel && (top == null || top.getMaterial() == Material.AIR)) {
