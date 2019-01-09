@@ -246,8 +246,9 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	/**
 	 * Generates the chunk at the specified position, from scratch
 	 */
+	@Override
 	public Chunk generateChunk(int x, int z) {
-		this.rand.setSeed((long)x * 341873128712L + (long)z * 132897987541L);
+		this.rand.setSeed(x * 341873128712L + z * 132897987541L);
 		ChunkPrimer chunkprimer = new ChunkPrimer();
 		this.biomesForGeneration = this.world.getBiomeProvider().getBiomes(this.biomesForGeneration, x * 16, z * 16, 16, 16);
 		this.setBlocksInChunk(x, z, chunkprimer);
@@ -265,8 +266,8 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	}
 	
 	private float getIslandDensityValue(int chunkX, int chunkZ, int offX, int offZ) {
-		float x = (float)(chunkX * 2 + offX);
-		float z = (float)(chunkZ * 2 + offZ);
+		float x = chunkX * 2 + offX;
+		float z = chunkZ * 2 + offZ;
 		float height = 50.0f - MathHelper.sqrt(x * x + z * z) * 8.0f;
 		
 		if (height > 80.0F) {
@@ -279,13 +280,13 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 		
 		for (int xi = -12; xi <= 12; ++xi) {
 			for (int zi = -12; zi <= 12; ++zi) {
-				long absX = (long)(chunkX + xi);
-				long absZ = (long)(chunkZ + zi);
+				long absX = chunkX + xi;
+				long absZ = chunkZ + zi;
 				
-				if (absX * absX + absZ * absZ > 10 * 10 && this.islandNoise.getValue((double)absX, (double)absZ) < -0.9) {
-					float psuedoRand = (MathHelper.abs((float)absX) * 3439.0F + MathHelper.abs((float)absZ) * 147.0F) % 13.0F + 9.0F;
-					x = (float)(offX - xi * 2);
-					z = (float)(offZ - zi * 2);
+				if (absX * absX + absZ * absZ > 10 * 10 && this.islandNoise.getValue(absX, absZ) < -0.9) {
+					float psuedoRand = (MathHelper.abs(absX) * 3439.0F + MathHelper.abs(absZ) * 147.0F) % 13.0F + 9.0F;
+					x = offX - xi * 2;
+					z = offZ - zi * 2;
 					float newHeight = 100.0F - MathHelper.sqrt(x * x + z * z) * psuedoRand;
 					
 					if (newHeight > 80.0F) {
@@ -311,7 +312,7 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	public void replaceBiomeBlocks(int x, int z, ChunkPrimer primer, Biome[] biomesIn) {
 		if (!net.minecraftforge.event.ForgeEventFactory.onReplaceBiomeBlocks(this, x, z, primer, this.world)) return;
 		double d0 = 0.03125D;
-		this.depthBuffer = this.surfaceNoise.getRegion(this.depthBuffer, (double)(x * 16), (double)(z * 16), 16, 16, d0, d0, 1.0D);
+		this.depthBuffer = this.surfaceNoise.getRegion(this.depthBuffer, x * 16, z * 16, 16, 16, d0, d0, 1.0D);
 		
 		for (int xi = 0; xi < 16; ++xi) {
 			for (int zi = 0; zi < 16; ++zi) {
@@ -361,14 +362,14 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 					}
 					
 					result = result - 8.0D;
-					result = result + (double)islandDensity;
+					result = result + islandDensity;
 					
 					
 					int limit = 2;
 					
 					//Limit for top side of islands
 					if (yi > ySamples / 2 - limit) {
-						double depthMixer = (double)((float)(yi - (ySamples / 2 - limit)) / 64.0F);
+						double depthMixer = (yi - (ySamples / 2 - limit)) / 64.0F;
 						depthMixer = MathHelper.clamp(depthMixer, 0.0D, 1.0D);
 						result = mix(result, -3000.0, depthMixer);
 					}
@@ -432,13 +433,13 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 					}
 										
 					result = result - 8.0D;
-					result = result + (double)islandDensity;
+					result = result + islandDensity;
 					
 					int limit = 4;
 					
 					//Limit for top side of islands
 					if (yi > ySamples - limit) {
-						double depthMixer = (double)((float)(yi - (ySamples - limit)) / 32.0F);
+						double depthMixer = (yi - (ySamples - limit)) / 32.0F;
 						depthMixer = MathHelper.clamp(depthMixer, 0.0D, 1.0D);
 						result = mix(result, 3000.0, depthMixer);
 					}
@@ -467,6 +468,7 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	/**
 	 * Generate initial structures in this chunk, e.g. mineshafts, temples, lakes, and dungeons
 	 */
+	@Override
 	public void populate(int x, int z) {
 		BlockFalling.fallInstantly = true;
 		net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(true, this, this.world, this.rand, x, z, false);
@@ -553,10 +555,12 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	/**
 	 * Called to generate additional structures after initial worldgen, used by ocean monuments
 	 */
+	@Override
 	public boolean generateStructures(Chunk chunkIn, int x, int z) {
 		return false;
 	}
 	
+	@Override
 	public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos) {
 		
 		if(pos.getY() > seaLevel) {
@@ -566,11 +570,13 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 		return new ArrayList<>();
 	}
 	
+	@Override
 	@Nullable
 	public BlockPos getNearestStructurePos(World worldIn, String structureName, BlockPos position, boolean findUnexplored) {
 		return null;
 	}
 	
+	@Override
 	public boolean isInsideStructure(World worldIn, String structureName, BlockPos pos) {
 		return false;
 	}
@@ -580,6 +586,7 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	 * placing any blocks. When called for the first time before any chunk is generated - also initializes the internal
 	 * state needed by getPossibleCreatures.
 	 */
+	@Override
 	public void recreateStructures(Chunk chunkIn, int x, int z) {
 	}
 	

@@ -90,7 +90,7 @@ public class Worlds extends BaseFeature {
 		
 		registerBiome(duvoticaBiome, new ResourceLocation(ModConstants.MODID, DUVOTICA));
 		
-		duvotica = new WorldTypeDuvotica(DUVOTICA);
+		duvotica = new WorldTypeDuvotica(DUVOTICA);//This is self registering in it's base WorldType class
 		
 		registerEntities();
 	}
