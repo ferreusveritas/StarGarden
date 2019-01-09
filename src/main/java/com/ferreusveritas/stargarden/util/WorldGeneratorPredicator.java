@@ -44,6 +44,7 @@ public class WorldGeneratorPredicator {
 			IWorldGenerator gen = iter.next();			
 			if(gen.getClass().getSimpleName().equals(className)) {
 				movedGenerators.put(gen, worldGeneratorIndex.get(gen));
+				worldGeneratorIndex.remove(gen);
 				iter.remove();
 			}
 		}
