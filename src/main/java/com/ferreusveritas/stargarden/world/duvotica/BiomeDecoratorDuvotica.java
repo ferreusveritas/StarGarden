@@ -15,10 +15,6 @@ public class BiomeDecoratorDuvotica extends BiomeDecorator {
 	@Override
 	public void decorate(World worldIn, Random random, Biome biome, BlockPos pos) {
 		
-		treesPerChunk = -999;
-		grassPerChunk = 20;
-		flowersPerChunk = 0;
-		
 		ChunkGeneratorSettings.Factory factory = new ChunkGeneratorSettings.Factory();
 		
 		//Disable all ugly cave rainbow stone
@@ -39,7 +35,6 @@ public class BiomeDecoratorDuvotica extends BiomeDecorator {
 		chunkPos = pos;
 		//This is just in case these members are accessed outside.  We don't use them here.
 		dirtGen = gravelOreGen = graniteGen = dioriteGen = andesiteGen = new WorldGenMinable(Blocks.STONE.getDefaultState(), 0);
-		
 		
 		coalGen = new WorldGenMinable(Blocks.COAL_ORE.getDefaultState(), this.chunkProviderSettings.coalSize);
 		ironGen = new WorldGenMinable(Blocks.IRON_ORE.getDefaultState(), this.chunkProviderSettings.ironSize);

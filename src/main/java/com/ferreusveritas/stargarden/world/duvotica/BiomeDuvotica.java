@@ -40,6 +40,10 @@ public class BiomeDuvotica extends Biome {
 	public BiomeDuvotica() {
 		super(getBiomeProperties());
 		
+		decorator.treesPerChunk = -999;
+		decorator.grassPerChunk = 20;
+		decorator.flowersPerChunk = 0;
+		
 		this.spawnableMonsterList.clear();
 		this.spawnableCreatureList.clear();
 		this.spawnableWaterCreatureList.clear();
@@ -58,7 +62,7 @@ public class BiomeDuvotica extends Biome {
 	
 	public void assignMaterials() {
 		stone = ChunkGeneratorDuvotica.getStone();
-		deepStone = stone;
+		deepStone = Blocks.STONE.getDefaultState();
 		sand = ChunkGeneratorDuvotica.getSand();
 		grass = BOPBlocks.grass.getDefaultState().withProperty(BlockBOPGrass.VARIANT, BOPGrassType.SILTY);
 		dirt = BOPBlocks.dirt.getDefaultState().withProperty(BlockBOPDirt.VARIANT, BOPDirtType.SILTY);
@@ -141,6 +145,8 @@ public class BiomeDuvotica extends Biome {
 	
 	@Override
 	public float getSpawningChance() {
+		System.out.println(decorator);
+
 		return 0.07f;
 	}
 	
