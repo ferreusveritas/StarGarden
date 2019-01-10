@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import biomesoplenty.api.block.BOPBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EnumCreatureType;
@@ -24,7 +25,6 @@ import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
 import net.minecraft.world.gen.NoiseGeneratorPerlin;
 import net.minecraft.world.gen.NoiseGeneratorSimplex;
-import net.minecraft.world.gen.feature.WorldGenEndIsland;
 
 public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	
@@ -55,7 +55,7 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	double[] sPOct1;
 	double[] lPOct1;
 	double[] lPOct2;
-	private final WorldGenEndIsland endIslands = new WorldGenEndIsland();
+	//private final WorldGenEndIsland endIslands = new WorldGenEndIsland();
 	
 	private final int seaLevel = 63;
 	private final int seaLevel2 = 31;
@@ -162,14 +162,6 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 				}
 			}
 		}
-
-		/*for(int iy = 0; iy < 48; iy++) {
-			for(int ix = 0; ix < 16; ix++) {
-				for(int iz = 0; iz < 16; iz++) {
-					primer.setBlockState(ix, iy, iz, STONE);
-				}
-			}
-		}*/
 		
 		xSamples = 3;
 		ySamples = 15;
@@ -475,82 +467,48 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 		BlockPos blockpos = new BlockPos(x * 16, 0, z * 16);
 		
 		this.world.getBiome(blockpos.add(16, 0, 16)).decorate(this.world, this.world.rand, blockpos);
-		
-		long distSquared = (long)x * (long)x + (long)z * (long)z;
-		
-		if (distSquared > 64 * 64) { //Must be 64 chunks(1024 blocks) from the world origin(0, 0) to run this populator
-			
-			populateEndIslands(x, z);
-			
-			/*if (this.getIslandDensityValue(x, z, 1, 1) > 40.0F) {
-				populateChorusFlowers(x, z);
-				populateEndGateways(x, z);
-			}*/
-		}
+		populateHoles(x, z);
 		
 		net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(false, this, this.world, this.rand, x, z, false);
 		BlockFalling.fallInstantly = false;
 	}
 	
-	private void populateEndIslands(int chunkX, int chunkZ) {
+	private void populateHoles(int chunkX, int chunkZ) {
 		BlockPos blockpos = new BlockPos(chunkX * 16, 0, chunkZ * 16);
 		
 		float islandHeight = this.getIslandDensityValue(chunkX, chunkZ, 1, 1);
 		
-		if (islandHeight < -20.0F && this.rand.nextInt(14) == 0) {
-			this.endIslands.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16) + 8, 55 + this.rand.nextInt(16), this.rand.nextInt(16) + 8));
+		if (islandHeight < -90.0F && this.rand.nextInt(128) == 0) {
+			BlockPos pos = blockpos.add(this.rand.nextInt(16) + 8, 42, this.rand.nextInt(16) + 8);
 			
-			if (this.rand.nextInt(4) == 0) {
-				this.endIslands.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16) + 8, 55 + this.rand.nextInt(16), this.rand.nextInt(16) + 8));
-			}
-		}
-	}
-	
-	/*
-	private void populateChorusFlowers(int chunkX, int chunkZ) {
-		BlockPos blockpos = new BlockPos(chunkX * 16, 0, chunkZ * 16);
-		
-		int j = this.rand.nextInt(5);
-		
-		for (int k = 0; k < j; ++k) {
-			int l = this.rand.nextInt(16) + 8;
-			int i1 = this.rand.nextInt(16) + 8;
-			int j1 = this.world.getHeight(blockpos.add(l, 0, i1)).getY();
+			int size = this.rand.nextInt(3) + 4;
 			
-			if (j1 > 0) {
-				int k1 = j1 - 1;
-				
-				if (this.world.isAirBlock(blockpos.add(l, k1 + 1, i1)) && this.world.getBlockState(blockpos.add(l, k1, i1)).getBlock() == Blocks.END_STONE) {
-					BlockChorusFlower.generatePlant(this.world, blockpos.add(l, k1 + 1, i1), this.rand, 8);
+			for( int z = -size - 1; z <= size + 1; z++ ) {
+				for( int x = -size - 1; x <= size + 1; x++ ) {
+					
+					if(x * x + z * z < (size + 1) * (size + 1)) {
+						this.world.setBlockState(pos.add(x, 19, z), Blocks.WATER.getDefaultState());
+					}
+					
+					if(x * x + z * z < size * size) {
+						for(int y = 0; y < 30; y++) {
+							this.world.setBlockToAir(pos.add(x, y, z));
+							
+							IBlockState state = this.world.getBlockState(pos.add(x, -y, z));
+							if(state.getMaterial() == Material.GROUND || state.getMaterial() == Material.GRASS) {
+								this.world.setBlockState(pos.add(x, -y, z), Blocks.STONE.getDefaultState());
+							}
+						}
+					}
+					
 				}
-			}
-		}
-	}
-	
-	private void populateEndGateways(int chunkX, int chunkZ) {
-		
-		if (this.rand.nextInt(700) == 0) {
-			BlockPos blockpos = new BlockPos(chunkX * 16, 0, chunkZ * 16);
-			
-			int l1 = this.rand.nextInt(16) + 8;
-			int i2 = this.rand.nextInt(16) + 8;
-			int j2 = this.world.getHeight(blockpos.add(l1, 0, i2)).getY();
-			
-			if (j2 > 0) {
-				int k2 = j2 + 3 + this.rand.nextInt(7);
-				BlockPos blockpos1 = blockpos.add(l1, k2, i2);
-				(new WorldGenEndGateway()).generate(this.world, this.rand, blockpos1);
-				TileEntity tileentity = this.world.getTileEntity(blockpos1);
 				
-				if (tileentity instanceof TileEntityEndGateway) {
-					TileEntityEndGateway tileentityendgateway = (TileEntityEndGateway)tileentity;
-					tileentityendgateway.setExactPosition(this.spawnPoint);
-				}
 			}
+			
+			
 		}
+
 	}
-	*/
-	
 	
 	/**
 	 * Called to generate additional structures after initial worldgen, used by ocean monuments
