@@ -1,6 +1,5 @@
 package com.ferreusveritas.stargarden.util;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -14,35 +13,23 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class WorldGeneratorPredicator {
 	
-    private Set<IWorldGenerator> worldGenerators;	
-    private Map<IWorldGenerator, Integer> worldGeneratorIndex;
+    private final Set<IWorldGenerator> worldGenerators;	
+    private final Map<IWorldGenerator, Integer> worldGeneratorIndex;
     
 	public WorldGeneratorPredicator() {
-		
-		try {
-			Field worldGenerators = GameRegistry.class.getField("worldGenerators");
-			Field worldGeneratorIndex = GameRegistry.class.getField("worldGeneratorIndex");
-
-			worldGenerators.setAccessible(true);
-			worldGeneratorIndex.setAccessible(true);
-			
-			this.worldGenerators = (Set<IWorldGenerator>) worldGenerators.get(null);
-			this.worldGeneratorIndex = (Map<IWorldGenerator, Integer>) worldGeneratorIndex.get(null);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		
+		worldGenerators = (Set<IWorldGenerator>) Util.getRestrictedObject(GameRegistry.class, null, "worldGenerators");
+		worldGeneratorIndex = (Map<IWorldGenerator, Integer>) Util.getRestrictedObject(GameRegistry.class, null, "worldGeneratorIndex");
 	}
 	
-	public void addPredicate(String className, Predicate<World> predicate) {
+	public void addPredicate(Predicate<String> classNamePredicate, Predicate<World> predicate) {
 
 		Map<IWorldGenerator, Integer> movedGenerators = new HashMap<>();
 		
 		Iterator<IWorldGenerator> iter = worldGenerators.iterator();
 
 		while(iter.hasNext()) {
-			IWorldGenerator gen = iter.next();			
-			if(gen.getClass().getSimpleName().equals(className)) {
+			IWorldGenerator gen = iter.next();
+			if(classNamePredicate.test(gen.getClass().getName())) {
 				movedGenerators.put(gen, worldGeneratorIndex.get(gen));
 				worldGeneratorIndex.remove(gen);
 				iter.remove();

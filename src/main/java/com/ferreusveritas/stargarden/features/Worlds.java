@@ -16,6 +16,7 @@ import com.ferreusveritas.dynamictrees.worldgen.BiomeDataBase.Operation;
 import com.ferreusveritas.stargarden.ModConstants;
 import com.ferreusveritas.stargarden.StarGarden;
 import com.ferreusveritas.stargarden.render.RenderSpiderDuvotica;
+import com.ferreusveritas.stargarden.util.WorldGeneratorPredicator;
 import com.ferreusveritas.stargarden.world.StarWorldType;
 import com.ferreusveritas.stargarden.world.duvotica.BiomeDuvotica;
 import com.ferreusveritas.stargarden.world.duvotica.EntitySpiderDuvotica;
@@ -107,6 +108,10 @@ public class Worlds extends BaseFeature {
 			new FeatureGenVine().setQuantity(16).setMaxLength(8)//Generate vines
 			).setBiomePredicate(biome -> biome == duvoticaBiome)
 		);
+		
+		WorldGeneratorPredicator wgPredicator = new WorldGeneratorPredicator();
+		
+		wgPredicator.addPredicate(name -> "team.chisel.common.util.GenerationHandler".equals(name), world -> world.provider.getDimension() == 0);
 		
 		duvoticaBiome.assignMaterials();
 	}
