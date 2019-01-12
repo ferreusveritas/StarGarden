@@ -37,6 +37,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
 
 @Mod.EventBusSubscriber(modid = ModConstants.MODID)
@@ -98,6 +100,11 @@ public class Worlds extends BaseFeature {
 	
 	public void registerEntities() {
 		EntityRegistry.registerModEntity(new ResourceLocation(ModConstants.MODID, DUVOTICA_SPIDER), EntitySpiderDuvotica.class, DUVOTICA_SPIDER, DUVOTICA_SPIDER_ID, StarGarden.instance, 50, 1, true, 0x822B39, 0xFFE33D);
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerModels() {
 		RenderingRegistry.registerEntityRenderingHandler(EntitySpiderDuvotica.class, manager -> new RenderSpiderDuvotica(manager));
 	}
 	
