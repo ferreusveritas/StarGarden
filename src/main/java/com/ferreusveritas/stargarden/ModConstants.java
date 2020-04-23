@@ -15,6 +15,7 @@ public class ModConstants extends com.ferreusveritas.dynamictrees.ModConstants {
 	public static final String JEI = "jei";
 	public static final String BIOMESOPLENTY = "biomesoplenty";
 	public static final String PHC_MODID = com.pam.harvestcraft.Reference.MODID;
+	public static final String RUSTIC = "rustic";
 	
 	public static final String PHC_LATEST = PHC_MODID + AT + com.pam.harvestcraft.Reference.VERSION + ORGREATER;
 	
@@ -35,7 +36,9 @@ public class ModConstants extends com.ferreusveritas.dynamictrees.ModConstants {
 			+ NEXT
 			+ REQAFTER + PHC_LATEST
 			+ NEXT
-			+ REQAFTER + DYNAMICTREES_LATEST;
+			+ REQAFTER + DYNAMICTREES_LATEST
+			+ NEXT
+			+ REQAFTER + RUSTIC;
 			//+ NEXT
 			//+ REQ_AFTER + Malisis.MALISISDOORS;
 			;

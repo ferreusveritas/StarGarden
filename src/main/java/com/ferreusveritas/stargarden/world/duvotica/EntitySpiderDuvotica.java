@@ -30,6 +30,11 @@ public class EntitySpiderDuvotica extends EntitySpider {
 		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.32);
 	}
 	
+	@Override
+    public float getEyeHeight() {
+        return 0.35F;
+    }
+	
 	public boolean attackEntityAsMob(Entity entityIn)
 	{
 		if (super.attackEntityAsMob(entityIn)) {

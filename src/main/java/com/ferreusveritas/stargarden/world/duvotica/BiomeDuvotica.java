@@ -57,6 +57,7 @@ public class BiomeDuvotica extends Biome {
 		//This is so the biomeDictionary doesn't crash
 		topBlock = Blocks.GRASS.getDefaultState();
 		fillerBlock = Blocks.DIRT.getDefaultState();
+		
 	}
 	
 	private static WorldGenerator grassOptions[];
@@ -147,8 +148,6 @@ public class BiomeDuvotica extends Biome {
 	
 	@Override
 	public float getSpawningChance() {
-		System.out.println(decorator);
-
 		return 0.07f;
 	}
 	

@@ -2,11 +2,13 @@ package com.ferreusveritas.stargarden.features;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import com.ferreusveritas.stargarden.ModConstants;
 import com.ferreusveritas.stargarden.util.Util;
 
+import cofh.core.init.CoreProps;
 import cofh.core.item.ItemMulti;
 import cofh.thermalexpansion.ThermalExpansion;
 import cofh.thermalexpansion.item.ItemMorb;
@@ -15,6 +17,8 @@ import cofh.thermalexpansion.util.managers.machine.CompactorManager;
 import cofh.thermalexpansion.util.managers.machine.FurnaceManager;
 import cofh.thermalexpansion.util.managers.machine.PulverizerManager;
 import cofh.thermalexpansion.util.managers.machine.SmelterManager;
+import cofh.thermalexpansion.util.managers.machine.TransposerManager;
+import cofh.thermalfoundation.init.TFFluids;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -27,6 +31,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreIngredient;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -97,7 +104,7 @@ public class Thermal extends BaseFeature {
 			secondaryOutput.writeToNBT(toSend.getCompoundTag(SECONDARY_OUTPUT));
 			toSend.setInteger(SECONDARY_CHANCE, secondaryChance);
 		}
-		FMLInterModComms.sendMessage(THERMALEXPANSION, ADD_SMELTER_RECIPE, toSend);*/
+		uFMLInterModComms.sendMessage(THERMALEXPANSION, ADD_SMELTER_RECIPE, toSend);*/
 	}
 	
 	public static ArrayList<ItemStack> getMintRemoveList() {
@@ -277,6 +284,33 @@ public class Thermal extends BaseFeature {
 		
 		//Force options to disable Numismatic Dynamo
 		cofh.thermalexpansion.block.dynamo.BlockDynamo.enable[5] = false;
+		
+		Block ashBlock = Block.REGISTRY.getObject(new ResourceLocation(BIOMESOPLENTY, "ash_block"));
+
+		if(ashBlock != null && ashBlock != Blocks.AIR) {
+			
+			List<Fluid> xpFluids = new ArrayList<Fluid>();
+									
+			xpFluids.add(TFFluids.fluidExperience);
+			if (FluidRegistry.isFluidRegistered(CoreProps.ESSENCE)) {
+				xpFluids.add(FluidRegistry.getFluid(CoreProps.ESSENCE));
+			}
+			
+			if (FluidRegistry.isFluidRegistered(CoreProps.XPJUICE)) {
+				xpFluids.add(FluidRegistry.getFluid(CoreProps.XPJUICE));
+			}
+			
+			xpFluids.forEach(f -> TransposerManager.addFillRecipe(16000, new ItemStack(ashBlock), new ItemStack(Blocks.NETHERRACK), new FluidStack(f, 1000), false));
+		}
+		
+		Block blackAsh = Block.REGISTRY.getObject(new ResourceLocation(QUARK, "black_ash"));
+		
+		if(blackAsh != null && blackAsh != Blocks.AIR) {
+			Item material = getThermalFoundationMaterial();
+			ItemStack sulfur = new ItemStack(material, 1, 771);
+			PulverizerManager.addRecipe(8000, new ItemStack(Items.SKULL, 1, 1), new ItemStack(blackAsh, 3), sulfur, 25);
+		}
+		
 	}
 	
 	@Override
@@ -295,6 +329,46 @@ public class Thermal extends BaseFeature {
 			);
 		}
 
+		Block blackAsh = Block.REGISTRY.getObject(new ResourceLocation(QUARK, "black_ash"));
+		Block ashBlock = Block.REGISTRY.getObject(new ResourceLocation(BIOMESOPLENTY, "ash_block"));
+		
+		if(blackAsh != null && blackAsh != Blocks.AIR) {
+			//Allow Quark wither ash to become a BoP ash_block
+			if(ashBlock != null && ashBlock != Blocks.AIR) {
+				GameRegistry.addShapedRecipe(
+					new ResourceLocation(ModConstants.MODID, "ash_block_from_wither_ash"),
+					null,
+					new ItemStack(ashBlock),
+					"xx", "xx", 'x', new ItemStack(blackAsh)
+					);
+			}
+			
+			//Allow Quark wither ash to become vanilla coal
+			GameRegistry.addShapedRecipe(
+				new ResourceLocation(ModConstants.MODID, "coal_from_ash"),
+				null,
+				new ItemStack(Items.COAL),
+				"xxx", "xxx", "xxx", 'x', new ItemStack(blackAsh)
+			);
+
+		}
+		
+		Item material = getThermalFoundationMaterial();
+		ItemStack pyrotheum = new ItemStack(material, 1, 1024);
+		ItemStack cryotheum = new ItemStack(material, 1, 1025);
+		ItemStack pulvObsidian = new ItemStack(material, 1, 770);
+
+		GameRegistry.addShapelessRecipe(
+			new ResourceLocation(ModConstants.MODID, "pulv_obsidian"),
+			null,
+			pulvObsidian,
+			new Ingredient[] {
+				Ingredient.fromStacks(pyrotheum),
+				Ingredient.fromStacks(cryotheum)
+			}
+		);
+		
+		
 	}
 	
 	@Override

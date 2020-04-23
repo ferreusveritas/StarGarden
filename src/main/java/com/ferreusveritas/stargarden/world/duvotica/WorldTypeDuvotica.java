@@ -53,7 +53,6 @@ public class WorldTypeDuvotica extends StarWorldType {
 			
 			@Override
 			public IChunkGenerator createChunkGenerator() {
-				// TODO Auto-generated method stub
 				return super.createChunkGenerator();
 			}
 		};

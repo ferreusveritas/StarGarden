@@ -521,8 +521,14 @@ public class ChunkGeneratorDuvotica implements IChunkGenerator {
 	@Override
 	public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos) {
 		
+        Biome biome = this.world.getBiome(pos);
+		
 		if(pos.getY() > seaLevel) {
-			return this.world.getBiome(pos).getSpawnableList(creatureType);
+			return biome.getSpawnableList(creatureType);
+		} else {
+			if(creatureType == EnumCreatureType.WATER_CREATURE) {
+		        return biome.getSpawnableList(creatureType);
+			}
 		}
 		
 		return new ArrayList<>();

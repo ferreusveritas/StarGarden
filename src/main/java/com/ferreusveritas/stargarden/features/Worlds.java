@@ -21,12 +21,15 @@ import com.ferreusveritas.stargarden.world.StarWorldType;
 import com.ferreusveritas.stargarden.world.duvotica.BiomeDuvotica;
 import com.ferreusveritas.stargarden.world.duvotica.EntitySpiderDuvotica;
 import com.ferreusveritas.stargarden.world.duvotica.WorldTypeDuvotica;
+import com.ferreusveritas.stargarden.world.maridia.BiomeMaridia;
+import com.ferreusveritas.stargarden.world.maridia.WorldTypeMaridia;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
@@ -45,12 +48,17 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldExcep
 public class Worlds extends BaseFeature {
 	
 	public static final String DUVOTICA = "duvotica";
+	public static final String MARIDIA = "maridia";
+	
 	public static final String DUVOTICA_SPIDER = "varroa";
 	
 	public static final int DUVOTICA_SPIDER_ID = 100;
 	
 	public static WorldType duvotica = null;
+	public static WorldType maridia = null;
+	
 	public static BiomeDuvotica duvoticaBiome = null;
+	public static BiomeMaridia maridiaBiome = null;
 	
 	private static Field field_World_provider = null;
 	
@@ -89,18 +97,59 @@ public class Worlds extends BaseFeature {
 	public void preInit() {
 		MinecraftForge.EVENT_BUS.register(new EventHandler());
 		
+		setupDuvotica();
+		setupMaridia();
+	}
+	
+	
+	////////////////////////////////////////////////////////////////
+	// Duvotica
+	////////////////////////////////////////////////////////////////
+	
+	public void setupDuvotica() {
 		duvoticaBiome = new BiomeDuvotica();
 		
 		registerBiome(duvoticaBiome, new ResourceLocation(ModConstants.MODID, DUVOTICA));
 		
+		BiomeDictionary.addTypes(duvoticaBiome, BiomeDictionary.Type.LUSH, BiomeDictionary.Type.WET);
+		
 		duvotica = new WorldTypeDuvotica(DUVOTICA);//This is self registering in it's base WorldType class
 		
-		registerEntities();
+		registerDuvoticaEntities();
 	}
 	
-	public void registerEntities() {
+	public void registerDuvoticaEntities() {
 		EntityRegistry.registerModEntity(new ResourceLocation(ModConstants.MODID, DUVOTICA_SPIDER), EntitySpiderDuvotica.class, DUVOTICA_SPIDER, DUVOTICA_SPIDER_ID, StarGarden.instance, 50, 1, true, 0x822B39, 0xFFE33D);
 	}
+
+	
+	////////////////////////////////////////////////////////////////
+	// Maridia
+	////////////////////////////////////////////////////////////////
+
+	public void setupMaridia() {
+		
+		Biome.BiomeProperties biomeProps = new Biome.BiomeProperties("Maridia");
+		biomeProps.setBaseHeight(-1.8F);
+		biomeProps.setHeightVariation(0.1F);
+		
+		maridiaBiome = new BiomeMaridia(biomeProps);
+		
+		registerBiome(maridiaBiome, new ResourceLocation(ModConstants.MODID, MARIDIA));
+		
+		BiomeDictionary.addTypes(maridiaBiome, BiomeDictionary.Type.OCEAN);
+		
+		maridia = new WorldTypeMaridia(MARIDIA);//This is self registering in it's base WorldType class
+				
+		registerMaridiaEntities();
+	}
+	
+	public void registerMaridiaEntities() { }
+
+	
+	////////////////////////////////////////////////////////////////
+	// Misc
+	////////////////////////////////////////////////////////////////
 	
 	@Override
 	@SideOnly(Side.CLIENT)
