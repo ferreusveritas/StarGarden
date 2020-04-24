@@ -1,7 +1,5 @@
 package com.ferreusveritas.stargarden.features;
 
-import java.lang.reflect.Field;
-
 import com.ferreusveritas.dynamictrees.api.TreeRegistry;
 import com.ferreusveritas.dynamictrees.api.WorldGenRegistry.BiomeDataBasePopulatorRegistryEvent;
 import com.ferreusveritas.dynamictrees.api.worldgen.BiomePropertySelectors.EnumChance;
@@ -17,7 +15,6 @@ import com.ferreusveritas.stargarden.ModConstants;
 import com.ferreusveritas.stargarden.StarGarden;
 import com.ferreusveritas.stargarden.render.RenderSpiderDuvotica;
 import com.ferreusveritas.stargarden.util.WorldGeneratorPredicator;
-import com.ferreusveritas.stargarden.world.StarWorldType;
 import com.ferreusveritas.stargarden.world.duvotica.BiomeDuvotica;
 import com.ferreusveritas.stargarden.world.duvotica.EntitySpiderDuvotica;
 import com.ferreusveritas.stargarden.world.duvotica.WorldTypeDuvotica;
@@ -25,24 +22,17 @@ import com.ferreusveritas.stargarden.world.maridia.BiomeMaridia;
 import com.ferreusveritas.stargarden.world.maridia.WorldTypeMaridia;
 
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeManager;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToFindFieldException;
 
 @Mod.EventBusSubscriber(modid = ModConstants.MODID)
 public class Worlds extends BaseFeature {
@@ -59,44 +49,9 @@ public class Worlds extends BaseFeature {
 	
 	public static BiomeDuvotica duvoticaBiome = null;
 	public static BiomeMaridia maridiaBiome = null;
-	
-	private static Field field_World_provider = null;
-	
-	static {
-		try {
-			field_World_provider = ReflectionHelper.findField(World.class, "field_73011_w", "provider");
-		}
-		catch (UnableToFindFieldException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public class EventHandler {
-		@SubscribeEvent(priority = EventPriority.HIGH)
-		public void onWorldLoad(WorldEvent.Load event) {
-			World world = event.getWorld();
-			if(world.getWorldType() instanceof StarWorldType) {
-				StarWorldType starWorldType = (StarWorldType) world.getWorldType();
-				if(starWorldType.hasCustomWorldProvider()) {
-					int dim = world.provider.getDimension();
-					WorldProvider newProvider = starWorldType.createCustomWorldProvider(world.provider);
-					try {
-						field_World_provider.set(world, newProvider);
-					}
-					catch (IllegalArgumentException | IllegalAccessException e) {
-						e.printStackTrace();
-					}
-					world.provider.setWorld(world);
-					world.provider.setDimension(dim);
-				}
-			}
-		}
-	}
-	
+
 	@Override
 	public void preInit() {
-		MinecraftForge.EVENT_BUS.register(new EventHandler());
-		
 		setupDuvotica();
 		setupMaridia();
 	}
@@ -128,12 +83,8 @@ public class Worlds extends BaseFeature {
 	////////////////////////////////////////////////////////////////
 
 	public void setupMaridia() {
-		
-		Biome.BiomeProperties biomeProps = new Biome.BiomeProperties("Maridia");
-		biomeProps.setBaseHeight(-1.8F);
-		biomeProps.setHeightVariation(0.1F);
-		
-		maridiaBiome = new BiomeMaridia(biomeProps);
+
+		maridiaBiome = new BiomeMaridia();
 		
 		registerBiome(maridiaBiome, new ResourceLocation(ModConstants.MODID, MARIDIA));
 		
@@ -170,6 +121,7 @@ public class Worlds extends BaseFeature {
 		wgPredicator.addPredicate(name -> "team.chisel.common.util.GenerationHandler".equals(name), world -> world.provider.getDimension() == 0);
 		
 		duvoticaBiome.assignMaterials();
+		maridiaBiome.assignMaterials();
 	}
 	
 	public void registerBiome(Biome biome, ResourceLocation resLoc) {

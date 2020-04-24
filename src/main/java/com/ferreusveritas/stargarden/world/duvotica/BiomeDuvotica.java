@@ -164,10 +164,10 @@ public class BiomeDuvotica extends Biome {
 		
 		for (int yi = 255; yi >= 0; --yi) {
 			if (yi <= rand.nextInt(5)) {
-				chunkPrimerIn.setBlockState(clipZ, yi, clipX, BEDROCK);
+				chunkPrimerIn.setBlockState(clipX, yi, clipZ, BEDROCK);
 			}
 			else {
-				IBlockState sample = chunkPrimerIn.getBlockState(clipZ, yi, clipX);
+				IBlockState sample = chunkPrimerIn.getBlockState(clipX, yi, clipZ);
 				
 				if (sample.getMaterial() == Material.AIR) {
 					density = -1;
@@ -196,17 +196,17 @@ public class BiomeDuvotica extends Biome {
 						density = random;
 						
 						if (yi >= seaLevel - 1 || yi <= 43) { //Set the top layer of grass
-							chunkPrimerIn.setBlockState(clipZ, yi, clipX, top);
+							chunkPrimerIn.setBlockState(clipX, yi, clipZ, top);
 						}
 						else {
-							chunkPrimerIn.setBlockState(clipZ, yi, clipX, fill);
+							chunkPrimerIn.setBlockState(clipX, yi, clipZ, fill);
 						}
 					}
 					else if (density > 0) {
 						--density;
-						chunkPrimerIn.setBlockState(clipZ, yi, clipX, fill);
+						chunkPrimerIn.setBlockState(clipX, yi, clipZ, fill);
 					} else if(yi < 42) {
-						chunkPrimerIn.setBlockState(clipZ, yi, clipX, deepStone);
+						chunkPrimerIn.setBlockState(clipX, yi, clipZ, deepStone);
 					}
 				}//end if sample == stone
 			}
