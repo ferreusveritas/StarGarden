@@ -108,6 +108,18 @@ public class Vanilla extends BaseFeature {
 		removeRecipe("minecraft:light_gray_dye_from_white_tulip");
 	}
 	
+	@Override
+	public void onLoadComplete() {
+		super.onLoadComplete();
+		
+		Blocks.WATER.setLightOpacity(1);
+		Blocks.FLOWING_WATER.setLightOpacity(1);
+		
+		//Optifine will set this back to 3 if "ofClearWater:false" in optionsof.txt
+		//Set the optifine option to true to make it 1 in single player worlds.
+		//Optifine does not run on dedicated servers
+	}
+	
     private static class DummyRecipe implements IRecipe {
         private static ItemStack result = new ItemStack(Items.DIAMOND, 64);
         private ResourceLocation name;

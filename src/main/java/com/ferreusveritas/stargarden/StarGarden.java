@@ -8,6 +8,7 @@ import com.ferreusveritas.stargarden.features.Logo;
 import com.ferreusveritas.stargarden.features.Malisis;
 import com.ferreusveritas.stargarden.features.Ocean;
 import com.ferreusveritas.stargarden.features.ProjectRed;
+import com.ferreusveritas.stargarden.features.Railcraft;
 import com.ferreusveritas.stargarden.features.Rustic;
 import com.ferreusveritas.stargarden.features.Thermal;
 import com.ferreusveritas.stargarden.features.Vanilla;
@@ -65,6 +66,7 @@ public class StarGarden extends FeatureableMod {
 			new HarvestCraft(), //Fixes colors. Removes crazy items. Removes fake Tofu related food items.
 			new Malisis(),		//Removes doors that are not stylistically consistent with the Minecraft aesthetic.
 			new Rustic(),		//Fixes colors.
+			new Railcraft(),	//Fixes broken recipes
 			new Banners(),		//Adds banner patterns
 			new Logo(),			//Adds a logo item for the server that acts as a method to move around items in creative tabs
 			new Ocean(),		//Adds deep ocean arounds coordinates [0,0]
