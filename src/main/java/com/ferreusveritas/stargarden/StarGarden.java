@@ -1,6 +1,7 @@
 package com.ferreusveritas.stargarden;
 
 import com.ferreusveritas.stargarden.features.Banners;
+import com.ferreusveritas.stargarden.features.Cathedral;
 import com.ferreusveritas.stargarden.features.CommonProxy;
 import com.ferreusveritas.stargarden.features.ComputerCraft;
 import com.ferreusveritas.stargarden.features.HarvestCraft;
@@ -71,6 +72,7 @@ public class StarGarden extends FeatureableMod {
 			new Logo(),			//Adds a logo item for the server that acts as a method to move around items in creative tabs
 			new Ocean(),		//Adds deep ocean arounds coordinates [0,0]
 			new Worlds(),
+			new Cathedral(),
 			proxy
 		);
 	}
