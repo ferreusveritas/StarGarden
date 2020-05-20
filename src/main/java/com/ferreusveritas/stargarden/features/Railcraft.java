@@ -63,15 +63,27 @@ public class Railcraft extends BaseFeature {
 		ItemStack minecart = new ItemStack(Items.MINECART);
 		
 		GameRegistry.addShapedRecipe(new ResourceLocation(ModConstants.MODID, "locomotive_electric"), null, electricLocomotive,
-				"lp ",
-				"scs",
-				"gmg",
-				'l', invertedCageLamp,
-				'p', "plateSteel",
-				's', redstoneServo,
-				'c', energyCell,
-				'g', "gearSteel",
-				'm', minecart);
+			"lp ",
+			"scs",
+			"gmg",
+			'l', invertedCageLamp,
+			'p', "plateSteel",
+			's', redstoneServo,
+			'c', energyCell,
+			'g', "gearSteel",
+			'm', minecart);
+		
+		
+		//Add recipe for stone ties
+		ItemStack rebar = new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(RAILCRAFT, "rebar")));
+		ItemStack stoneTie = new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(RAILCRAFT, "tie")));
+		ItemStack slab = new ItemStack(Blocks.STONE_SLAB);
+		
+		GameRegistry.addShapedRecipe(new ResourceLocation(ModConstants.MODID, "stone_tie"), null, stoneTie,
+			" r ",
+			"sss",
+			'r', rebar,
+			's', slab);
 		
 	}
 	

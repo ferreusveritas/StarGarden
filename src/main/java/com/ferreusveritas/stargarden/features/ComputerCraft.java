@@ -7,8 +7,12 @@ import java.util.stream.IntStream;
 import com.ferreusveritas.stargarden.ModConstants;
 import com.ferreusveritas.stargarden.util.Util;
 
+import dan200.computercraft.api.AbstractTurtleUpgrade;
+import dan200.computercraft.api.turtle.ITurtleUpgrade;
+import dan200.computercraft.shared.TurtleUpgrades;
 import dan200.computercraft.shared.media.items.ItemDiskExpanded;
 import dan200.computercraft.shared.media.items.ItemDiskLegacy;
+import dan200.computercraft.shared.turtle.upgrades.TurtleTool;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -17,6 +21,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreIngredient;
@@ -45,6 +50,68 @@ public class ComputerCraft extends BaseFeature {
 		IntStream.range(0, 16).forEach(i -> list.add(new ResourceLocation(COMPUTERCRAFT, "disk_imposter_convert_" + i)));
 		
 		return list;
+	}
+
+	@Override
+	public void preInit() {
+		super.preInit();
+	}
+	
+	@Override
+	public void init() {
+		super.init();
+		
+		//Hack to change turtles to use Adventurer's toolbox tools
+		
+		for(ITurtleUpgrade upgrade : TurtleUpgrades.getUpgrades()) {
+			
+			if(upgrade instanceof TurtleTool) {
+				TurtleTool turtleTool = (TurtleTool) upgrade;
+				
+				ItemStack newItem = ItemStack.EMPTY;
+				Item keyItem = turtleTool.getCraftingItem().getItem();
+				
+				if(keyItem == Items.DIAMOND_SWORD) {
+					newItem = new ItemStack(Item.REGISTRY.getObject(new ResourceLocation("toolbox", "sword")));
+					NBTTagCompound tag = new NBTTagCompound();
+					tag.setString("ADORNMENT", "diamond");
+					tag.setString("Blade", "iron");
+					tag.setString("Crossguard", "iron");
+					tag.setString("Handle", "wood");
+					newItem.setTagCompound(tag);
+				}
+				else if(keyItem == Items.DIAMOND_PICKAXE || keyItem == Items.DIAMOND_HOE || keyItem == Items.DIAMOND_SHOVEL || keyItem == Items.DIAMOND_AXE) {
+					
+					String type = "";
+					
+					if(keyItem == Items.DIAMOND_PICKAXE) {
+						type = "pickaxe";
+					}
+					else if(keyItem == Items.DIAMOND_HOE) {
+						type = "hoe";
+					}
+					else if(keyItem == Items.DIAMOND_SHOVEL) {
+						type = "shovel";
+					}
+					else if(keyItem == Items.DIAMOND_AXE) {
+						type = "axe";
+					}
+					
+					newItem = new ItemStack(Item.REGISTRY.getObject(new ResourceLocation("toolbox", type)));
+					NBTTagCompound tag = new NBTTagCompound();
+					tag.setString("ADORNMENT", "diamond");
+					tag.setString("Haft", "wood");
+					tag.setString("Handle", "wood");
+					tag.setString("Head", "iron");
+					newItem.setTagCompound(tag);
+				}
+								
+				if(newItem != ItemStack.EMPTY) {
+					Util.setRestrictedObject(TurtleTool.class, turtleTool, newItem, "item");
+					Util.setRestrictedObject(AbstractTurtleUpgrade.class, turtleTool, newItem, "stack");
+				}
+			}
+		}	
 	}
 	
 	@Override
