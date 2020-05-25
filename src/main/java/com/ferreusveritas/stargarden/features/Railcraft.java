@@ -76,10 +76,12 @@ public class Railcraft extends BaseFeature {
 		
 		//Add recipe for stone ties
 		ItemStack rebar = new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(RAILCRAFT, "rebar")));
-		ItemStack stoneTie = new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(RAILCRAFT, "tie")));
+		ItemStack stoneTie = new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(RAILCRAFT, "tie")), 1, 1);
 		ItemStack slab = new ItemStack(Blocks.STONE_SLAB);
 		
-		GameRegistry.addShapedRecipe(new ResourceLocation(ModConstants.MODID, "stone_tie"), null, stoneTie,
+		GameRegistry.addShapedRecipe(new ResourceLocation(ModConstants.MODID, "stone_tie"),
+			null,
+			stoneTie,
 			" r ",
 			"sss",
 			'r', rebar,
