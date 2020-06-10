@@ -3,6 +3,8 @@ package com.ferreusveritas.stargarden.features;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -40,7 +42,10 @@ public class BaseFeature implements IFeature {
 	public void registerRecipes(IForgeRegistry<IRecipe> registry) { }
 
 	@Override
+	public void registerEntities(IForgeRegistry<EntityEntry> registry) { }
+	
+	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerModels() { }
+	public void registerModels(ModelRegistryEvent event) { }
 	
 }

@@ -25,6 +25,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -272,7 +273,7 @@ public class HarvestCraft extends BaseFeature {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerModels() {
+	public void registerModels(ModelRegistryEvent event) {
 		ModelLoader.setCustomModelResourceLocation(nonpareils, 0, new ModelResourceLocation(nonpareils.getRegistryName(), "inventory"));
 	}
 	

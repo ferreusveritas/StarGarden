@@ -24,6 +24,7 @@ import com.ferreusveritas.stargarden.world.maridia.WorldTypeMaridia;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -104,7 +105,7 @@ public class Worlds extends BaseFeature {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerModels() {
+	public void registerModels(ModelRegistryEvent event) {
 		RenderingRegistry.registerEntityRenderingHandler(EntitySpiderDuvotica.class, manager -> new RenderSpiderDuvotica(manager));
 	}
 	

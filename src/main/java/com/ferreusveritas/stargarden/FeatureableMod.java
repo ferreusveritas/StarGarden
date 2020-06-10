@@ -15,6 +15,7 @@ import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -73,9 +74,14 @@ public abstract class FeatureableMod {
 		}
 		
 		@SubscribeEvent
+		public void registerEntities(RegistryEvent.Register<EntityEntry> event) {
+			features.forEach(i -> i.registerEntities(event.getRegistry()));
+		}
+		
+		@SubscribeEvent
 		@SideOnly(Side.CLIENT)
 		public void registerModels(ModelRegistryEvent event) {
-			features.forEach(i -> i.registerModels());
+			features.forEach(i -> i.registerModels(event));
 		}
 		
 	}

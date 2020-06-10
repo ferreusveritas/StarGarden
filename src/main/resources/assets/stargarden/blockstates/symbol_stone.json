@@ -1,0 +1,6 @@
+{
+    "variants": {
+    	"variant=aries"	:{"model": "stargarden:symbol_stone_aries"},
+		"variant=libra" :{"model": "stargarden:symbol_stone_libra"}
+    }
+}

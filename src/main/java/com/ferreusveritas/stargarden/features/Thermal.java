@@ -15,6 +15,7 @@ import cofh.thermalexpansion.ThermalExpansion;
 import cofh.thermalexpansion.item.ItemMorb;
 import cofh.thermalexpansion.util.managers.machine.CentrifugeManager;
 import cofh.thermalexpansion.util.managers.machine.CompactorManager;
+import cofh.thermalexpansion.util.managers.machine.CompactorManager.Mode;
 import cofh.thermalexpansion.util.managers.machine.FurnaceManager;
 import cofh.thermalexpansion.util.managers.machine.PulverizerManager;
 import cofh.thermalexpansion.util.managers.machine.SmelterManager;
@@ -306,16 +307,25 @@ public class Thermal extends BaseFeature {
 			PulverizerManager.addRecipe(8000, new ItemStack(Items.SKULL, 1, 1), new ItemStack(blackAsh, 3), sulfur, 25);
 		}
 
-
+		ItemStack coalPowder = new ItemStack(getThermalFoundationMaterial(), 1, 768);
+		ItemStack charcoalPowder = new ItemStack(getThermalFoundationMaterial(), 1, 769);
+		ItemStack sulfurPowder = new ItemStack(getThermalFoundationMaterial(), 1, 771);
+		ItemStack niterPowder = new ItemStack(getThermalFoundationMaterial(), 1, 772);
+		
 		//Turn gunpowder into it's component parts with the centrifuge
 		List gunPowderComponents = new ArrayList<ItemStack>();
-		gunPowderComponents.add(new ItemStack(getThermalFoundationMaterial(), 1, 769));
-		gunPowderComponents.add(new ItemStack(getThermalFoundationMaterial(), 1, 771));
-		gunPowderComponents.add(new ItemStack(getThermalFoundationMaterial(), 1, 772));
-		gunPowderComponents.add(new ItemStack(getThermalFoundationMaterial(), 1, 772));
+		gunPowderComponents.add(charcoalPowder);
+		gunPowderComponents.add(sulfurPowder);
+		gunPowderComponents.add(niterPowder);
+		gunPowderComponents.add(niterPowder);
 
 		CentrifugeManager.addRecipe(16000, new ItemStack(Items.GUNPOWDER), gunPowderComponents, null);
 
+		//Turn 4 charcoal powder into coal powder
+		ItemStack charcoalPowder4 = charcoalPowder.copy();
+		charcoalPowder4.setCount(4);
+		CompactorManager.addRecipe(16000, charcoalPowder4, coalPowder, Mode.ALL);
+		
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.ferreusveritas.stargarden;
 import com.ferreusveritas.stargarden.features.ComputerCraft;
 import com.ferreusveritas.stargarden.features.Malisis;
 import com.ferreusveritas.stargarden.features.ProjectRed;
+import com.ferreusveritas.stargarden.features.Quark;
 import com.ferreusveritas.stargarden.features.Railcraft;
 import com.ferreusveritas.stargarden.features.Rustic;
 import com.ferreusveritas.stargarden.features.Thermal;
@@ -14,7 +15,7 @@ public class ModConstants extends com.ferreusveritas.dynamictrees.ModConstants {
 	
 	//Other Mods
 	public static final String COMPUTERCRAFT = ComputerCraft.COMPUTERCRAFT;
-	public static final String QUARK = "quark";
+	public static final String QUARK = Quark.QUARK;
 	public static final String JEI = "jei";
 	public static final String BIOMESOPLENTY = "biomesoplenty";
 	public static final String PHC_MODID = com.pam.harvestcraft.Reference.MODID;

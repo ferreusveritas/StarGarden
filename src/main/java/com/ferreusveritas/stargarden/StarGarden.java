@@ -8,7 +8,9 @@ import com.ferreusveritas.stargarden.features.HarvestCraft;
 import com.ferreusveritas.stargarden.features.Logo;
 import com.ferreusveritas.stargarden.features.Malisis;
 import com.ferreusveritas.stargarden.features.Ocean;
+import com.ferreusveritas.stargarden.features.Orrery;
 import com.ferreusveritas.stargarden.features.ProjectRed;
+import com.ferreusveritas.stargarden.features.Quark;
 import com.ferreusveritas.stargarden.features.Railcraft;
 import com.ferreusveritas.stargarden.features.Rustic;
 import com.ferreusveritas.stargarden.features.Thermal;
@@ -24,21 +26,21 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
 * <p><pre><tt><b>
-*  ╭─────────────────╮
-*  │                 │
-*  │    ✦            │
-*  │          ✦      │
-*  │                 │
-*  │           ✦     │
-*  │     ✦           │
-*  │             ✦   │
-*  │                 │
-*  │  █████████████  │
-*  │  ▒▒▒▒▒▒▒▒▒▒▒▒▒  │
-*  │  ░░░░░░░░░░░░░  │
-*  ╞═════════════════╡
-*  │ＳＴＡＲ  ＧＡＲＤＥＮ│
-*  ╰─────────────────╯
+*  ╭────────────────────╮
+*  │                    │
+*  │      ✦             │
+*  │           ✦        │
+*  │                    │
+*  │             ✦      │
+*  │     ✦              │
+*  │               ✦    │
+*  │                    │
+*  │ ██████████████████ │
+*  │ ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ │
+*  │ ░░░░░░░░░░░░░░░░░░ │
+*  ╞════════════════════╡
+*  │S T A R G A R D E N │
+*  ╰────────────────────╯
 * </b></tt></pre></p>
 * <p>
 * 2018 Ferreusveritas
@@ -73,6 +75,8 @@ public class StarGarden extends FeatureableMod {
 			new Ocean(),		//Adds deep ocean arounds coordinates [0,0]
 			new Worlds(),
 			new Cathedral(),
+			new Quark(),
+			new Orrery(),
 			proxy
 		);
 	}
@@ -97,5 +101,5 @@ public class StarGarden extends FeatureableMod {
 	public void onLoadComplete(FMLLoadCompleteEvent event) {
 		super.onLoadComplete(event);
 	}
-	
+		
 }

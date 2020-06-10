@@ -19,12 +19,16 @@ public class Rustic extends BaseFeature {
 	@Override
 	public void postInit() {
 		Vanilla.removeOre( new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(RUSTIC, "wildberries"))) , "dyeRed");
+		Vanilla.removeOre( new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(RUSTIC, "grapes"))) , "dyePurple");
 	}
 	
 	@Override
 	public void registerRecipes(IForgeRegistry<IRecipe> registry) {
 		ItemStack wildBerries = new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(RUSTIC, "wildberries")));
 		GameRegistry.addShapelessRecipe(new ResourceLocation(ModConstants.MODID, "wildberriesreddye"), null, new ItemStack(Items.DYE, 2, EnumDyeColor.RED.getDyeDamage()), Ingredient.fromStacks(wildBerries));
+		
+		ItemStack grapes = new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(RUSTIC, "grapes")));
+		GameRegistry.addShapelessRecipe(new ResourceLocation(ModConstants.MODID, "grapespurpledye"), null, new ItemStack(Items.DYE, 2, EnumDyeColor.PURPLE.getDyeDamage()), Ingredient.fromStacks(grapes));
 	}
 	
 }

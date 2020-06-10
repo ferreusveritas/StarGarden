@@ -6,6 +6,8 @@ item.nonpareils.name=Nonpareils
 
 entity.varroa.name=Varroa Spider
 
+tile.symbol_stone.aries.name=First point of Aries
+tile.symbol_stone.libra.name=First point of Libra
+
 generator.duvotica=Duvotica
 generator.maridia=Maridia
-

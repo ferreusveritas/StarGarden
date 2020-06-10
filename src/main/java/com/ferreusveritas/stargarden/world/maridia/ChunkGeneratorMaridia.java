@@ -229,8 +229,6 @@ public class ChunkGeneratorMaridia implements IChunkGenerator {
 		this.sPOct1 = this.sPerlinNoise1.generateNoiseOctaves(this.sPOct1, chunkPosX, chunkPosY, chunkPosZ, xSamples, ySamples, zSamples, d0 / 80.0D, 4.277575000000001D, d0 / 80.0D);
 		this.lPOct1 = this.lPerlinNoise1.generateNoiseOctaves(this.lPOct1, chunkPosX, chunkPosY, chunkPosZ, xSamples, ySamples, zSamples, d0, 684.412D, d0);
 		this.lPOct2 = this.lPerlinNoise2.generateNoiseOctaves(this.lPOct2, chunkPosX, chunkPosY, chunkPosZ, xSamples, ySamples, zSamples, d0, 684.412D, d0);
-		int chunkX = chunkPosX / 2;
-		int chunkZ = chunkPosZ / 2;
 		int bufferPos = 0;
 		
 		for (int xi = 0; xi < xSamples; ++xi) {
