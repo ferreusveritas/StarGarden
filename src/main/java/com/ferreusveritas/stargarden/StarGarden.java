@@ -13,6 +13,7 @@ import com.ferreusveritas.stargarden.features.ProjectRed;
 import com.ferreusveritas.stargarden.features.Quark;
 import com.ferreusveritas.stargarden.features.Railcraft;
 import com.ferreusveritas.stargarden.features.Rustic;
+import com.ferreusveritas.stargarden.features.SkyHook;
 import com.ferreusveritas.stargarden.features.Thermal;
 import com.ferreusveritas.stargarden.features.Vanilla;
 import com.ferreusveritas.stargarden.features.Worlds;
@@ -77,6 +78,7 @@ public class StarGarden extends FeatureableMod {
 			new Cathedral(),
 			new Quark(),
 			new Orrery(),
+			new SkyHook(),
 			proxy
 		);
 	}
