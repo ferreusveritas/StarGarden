@@ -105,6 +105,12 @@ public class Vanilla extends BaseFeature {
 		removeOre(new ItemStack(Items.DYE, 1, 4), "dyeBlue");//Lapis Lazuli
 		removeOre(new ItemStack(Items.DYE, 1, 15), "dyeWhite");//Bonemeal
 		
+		removeOre(new ItemStack(Items.DYE, 1, 0), "dye");//Ink Sac
+		removeOre(new ItemStack(Items.DYE, 1, 2), "dye");//Cactus
+		removeOre(new ItemStack(Items.DYE, 1, 3), "dye");//Cocoa Beans
+		removeOre(new ItemStack(Items.DYE, 1, 4), "dye");//Lapis Lazuli
+		removeOre(new ItemStack(Items.DYE, 1, 15), "dye");//Bonemeal
+		
 		removeRecipe("minecraft:light_gray_dye_from_white_tulip");
 	}
 	

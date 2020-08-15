@@ -20,6 +20,7 @@ public class Rustic extends BaseFeature {
 	public void postInit() {
 		Vanilla.removeOre( new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(RUSTIC, "wildberries"))) , "dyeRed");
 		Vanilla.removeOre( new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(RUSTIC, "grapes"))) , "dyePurple");
+		Vanilla.removeOre( new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(RUSTIC, "ironberries"))) , "dyeLightGray");
 	}
 	
 	@Override

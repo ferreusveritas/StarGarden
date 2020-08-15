@@ -48,6 +48,7 @@ public class ComputerCraft extends BaseFeature {
 		//Remove oreDict insensitive recipes
 		IntStream.range(0, 16).forEach(i -> list.add(new ResourceLocation(COMPUTERCRAFT, "disk_imposter_" + i)));
 		IntStream.range(0, 16).forEach(i -> list.add(new ResourceLocation(COMPUTERCRAFT, "disk_imposter_convert_" + i)));
+		IntStream.range(0, 16).forEach(i -> list.add(new ResourceLocation(COMPUTERCRAFT, "generated/disk/disk_" + i)));
 		
 		return list;
 	}
