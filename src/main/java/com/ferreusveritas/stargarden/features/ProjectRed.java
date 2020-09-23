@@ -2,16 +2,20 @@ package com.ferreusveritas.stargarden.features;
 
 import java.util.ArrayList;
 
+import com.ferreusveritas.stargarden.ModConstants;
 import com.ferreusveritas.stargarden.util.Util;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -47,6 +51,10 @@ public class ProjectRed extends BaseFeature {
 		return Item.REGISTRY.getObject(new ResourceLocation(PROJECTREDCORE, "resource_item"));
 	}
 	
+	public static Item getProjectRedWireItem() {
+		return getProjectRedTransItem("wire");
+	}
+	
 	public ArrayList<String> getRemoveOreList() {
 		ArrayList<String> list = new ArrayList<String>();
 		for(String oreName : new String[]{ "gemRuby", "gemSapphire", "gemPeridot", "ingotCopper", "ingotTin", "ingotSilver" }) {
@@ -66,6 +74,7 @@ public class ProjectRed extends BaseFeature {
 				100, //Copper Ingot
 				101, //Tin Ingot
 				102, //Silver Ingot
+				103, //Red Alloy Ingot
 				104, //Elecrotine Alloy Ingot
 				105, //Elecrotine
 				200, //Ruby
@@ -130,12 +139,22 @@ public class ProjectRed extends BaseFeature {
 		Vanilla.removeRecipe(PROJECTREDTRANS + ":framed/34_framed");
 		Vanilla.removeRecipe(PROJECTREDCORE + ":misc/sail");
 		Vanilla.removeRecipe(PROJECTREDCORE + ":misc/woven_cloth");
-	
+		
+		//Remove insulated wire recipes
+		for(EnumDyeColor color : EnumDyeColor.values()) {
+			String name = color.getDyeColorName();
+			name = "silver".equals(name) ? "light_gray" : name;
+			Vanilla.removeRecipe(PROJECTREDTRANS + ":insulated/" + name + "_insulated_wire");
+		}
+		
 		//These will be replaced with Induction Smelter Recipes
 		Vanilla.removeRecipe(PROJECTREDCORE + ":resource/red_iron_compound");
 		Vanilla.removeRecipe(PROJECTREDCORE + ":resource/sandy_coal_compound");
 		Vanilla.removeRecipe(PROJECTREDCORE + ":resource/red_silicon_compound");
 		Vanilla.removeRecipe(PROJECTREDCORE + ":resource/glowing_silicon_compound");
+		
+		Vanilla.removeRecipe(PROJECTREDTRANS + ":red_alloy_wire");
+		Vanilla.removeRecipe(PROJECTREDCORE + ":tools/multimeter");
 		
 		//Remove subItems from Project Red
 		CreativeTabs projectRedCoreTab = Util.findCreativeTab("projectred.core");
@@ -161,14 +180,46 @@ public class ProjectRed extends BaseFeature {
 	public void registerRecipes(IForgeRegistry<IRecipe> registry) {
 		
 		Item resItem = getProjectRedResItem();
+		Item wireItem = getProjectRedWireItem();
 		
-		ItemStack silverIngot = new ItemStack(Thermal.getThermalFoundationItem("material"), 1, 130);
+		//ItemStack silverIngot = new ItemStack(Thermal.getThermalFoundationItem("material"), 1, 130);
 		ItemStack siliconWafer = new ItemStack(resItem, 1, 301);
 		
 		Thermal.addSmelterRecipe(8000, new ItemStack(Blocks.COAL_BLOCK), new ItemStack(Blocks.SAND, 8), new ItemStack(resItem, 1, 300), ItemStack.EMPTY, 0);//Silicon Boule
 		Thermal.addSmelterRecipe(4000, siliconWafer, new ItemStack(Items.REDSTONE, 4), new ItemStack(resItem, 1, 320), ItemStack.EMPTY, 0);//Infused Silicon
 		Thermal.addSmelterRecipe(4000, siliconWafer, new ItemStack(Items.GLOWSTONE_DUST, 4), new ItemStack(resItem, 1, 341), ItemStack.EMPTY, 0);//Energized Silicon
-		Thermal.addSmelterRecipe(2000, silverIngot, new ItemStack(Items.REDSTONE, 4), new ItemStack(resItem, 1, 103), ItemStack.EMPTY, 0);//Red Alloy Ingot
+		//Thermal.addSmelterRecipe(2000, silverIngot, new ItemStack(Items.REDSTONE, 4), new ItemStack(resItem, 1, 103), ItemStack.EMPTY, 0);//Red Alloy Ingot
+		
+		GameRegistry.addShapedRecipe(new ResourceLocation(ModConstants.MODID, "signalum_wire"), null,
+			new ItemStack(wireItem, 16, 0),
+			"x", "x", "x", 'x',
+			new ItemStack(Thermal.getThermalFoundationMaterial(), 1, 165)
+		);
+
+		Ingredient oneWire = Ingredient.fromStacks(new ItemStack(wireItem, 1, 0));
+		
+		for(EnumDyeColor color : EnumDyeColor.values()) {
+			GameRegistry.addShapelessRecipe(new ResourceLocation(ModConstants.MODID, "insulated_wire_" + color.getDyeColorName()), null,
+				new ItemStack(wireItem, 3, color.getMetadata() + 1),
+				oneWire,
+				oneWire,
+				oneWire,
+				Ingredient.fromStacks(new ItemStack(Blocks.WOOL, 1, color.getMetadata()))
+			);
+		}
+		
+		GameRegistry.addShapedRecipe(new ResourceLocation(ModConstants.MODID, "multimeter"), null,
+			new ItemStack(getProjectRedItem("multimeter")),
+			"w w",
+			"bgr",
+			"blr",
+			'w', oneWire,
+			'b', "dyeBlack",
+			'g', "dyeGreen",
+			'r', "dyeRed",
+			'l', new ItemStack(Items.GLOWSTONE_DUST)
+		);
+		
 	}
 	
 	@Override

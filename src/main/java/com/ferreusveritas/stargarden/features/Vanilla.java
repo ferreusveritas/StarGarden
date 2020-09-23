@@ -58,13 +58,22 @@ public class Vanilla extends BaseFeature {
 	}
 	
 	public static void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-		if(Vanilla.contraband.containsKey(tab)) {
+		
+		if(tab == CreativeTabs.SEARCH) {
+			Vanilla.contraband.forEach((t, i) -> {
+				HashSet<Item> itemSet = new HashSet<Item>();
+				HashSet<ItemStack> relocation = i;//Get the set of itemStacks for this tab
+				relocation.forEach( i2 -> itemSet.add(i2.getItem()) );//Create a set of items from the itemStacks
+				itemSet.forEach(i2 -> items.addAll(getFilteredItemStacks(i2, null, relocation)));//Add all of the ItemStacks that are not contraband
+			});
+		}
+		else if(Vanilla.contraband.containsKey(tab)) {
 			HashSet<Item> itemSet = new HashSet<Item>();
 			HashSet<ItemStack> relocation = Vanilla.contraband.get(tab);//Get the set of itemStacks for this tab
 			relocation.forEach( i -> itemSet.add(i.getItem()) );//Create a set of items from the itemStacks
 			itemSet.forEach(i -> items.addAll(getFilteredItemStacks(i, null, relocation)));//Add all of the ItemStacks that are not contraband
 		}
-
+		
 		if(Vanilla.additions.containsKey(tab)) {
 			items.addAll(Vanilla.additions.get(tab));
 		}
@@ -126,23 +135,23 @@ public class Vanilla extends BaseFeature {
 		//Optifine does not run on dedicated servers
 	}
 	
-    private static class DummyRecipe implements IRecipe {
-        private static ItemStack result = new ItemStack(Items.DIAMOND, 64);
-        private ResourceLocation name;
-
-        @Override
-        public IRecipe setRegistryName(ResourceLocation name) {
-            this.name = name;
-            return this;
-        }
-        @Override public ResourceLocation getRegistryName() { return name; }
-        @Override public Class<IRecipe> getRegistryType() { return IRecipe.class; }
-        @Override public boolean matches(InventoryCrafting inv, World worldIn) { return false; } //dirt?
-        @Override public ItemStack getCraftingResult(InventoryCrafting inv) { return result; }
-        @Override public boolean canFit(int width, int height) { return false; }
-        @Override public ItemStack getRecipeOutput() { return result; }
-        @Override public boolean isDynamic() { return true; }
-    }
+	private static class DummyRecipe implements IRecipe {
+		private static ItemStack result = new ItemStack(Items.DIAMOND, 64);
+		private ResourceLocation name;
+		
+		@Override
+		public IRecipe setRegistryName(ResourceLocation name) {
+			this.name = name;
+			return this;
+		}
+		@Override public ResourceLocation getRegistryName() { return name; }
+		@Override public Class<IRecipe> getRegistryType() { return IRecipe.class; }
+		@Override public boolean matches(InventoryCrafting inv, World worldIn) { return false; } //dirt?
+		@Override public ItemStack getCraftingResult(InventoryCrafting inv) { return result; }
+		@Override public boolean canFit(int width, int height) { return false; }
+		@Override public ItemStack getRecipeOutput() { return result; }
+		@Override public boolean isDynamic() { return true; }
+	}
 	
 	public static void removeRecipe(ResourceLocation location) {
 		((IForgeRegistryModifiable)ForgeRegistries.RECIPES).register(new DummyRecipe().setRegistryName(location));
@@ -154,7 +163,7 @@ public class Vanilla extends BaseFeature {
 	
 	public static void removeSmelterRecipe(ItemStack output) {
 		Map<ItemStack, ItemStack> smeltingList = FurnaceRecipes.instance().getSmeltingList();
-
+		
 		for(Map.Entry<ItemStack, ItemStack> entry : smeltingList.entrySet()) {
 			if(output.getItem().equals(entry.getValue().getItem())) {
 				if(output.getItemDamage() == entry.getValue().getItemDamage()) {
@@ -168,7 +177,7 @@ public class Vanilla extends BaseFeature {
 	public static void removeItemStackFromJEI(ItemStack stack) {
 		StarGarden.proxy.removeItemStackFromJEI(stack);
 	}
-
+	
 	public static List<NonNullList<ItemStack>> ores = null;
 	public static List<NonNullList<ItemStack>> oresUn = null;
 	

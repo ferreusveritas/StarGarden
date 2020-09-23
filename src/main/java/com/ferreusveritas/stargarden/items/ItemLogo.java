@@ -26,6 +26,4 @@ public class ItemLogo extends Item {
 		}
 	}
 	
-
-	
 }

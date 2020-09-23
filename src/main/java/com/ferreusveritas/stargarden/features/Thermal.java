@@ -20,6 +20,7 @@ import cofh.thermalexpansion.util.managers.machine.FurnaceManager;
 import cofh.thermalexpansion.util.managers.machine.PulverizerManager;
 import cofh.thermalexpansion.util.managers.machine.SmelterManager;
 import cofh.thermalexpansion.util.managers.machine.TransposerManager;
+import cofh.thermalfoundation.ThermalFoundation;
 import cofh.thermalfoundation.init.TFFluids;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -29,6 +30,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
@@ -42,80 +44,79 @@ import net.minecraftforge.oredict.OreIngredient;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class Thermal extends BaseFeature {
-
+	
 	public static final String BIOMESOPLENTY = "biomesoplenty";
 	public static final String QUARK = "quark";
 	public static final String THERMALEXPANSION = "thermalexpansion";
 	public static final String THERMALFOUNDATION = "thermalfoundation";
 	public static final String THERMALDYNAMICS = "thermaldynamics";
-
+	
 	public static Item getThermalExpansionItem(String name) {
 		return Item.REGISTRY.getObject(new ResourceLocation(THERMALEXPANSION, name));
 	}
-
+	
 	public static Item getThermalFoundationItem(String name) {
 		return Item.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, name));
 	}
-
+	
 	public static Item getThermalDynamicsItem(String name) {
 		return Item.REGISTRY.getObject(new ResourceLocation(THERMALDYNAMICS, name));
 	}
-
+	
 	public static Item getThermalFoundationMaterial() {
 		return getThermalFoundationItem("material");
 	}
-
+	
+	public static Block getThermalFoundationStorage() {
+		return Block.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "storage"));
+	}
+	
+	public static Block getThermalFoundationOre() {
+		return Block.REGISTRY.getObject(new ResourceLocation(THERMALFOUNDATION, "ore"));
+	}
+	
 	public static void removeFurnaceRecipe(ItemStack input) {
-
-		if (input.isEmpty()) {
-			return;
+		if (!input.isEmpty()) {
+			FurnaceManager.removeRecipe(input);
 		}
-
-		FurnaceManager.removeRecipe(input);
 	}
-
+	
 	private static void removeCompactorMintRecipe(ItemStack input) {
-
-		if (input.isEmpty()) {
-			return;
+		if (!input.isEmpty()) {
+			CompactorManager.removeRecipe(input, CompactorManager.Mode.COIN);
 		}
-
-		CompactorManager.removeRecipe(input, CompactorManager.Mode.COIN);
 	}
-
+	
 	public static void addSmelterRecipe(int energy, ItemStack primaryInput, ItemStack secondaryInput, ItemStack primaryOutput, ItemStack secondaryOutput, int secondaryChance) {
-
 		if (primaryInput.isEmpty() || secondaryInput.isEmpty() || primaryOutput.isEmpty()) {
 			return;
 		}
-
 		SmelterManager.addRecipe(energy, primaryInput, secondaryInput, primaryOutput, secondaryOutput, secondaryChance);
-
 	}
-
+	
 	public static ArrayList<ItemStack> getMintRemoveList() {
 		ArrayList<ItemStack> mintRemoveList = new ArrayList<ItemStack>();
-
+		
 		mintRemoveList.add(new ItemStack(Blocks.IRON_BLOCK));
 		mintRemoveList.add(new ItemStack(Items.IRON_INGOT));
 		mintRemoveList.add(new ItemStack(Items.IRON_NUGGET));
-
+		
 		mintRemoveList.add(new ItemStack(Blocks.GOLD_BLOCK));
 		mintRemoveList.add(new ItemStack(Items.GOLD_INGOT));
 		mintRemoveList.add(new ItemStack(Items.GOLD_NUGGET));
-
-		for(int i = 0; i <= 9; i++) { //Copper, Tin, Silver, Lead, Aluminum, Nickle, Platinum, Iridium, Mana Infused
+		
+		for(int i = 0; i <= 9; i++) { //Copper, Tin, Silver, Lead, Aluminum, Nickel, Platinum, Iridium, Mana Infused
 			mintRemoveList.add(new ItemStack(getThermalFoundationItem("storage"), 1, i));//Blocks
 			mintRemoveList.add(new ItemStack(getThermalFoundationMaterial(), 1, i + 128));//Ingots
 			mintRemoveList.add(new ItemStack(getThermalFoundationMaterial(), 1, i + 192));//Nuggets
 		}
-
+		
 		for(int i = 0; i <= 8; i++) { //Steel, Electrum, Invar, Bronze, Constantan, Signalum, Lumium, Enderium
 			mintRemoveList.add(new ItemStack(getThermalFoundationItem("storage_alloy"), 1, i));//Blocks
 			mintRemoveList.add(new ItemStack(getThermalFoundationMaterial(), 1, i + 160));//Ingots
 			mintRemoveList.add(new ItemStack(getThermalFoundationMaterial(), 1, i + 224));//Nuggets
 		}
-
+		
 		return mintRemoveList;
 	}
 	
@@ -150,20 +151,79 @@ public class Thermal extends BaseFeature {
 	
 	public static ArrayList<ItemStack> getPulverizerRemoveList() {
 		ArrayList<ItemStack> pulverizerRemoveList = new ArrayList<ItemStack>();
-
+		
 		Item quiltedWool = Item.REGISTRY.getObject(new ResourceLocation(QUARK, "quilted_wool"));
-
+		
 		for(EnumDyeColor color : EnumDyeColor.values()) {
 			pulverizerRemoveList.add(new ItemStack(Blocks.WOOL, 1, color.getMetadata()));
 			pulverizerRemoveList.add(new ItemStack(quiltedWool, 1, color.getMetadata()));
 			pulverizerRemoveList.add(new ItemStack(Block.REGISTRY.getObject(new ResourceLocation(QUARK, "colored_flowerpot_" + color.getName()))));
 		}
-
+		
 		pulverizerRemoveList.add(new ItemStack(Blocks.RED_FLOWER, 1, 6));
-
+		
 		return pulverizerRemoveList;
 	}
-
+	
+	public static ArrayList<ItemStack> getRemoveItemsList() {
+		ArrayList<ItemStack> list = new ArrayList<>();
+		
+		Item material = getThermalFoundationMaterial();
+		
+		int matMetas[] = {
+			22, //Wood Gear
+			23,//Stone Gear
+			26, //Diamond Gear
+			27, //Emerald Gear
+			
+			68, //Aluminum Ingot
+			71, //Iridium Ingot
+			72, //Mana Infused Ingot
+			
+			132, //Aluminum Ingot
+			135, //Iridium Ingot
+			136, //Mana Infused Ingot
+			
+			196, //Aluminum Nugget
+			199, //Iridium Nugget
+			200, //Mana Infused Nugget
+			
+			260, //Aluminum Gear
+			263, //Iridium Gear
+			264, //Mana Infused Gear
+			
+			324, //Aluminum Plate
+			327, //Iridium Plate
+			328 //Mana Infused Plate
+		};
+		
+		for(int meta : matMetas) {
+			list.add(new ItemStack(material, 1, meta));
+		}
+		
+		return list;
+	}
+	
+	public static ArrayList<ItemStack> getRemoveBlocksList() {
+		ArrayList<ItemStack> list = new ArrayList<>();
+		
+		Item storage = ItemBlock.getItemFromBlock(getThermalFoundationStorage());
+		Item ore = ItemBlock.getItemFromBlock(getThermalFoundationOre());
+		
+		int strMetas[] = {
+			4, //Aluminum Block
+			7, //Iridium Block
+			8 //Mana Infused  Block
+		};
+		
+		for(int meta : strMetas) {
+			list.add(new ItemStack(storage, 1, meta));
+			list.add(new ItemStack(ore, 1, meta));
+		}
+		
+		return list;
+	}
+	
 	public static ArrayList<ItemStack> getJeiRemoveList() {
 		ArrayList<ItemStack> jeiRemoveList = new ArrayList<ItemStack>();
 		jeiRemoveList.add(new ItemStack(getThermalFoundationItem("coin"), 1, 0));
@@ -173,21 +233,29 @@ public class Thermal extends BaseFeature {
 		jeiRemoveList.add(new ItemStack(getThermalExpansionItem("morb")));
 		return jeiRemoveList;
 	}
-
+	
 	public static ArrayList<String> getRecipeRemoveList() {
 		ArrayList<String> recipesRemoveList = new ArrayList<String>();
 		recipesRemoveList.add(THERMALFOUNDATION + ":dynamo_5");//Remove the recipe for the stupid Numismatic Dynamo
 		recipesRemoveList.add(THERMALEXPANSION + ":augment_13");//Numismatic Press
 		recipesRemoveList.add(THERMALEXPANSION + ":augment_39");//Lapidary Calibration
-
+		
+		recipesRemoveList.add(THERMALFOUNDATION + ":material_59");//Wooden Gear
+		recipesRemoveList.add(THERMALFOUNDATION + ":material_60");//Stone Gear
+		recipesRemoveList.add(THERMALFOUNDATION + ":material_63");//Diamond Gear
+		recipesRemoveList.add(THERMALFOUNDATION + ":material_64");//Emerald Gear
+		recipesRemoveList.add(THERMALFOUNDATION + ":material_69");//Aluminum Gear
+		recipesRemoveList.add(THERMALFOUNDATION + ":material_72");//Iridium Gear
+		recipesRemoveList.add(THERMALFOUNDATION + ":material_73");//Mana Infused Gear
+		
 		IntStream.rangeClosed(5, 9).forEach(i -> recipesRemoveList.add(THERMALEXPANSION + ":capacitor_" + i));//Capacitor Coloring
 		IntStream.rangeClosed(5, 9).forEach(i -> recipesRemoveList.add(THERMALEXPANSION + ":reservoir_" + i));//Reservoir Coloring
 		IntStream.rangeClosed(13, 22).forEach(i -> recipesRemoveList.add(THERMALEXPANSION + ":satchel_" + i));//Satchel Coloring
 		IntStream.rangeClosed(0, 15).forEach(i -> recipesRemoveList.add(THERMALFOUNDATION + ":rockwool" +  (i != 0 ? ("_" + i) : "")));//Rockwool Coloring
-
+		
 		return recipesRemoveList;
 	}
-
+	
 	@Override
 	public void preInit() {
 		ItemMorb.enable = false;
@@ -199,15 +267,15 @@ public class Thermal extends BaseFeature {
 		ThermalExpansion.CONFIG.set("Device.MobCatcher", "Enable", false);
 		ThermalExpansion.CONFIG.set("Dynamo.Numismatic", "Enable", false);
 		ThermalExpansion.CONFIG.save();
-
+		
 		//getThermalDynamicsItem("cover").setCreativeTab(null);
-
+		
 		disableMorbs();
 	}
-
+	
 	private void disableMorbs() {
 		ArrayList<String> list = new ArrayList<>();
-
+		
 		for (ResourceLocation name : EntityList.getEntityNameList()) {
 			Class<? extends Entity> clazz = EntityList.getClass(name);
 			if (clazz == null || !EntityLiving.class.isAssignableFrom(clazz)) {
@@ -218,42 +286,57 @@ public class Thermal extends BaseFeature {
 				continue;
 			}
 		}
-
+		
 		getThermalExpansionItem("morb").setCreativeTab(null);
-
+		
 		ItemMorb.blacklist = list.toArray(new String[0]);
 		ItemMorb.enable = false;
 	}
-
+	
 	@Override
 	public void postInit() {
-
+		Item material = getThermalFoundationMaterial();
+		Block storage = getThermalFoundationStorage();
+		Block ore = getThermalFoundationOre();
+		
+		material.setCreativeTab(null);
+		storage.setCreativeTab(null);
+		ore.setCreativeTab(null);
+		
 		//int coinMetas[] = { 0, 1, 64, 65, 66, 67, 68, 69, 70, 71, 72, 96, 97, 98, 99, 100, 101, 102, 103 };
 		Item coin = getThermalFoundationItem("coin");
 		coin.setCreativeTab(null);//Remove the coin from the creative tabs
-
+		
 		Item pigment = getThermalFoundationItem("dye");
 		pigment.setCreativeTab(null);
-
+		
 		getRecipeRemoveList().forEach(Vanilla::removeRecipe);
 		getPulverizerRemoveList().forEach(PulverizerManager::removeRecipe);
 		getMintRemoveList().forEach(Thermal::removeCompactorMintRecipe);
-
+		
 		for(EnumDyeColor c: EnumDyeColor.values()) {
 			//Remove Thermal Expansion Pigments
 			Vanilla.removeOre(new ItemStack(pigment, 1, c.getMetadata()), null);
 			//Remove concrete powder recipes from Centrifugal Separator
 			CentrifugeManager.removeRecipe(new ItemStack(Blocks.CONCRETE_POWDER, 2, c.getMetadata()));
 		}
-
+		
 		Item quiltedWool = Item.REGISTRY.getObject(new ResourceLocation(QUARK, "quilted_wool"));
 		ItemStack sand = new ItemStack(Blocks.SAND);
 		ItemStack gravel = new ItemStack(Blocks.GRAVEL);
-
+		
 		int meta = 15;
-
+		
 		ArrayList<ItemStack> safeDyesList = getSafeDyesList();
-
+		
+		for(ItemStack stack : getRemoveItemsList()) {
+			Vanilla.addContraband(stack, ThermalFoundation.tabItems);
+		}
+		
+		for(ItemStack stack : getRemoveBlocksList()) {
+			Vanilla.addContraband(stack, ThermalFoundation.tabCommon);
+		}
+		
 		//Recreate pulverizer recipes to produce safe dyes
 		for(ItemStack dye: safeDyesList) {
 			PulverizerManager.addRecipe(3000, new ItemStack(Blocks.WOOL, 1, meta), new ItemStack(Items.STRING, 4), dye, 15);
@@ -261,52 +344,60 @@ public class Thermal extends BaseFeature {
 			CentrifugeManager.addRecipe(2000, new ItemStack(Blocks.CONCRETE_POWDER, 2, meta), Arrays.asList(sand, gravel, dye), Arrays.asList(100, 100, 10), null);
 			meta--;
 		}
-
+		
 		//Create pulverizer recipes for vanilla to safe dyes
 		for(EnumDyeColor color : new EnumDyeColor[] { EnumDyeColor.BLACK, EnumDyeColor.GREEN, EnumDyeColor.BROWN, EnumDyeColor.BLUE }) {
 			ItemStack safeDye = safeDyesList.get(color.getDyeDamage()).copy();
 			safeDye.setCount(4);
 			PulverizerManager.addRecipe(2000, new ItemStack(Items.DYE, 1, color.getDyeDamage()), safeDye);
 		}
-
+		
 		//Make white tulip produce white dye
 		ItemStack whiteDye = safeDyesList.get(EnumDyeColor.WHITE.getDyeDamage()).copy();
 		whiteDye.setCount(4);
 		PulverizerManager.addRecipe(2000, new ItemStack(Blocks.RED_FLOWER, 1, 6), whiteDye);
-
+		
+		//Useless gears
+		CompactorManager.removeRecipe(new ItemStack(Items.DIAMOND), CompactorManager.Mode.GEAR);//Diamond Gear
+		CompactorManager.removeRecipe(new ItemStack(Items.EMERALD), CompactorManager.Mode.GEAR);//Emerald Gear
+		CompactorManager.removeRecipe(new ItemStack(material, 1, 132), CompactorManager.Mode.GEAR);//Aluminum Gear
+		CompactorManager.removeRecipe(new ItemStack(material, 1, 135), CompactorManager.Mode.GEAR);//Iridium Gear
+		CompactorManager.removeRecipe(new ItemStack(material, 1, 136), CompactorManager.Mode.GEAR);//Mana Infused Gear
+		
+		CompactorManager.removeRecipe(new ItemStack(material, 1, 132), CompactorManager.Mode.PLATE);//Aluminum Plate
+		CompactorManager.removeRecipe(new ItemStack(material, 1, 135), CompactorManager.Mode.PLATE);//Iridium Plate
+		CompactorManager.removeRecipe(new ItemStack(material, 1, 136), CompactorManager.Mode.PLATE);//Mana Infused Plate
+		
 		//Force options to disable Numismatic Dynamo
 		cofh.thermalexpansion.block.dynamo.BlockDynamo.enable[5] = false;
-
-
+		
 		//Allow filling ash blocks with XPJuice to produce netherrack
 		Block ashBlock = Block.REGISTRY.getObject(new ResourceLocation(BIOMESOPLENTY, "ash_block"));
-
+		
 		if(ashBlock != null && ashBlock != Blocks.AIR) {
-
+			
 			List<Fluid> xpFluids = new ArrayList<Fluid>();
-
+			
 			xpFluids.add(TFFluids.fluidExperience);
 			if (FluidRegistry.isFluidRegistered(CoreProps.ESSENCE)) {
 				xpFluids.add(FluidRegistry.getFluid(CoreProps.ESSENCE));
 			}
-
+			
 			if (FluidRegistry.isFluidRegistered(CoreProps.XPJUICE)) {
 				xpFluids.add(FluidRegistry.getFluid(CoreProps.XPJUICE));
 			}
-
+			
 			xpFluids.forEach(f -> TransposerManager.addFillRecipe(16000, new ItemStack(ashBlock), new ItemStack(Blocks.NETHERRACK), new FluidStack(f, 1000), false));
 		}
-
-
+		
 		//Allow grinding a wither skull into black_ash
 		Block blackAsh = Block.REGISTRY.getObject(new ResourceLocation(QUARK, "black_ash"));
-
+		
 		if(blackAsh != null && blackAsh != Blocks.AIR) {
-			Item material = getThermalFoundationMaterial();
 			ItemStack sulfur = new ItemStack(material, 1, 771);
 			PulverizerManager.addRecipe(8000, new ItemStack(Items.SKULL, 1, 1), new ItemStack(blackAsh, 3), sulfur, 25);
 		}
-
+		
 		ItemStack coalPowder = new ItemStack(getThermalFoundationMaterial(), 1, 768);
 		ItemStack charcoalPowder = new ItemStack(getThermalFoundationMaterial(), 1, 769);
 		ItemStack sulfurPowder = new ItemStack(getThermalFoundationMaterial(), 1, 771);
@@ -318,19 +409,19 @@ public class Thermal extends BaseFeature {
 		gunPowderComponents.add(sulfurPowder);
 		gunPowderComponents.add(niterPowder);
 		gunPowderComponents.add(niterPowder);
-
+		
 		CentrifugeManager.addRecipe(16000, new ItemStack(Items.GUNPOWDER), gunPowderComponents, null);
-
+		
 		//Turn 4 charcoal powder into coal powder
 		ItemStack charcoalPowder4 = charcoalPowder.copy();
 		charcoalPowder4.setCount(4);
 		CompactorManager.addRecipe(16000, charcoalPowder4, coalPowder, Mode.ALL);
 		
 	}
-
+	
 	@Override
 	public void registerRecipes(IForgeRegistry<IRecipe> registry) {
-
+		
 		//Recreate rockwool recipes to respect Ore Dictionary Dyes
 		for(EnumDyeColor color : EnumDyeColor.values()) {
 			GameRegistry.addShapelessRecipe(
