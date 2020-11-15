@@ -142,7 +142,7 @@ public class ProjectRed extends BaseFeature {
 		
 		//Remove insulated wire recipes
 		for(EnumDyeColor color : EnumDyeColor.values()) {
-			String name = color.getDyeColorName();
+			String name = Vanilla.getDyeName(color);
 			name = "silver".equals(name) ? "light_gray" : name;
 			Vanilla.removeRecipe(PROJECTREDTRANS + ":insulated/" + name + "_insulated_wire");
 		}
@@ -199,7 +199,7 @@ public class ProjectRed extends BaseFeature {
 		Ingredient oneWire = Ingredient.fromStacks(new ItemStack(wireItem, 1, 0));
 		
 		for(EnumDyeColor color : EnumDyeColor.values()) {
-			GameRegistry.addShapelessRecipe(new ResourceLocation(ModConstants.MODID, "insulated_wire_" + color.getDyeColorName()), null,
+			GameRegistry.addShapelessRecipe(new ResourceLocation(ModConstants.MODID, "insulated_wire_" + Vanilla.getDyeName(color)), null,
 				new ItemStack(wireItem, 3, color.getMetadata() + 1),
 				oneWire,
 				oneWire,

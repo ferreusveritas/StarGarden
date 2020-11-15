@@ -33,7 +33,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryModifiable;
 
 public class Vanilla extends BaseFeature {
-
+	
 	public static final CreativeTabs spawnEggs = new CreativeTabs("spawneggs") {
 		@SideOnly(Side.CLIENT)
 		@Override
@@ -252,6 +252,29 @@ public class Vanilla extends BaseFeature {
 		//Make white tulip produce white dye
 		ItemStack whiteDye = Thermal.getSafeDyesList().get(EnumDyeColor.WHITE.getDyeDamage()).copy();
 		GameRegistry.addShapedRecipe(new ResourceLocation(ModConstants.MODID, "white_gray_dye_from_white_tulip"), null, whiteDye, "x", 'x', new ItemStack(Blocks.RED_FLOWER, 1, 6));
+	}
+	
+	public static String getDyeName(EnumDyeColor color) {
+		switch(color) {
+			case WHITE: return "white";
+			case ORANGE: return "orange";
+			case MAGENTA: return "magenta";
+			case LIGHT_BLUE: return "light_blue";
+			case YELLOW: return "yellow";
+			case LIME: return "lime";
+			case PINK: return "pink";
+			case GRAY: return "gray";
+			case SILVER: return "silver";
+			case CYAN: return "cyan";
+			case PURPLE: return "purple";
+			case BLUE: return "blue";
+			case BROWN: return "brown";
+			case GREEN: return "green";
+			case RED: return "red";
+			case BLACK: return "black";
+		}
+		
+		return "";
 	}
 	
 }
